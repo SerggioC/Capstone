@@ -8,27 +8,26 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,43 +61,41 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-    private ScaledVideoView mScaledVideoView;
+    private VideoView videoView;
+    private FrameLayout mainLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        enterFullScreen();
         setContentView(R.layout.activity_login);
 
+        mainLayout = findViewById(R.id.rootView);
+
         // Setup Background Video
-        mScaledVideoView = findViewById(R.id.video_view);
+        videoView = findViewById(R.id.video_view);
         Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.beach_fly_over);
+        videoView.setVideoURI(uri);
+        videoView.start();
 
-        mScaledVideoView.setVideoURI(uri);
-        mScaledVideoView.start();
+        videoView.setOnPreparedListener(mediaPlayer -> {
+            //mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
 
-        mScaledVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                //mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
+            // get Video dimensions W/H
+            int height = mediaPlayer.getVideoWidth();
+            int width = mediaPlayer.getVideoHeight();
 
-                // get Video dimensions W/H
-                int height = mediaPlayer.getVideoWidth();
-                int width = mediaPlayer.getVideoHeight();
+            int videoViewLargestSize = height > width ? height : width;
+            int videoViewSmallestSize = height < width ? height : width;
 
-                int videoViewLargestSize = height > width ? height : width;
-                int videoViewSmallestSize = height < width ? height : width;
+            float aspectRatio = (float) videoViewLargestSize / videoViewSmallestSize;
 
-                float aspectRatio = (float) videoViewLargestSize / videoViewSmallestSize;
+            //Adjust videoView size maintaining aspect ratio
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+                    (int) (videoViewLargestSize * aspectRatio), (int) (videoViewSmallestSize * aspectRatio));
+            videoView.setLayoutParams(layoutParams);
 
-                mScaledVideoView.setLayoutParams(new ConstraintLayout.LayoutParams((int) (videoViewLargestSize * aspectRatio), (int) (videoViewSmallestSize * aspectRatio)));
-
-                //mScaledVideoView.setLayoutParams(new ConstraintLayout.LayoutParams(videoViewSmallestSize, videoViewLargestSize));
-
-                mediaPlayer.setLooping(true);
-            }
+            mediaPlayer.setLooping(true);
         });
 
 
@@ -119,15 +116,30 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
 
         TextView mEmailSignInButton = findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
+        mEmailSignInButton.setOnClickListener(view -> attemptLogin());
 
-        mLoginFormView = findViewById(R.id.login_form);
+        mLoginFormView = findViewById(R.id.email_login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    private void enterFullScreen() {
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     private void populateAutoComplete() {
@@ -137,6 +149,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         getLoaderManager().initLoader(0, null, this);
     }
+
 
     private boolean mayRequestContacts() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -180,8 +193,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        int i = mScaledVideoView.getWidth();
-        int i2 = mScaledVideoView.getHeight();
+        int i = videoView.getWidth();
+        int i2 = videoView.getHeight();
 
         Toast.makeText(this, "width = " + i + " \n height = " + i2, Toast.LENGTH_LONG).show();
 

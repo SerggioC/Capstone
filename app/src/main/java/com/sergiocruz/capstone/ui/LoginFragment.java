@@ -51,8 +51,15 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.TwitterAuthProvider;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.FragmentEntryLoginBinding;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,6 +92,8 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
     // UI android dataBinding references
     FragmentEntryLoginBinding binding;
+
+    private TwitterLoginButton mLoginButton;
 
     private LoginButton facebookLoginButton;
 
@@ -142,7 +151,52 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
     }
 
     private void setupTwitterLogin() {
+        Twitter.initialize(getContext());
 
+        mLoginButton = binding.rootView.findViewById(R.id.twitter_login_button);
+        mLoginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                Log.d("Sergio> ", "twitterLogin:success" + result);
+                handleTwitterLoginSession(result.data);
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                Log.w("Sergio >", "twitterLogin:failure", exception);
+                updateUI(null);
+            }
+        });
+
+    }
+
+    private void handleTwitterLoginSession(TwitterSession session) {
+        Log.d("Sergio >", "handleTwitterSession:" + session);
+
+        AuthCredential credential = TwitterAuthProvider.getCredential(
+                session.getAuthToken().token,
+                session.getAuthToken().secret);
+
+        mFirebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("sergio >", "signInWithCredential:success");
+                            FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("Sergio >", "signInWithCredential:failure", task.getException());
+                            Toast.makeText(getContext(), "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            updateUI(null);
+                        }
+
+                        // ...
+                    }
+                });
     }
 
     private void setupGoogleSignIn() {
@@ -160,7 +214,7 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
         if (account != null) {
-            updateUI(account);
+            // TODO Jump to pager fragment
         }
 
         binding.rootView.findViewById(R.id.google_sign_in_button)
@@ -265,6 +319,7 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
                 });
     }
+
     private void setupFacebookLogin() {
 
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
@@ -302,10 +357,8 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
             }
         });
 
-
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
     }
-
 
     private void signInWithGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -314,9 +367,9 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Handle Facebook callback
         fbCallbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
-
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
@@ -331,6 +384,10 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
                 // ...
             }
         }
+
+        // Pass the activity result to the Twitter login button.
+        mLoginButton.onActivityResult(requestCode, resultCode, data);
+
     }
 
     @Override

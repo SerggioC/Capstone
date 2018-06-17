@@ -36,6 +36,14 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    // Use keys in gradle.properties. Add to .gitignore
+    // get key in Java: BuildConfig.SOME_API_KEY
+    // get key in Java: BuildConfig.ANOTHER_API_KEY
+    buildTypes.each {
+        it.buildConfigField 'String', 'TWITTER_API_KEY', TwitterApiKey
+        it.buildConfigField 'String', 'TWITTER_API_SECRET', TwitterApiSecret
+    }
+
 }
 
 ext {

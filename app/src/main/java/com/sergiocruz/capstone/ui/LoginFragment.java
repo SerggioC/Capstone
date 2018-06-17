@@ -3,15 +3,11 @@ package com.sergiocruz.capstone.ui;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -19,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,7 +32,6 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.Profile;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -52,11 +48,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.TwitterAuthProvider;
+import com.sergiocruz.capstone.BuildConfig;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.FragmentEntryLoginBinding;
 import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterConfig;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
@@ -64,139 +64,126 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
+public class LoginFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
+    public static final int RC_SIGN_IN = 3;
+    // Id to identity READ_CONTACTS permission request
     private static final int REQUEST_READ_CONTACTS = 0;
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
 
     private static final String EMAIL_PERMISSION = "email";
     private static final String PUBLIC_PROFILE_PERMISSION = "public_profile";
-    public static final int RC_SIGN_IN = 3;
-
     // UI android dataBinding references
     FragmentEntryLoginBinding binding;
 
-    private TwitterLoginButton mLoginButton;
-
-    private LoginButton facebookLoginButton;
+    private TwitterLoginButton twitterLoginButton;
 
     // Keep track of the login task to ensure we can cancel it if requested.
-    private UserLoginTask mAuthTask = null;
     private CallbackManager fbCallbackManager;
-    private boolean isLoggedIn;
     private FirebaseAuth mFirebaseAuth;
     private GoogleSignInClient mGoogleSignInClient;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        initializeTwitter();
 
         // Inflate view and obtain an instance of the binding class.
-        binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_entry_login);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_entry_login, container, false);
 
         // Specify the current fragment as the lifecycle owner.
         binding.setLifecycleOwner(this);
 
         enterFullScreen();
 
-        prepareBackgroundVideo();
-
         // Set up the login form.
         populateAutoComplete();
 
         binding.passwordEditText.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                attemptLogin();
+                attemptEmailPasswordLogin();
                 return true;
             }
             return false;
         });
 
-        binding.emailSignInButton.setOnClickListener(view -> attemptLogin());
+        binding.emailSignInButton.setOnClickListener(view -> attemptEmailPasswordLogin());
 
-        setupAppLoginOptions();
+        binding.anonymousLogin.setOnClickListener(view -> startAnonimousLogin());
 
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
 
+        setupAppLoginOptions();
+
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        prepareBackgroundVideo();
     }
 
     private void setupAppLoginOptions() {
         setupGoogleSignIn();
         setupFacebookLogin();
         setupTwitterLogin();
-        setupEmailLogin();
     }
 
-    private void setupEmailLogin() {
-
-    }
-
-    private void setupTwitterLogin() {
-        Twitter.initialize(getContext());
-
-        mLoginButton = binding.rootView.findViewById(R.id.twitter_login_button);
-        mLoginButton.setCallback(new Callback<TwitterSession>() {
-            @Override
-            public void success(Result<TwitterSession> result) {
-                Log.d("Sergio> ", "twitterLogin:success" + result);
-                handleTwitterLoginSession(result.data);
-            }
-
-            @Override
-            public void failure(TwitterException exception) {
-                Log.w("Sergio >", "twitterLogin:failure", exception);
-                updateUI(null);
-            }
-        });
-
-    }
-
-    private void handleTwitterLoginSession(TwitterSession session) {
-        Log.d("Sergio >", "handleTwitterSession:" + session);
-
-        AuthCredential credential = TwitterAuthProvider.getCredential(
-                session.getAuthToken().token,
-                session.getAuthToken().secret);
-
-        mFirebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
+    private void createNewEmailLogin(String email, String password) {
+        mFirebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this.getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d("sergio >", "signInWithCredential:success");
+                            Log.d("Sergio >", "createUserWithEmail:success");
                             FirebaseUser user = mFirebaseAuth.getCurrentUser();
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w("Sergio >", "signInWithCredential:failure", task.getException());
-                            Toast.makeText(getContext(), "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            Log.w("Sergio >", "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_LONG).show();
                             updateUI(null);
                         }
-
-                        // ...
                     }
                 });
+    }
+
+    private void checkEmailPasswordLogin(String email, String password) {
+        mFirebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener((Task<AuthResult> task) -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d("Sergio >", "signInWithEmail:success");
+                        FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                        updateUI(user);
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w("Sergio >", "signInWithEmail:failure", task.getException());
+                        Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_LONG).show();
+                        binding.emailEditText.setError("Could not log in");
+                        binding.passwordEditText.setError("Could not log in");
+                        binding.emailEditText.requestFocus();
+                        updateUI(null);
+                    }
+                });
+    }
+
+    // Must be initialized before binding views... rolling eyes...
+    private void initializeTwitter() {
+        TwitterConfig twitterConfig = new TwitterConfig.Builder(getContext())
+                .logger(new DefaultLogger(Log.DEBUG))
+                .twitterAuthConfig(new TwitterAuthConfig(BuildConfig.TWITTER_API_KEY, BuildConfig.TWITTER_API_SECRET))
+                .debug(true)
+                .build();
+        Twitter.initialize(twitterConfig);
     }
 
     private void setupGoogleSignIn() {
@@ -219,7 +206,214 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
         binding.rootView.findViewById(R.id.google_sign_in_button)
                 .setOnClickListener(v -> signInWithGoogle());
+    }
 
+    private void setupFacebookLogin() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+        if (isLoggedIn) {
+            Profile profile = Profile.getCurrentProfile();
+            String userName = profile.getName();
+            Uri userImage = profile.getProfilePictureUri(250, 375); //3:2 aspect ratio
+            Log.i("Sergio>", this + " setupFacebookLogin\nuserName= " + userName + "\n" + userImage);
+        }
+
+        fbCallbackManager = CallbackManager.Factory.create();
+
+        LoginButton facebookLoginButton = binding.rootView.findViewById(R.id.facebook_login_button);
+        facebookLoginButton.setReadPermissions(Arrays.asList(EMAIL_PERMISSION, PUBLIC_PROFILE_PERMISSION));
+        // If you are using in a fragment, call facebookLoginButton.setFragment(this);
+        facebookLoginButton.setFragment(this);
+
+        // Callback registration
+        facebookLoginButton.registerCallback(fbCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                // App code
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
+
+        //LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList(EMAIL_PERMISSION, PUBLIC_PROFILE_PERMISSION));
+    }
+
+    private void setupTwitterLogin() {
+        twitterLoginButton = binding.rootView.findViewById(R.id.twitter_login_button);
+        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                Log.d("Sergio> ", "twitterLogin:success" + result);
+                handleTwitterLoginSession(result.data);
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                Log.w("Sergio >", "twitterLogin:failure", exception);
+                updateUI(null);
+            }
+        });
+    }
+
+    private void startAnonimousLogin() {
+        mFirebaseAuth.signInAnonymously()
+                .addOnCompleteListener((Task<AuthResult> task) -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d("Sergio >", "signInAnonymously:success");
+                        FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                        updateUI(user);
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w("Sergio >", "signInAnonymously:failure", task.getException());
+                        Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_LONG).show();
+                        updateUI(null);
+                    }
+                });
+    }
+
+    private void handleAuthWithGoogle(GoogleSignInAccount googleSignInAccount) {
+        Log.d("Sergio> ", "handleAuthWithGoogle:" + googleSignInAccount.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
+        mFirebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener((Task<AuthResult> task) -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d("Sergio> ", "google signInWithCredential:success");
+                        FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                        updateUI(user);
+
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w("Sergio> ", "signInWithCredential:failure", task.getException());
+                        Snackbar.make(binding.rootView, "Google Authentication Failed.", Snackbar.LENGTH_LONG).show();
+                        updateUI(null);
+                    }
+                });
+    }
+
+    private void handleFacebookAccessToken(AccessToken token) {
+        Log.d("Sergio> ", "handleFacebookAccessToken:" + token);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mFirebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener((Task<AuthResult> task) -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d("Sergio> ", "facebook signInWithCredential:success");
+                        FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                        updateUI(user);
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w("Sergio> ", "signInWithCredential:failure", task.getException());
+                        Toast.makeText(getContext(), "Facebook Authentication failed.", Toast.LENGTH_LONG).show();
+                        updateUI(null);
+                    }
+                });
+    }
+
+    private void handleTwitterLoginSession(TwitterSession session) {
+        Log.d("Sergio >", "handleTwitterSession:" + session);
+
+        AuthCredential credential = TwitterAuthProvider.getCredential(
+                session.getAuthToken().token,
+                session.getAuthToken().secret);
+
+        mFirebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("sergio >", "Twitter signInWithCredential:success");
+                            FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("Sergio >", "Twitter signInWithCredential:failure", task.getException());
+                            Toast.makeText(getContext(), "Twitter Authentication failed.", Toast.LENGTH_SHORT).show();
+                            updateUI(null);
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mFirebaseAuth.getCurrentUser();
+        if (currentUser != null) {
+            // User is signed in!
+            updateUI(currentUser);
+        }
+
+    }
+
+    private void signInWithGoogle() {
+        showProgress(true);
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Handle Facebook callback
+        fbCallbackManager.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                handleAuthWithGoogle(account);
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w("Sergio> ", "Google sign in failed", e);
+                // ...
+            }
+        }
+
+        // Pass the activity result to the Twitter login button.
+        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
+
+        // If using the TwitterLoginButton in a Fragment, use the following steps instead.
+        // Inside the Activity hosting the Fragment, pass the result from the Activity to the Fragment
+        // Pass the activity result to the fragment, which will then pass the result to the login
+        // button.
+        Fragment fragment = getFragmentManager().findFragmentByTag(LoginFragment.class.getSimpleName());
+        if (fragment != null) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
+
+
+    }
+
+    private void updateUI(FirebaseUser currentUser) {
+        showProgress(false);
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        binding.videoView.setVideoURI(null);
+    }
+
+    private void signOutUser() {
+        FirebaseAuth.getInstance().signOut();
     }
 
     private void prepareBackgroundVideo() {
@@ -249,164 +443,6 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
         });
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mFirebaseAuth.getCurrentUser();
-        if (currentUser != null) {
-            // User is signed in!
-            updateUI(currentUser);
-        }
-
-    }
-
-    private void updateUI(FirebaseUser currentUser) {
-
-    }
-
-    private void handleFacebookAccessToken(AccessToken token) {
-        Log.d("Sergio> ", "handleFacebookAccessToken:" + token);
-
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        mFirebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("Sergio> ", "signInWithCredential:success");
-                            FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                            user.getProviders();
-                            updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("Sergio> ", "signInWithCredential:failure", task.getException());
-                            Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_LONG).show();
-                            updateUI(null);
-                        }
-                    }
-                });
-    }
-
-    private void handleAuthWithGoogle(GoogleSignInAccount googleSignInAccount) {
-        Log.d("Sergio> ", "handleAuthWithGoogle:" + googleSignInAccount.getId());
-
-        AuthCredential credential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
-        mFirebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener((Executor) this, (Task<AuthResult> task) -> {
-
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d("Sergio> ", "signInWithCredential:success");
-                        FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                        updateUI(user);
-
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w("Sergio> ", "signInWithCredential:failure", task.getException());
-                        Snackbar.make(binding.rootView, "Authentication Failed.", Snackbar.LENGTH_LONG).show();
-                        updateUI(null);
-                    }
-
-
-                });
-    }
-
-    private void setupFacebookLogin() {
-
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        isLoggedIn = accessToken != null && !accessToken.isExpired();
-        if (isLoggedIn) {
-            Profile profile = Profile.getCurrentProfile();
-            String userName = profile.getName();
-            Uri userImage = profile.getProfilePictureUri(250, 375); //3:2 aspect ratio
-            Log.i("Sergio>", this + " setupFacebookLogin\nuserName= " + userName + "\n" + userImage);
-        }
-
-        fbCallbackManager = CallbackManager.Factory.create();
-
-        facebookLoginButton = binding.rootView.findViewById(R.id.facebook_login_button);
-        facebookLoginButton.setReadPermissions(Arrays.asList(EMAIL_PERMISSION, PUBLIC_PROFILE_PERMISSION));
-        // If you are using in a fragment, call facebookLoginButton.setFragment(this);
-        facebookLoginButton.setFragment(this);
-
-        // Callback registration
-        facebookLoginButton.registerCallback(fbCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                // App code
-                handleFacebookAccessToken(loginResult.getAccessToken());
-            }
-
-            @Override
-            public void onCancel() {
-                // App code
-            }
-
-            @Override
-            public void onError(FacebookException exception) {
-                // App code
-            }
-        });
-
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
-    }
-
-    private void signInWithGoogle() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Handle Facebook callback
-        fbCallbackManager.onActivityResult(requestCode, resultCode, data);
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                handleAuthWithGoogle(account);
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w("Sergio> ", "Google sign in failed", e);
-                // ...
-            }
-        }
-
-        // Pass the activity result to the Twitter login button.
-        mLoginButton.onActivityResult(requestCode, resultCode, data);
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-    }
-
-    private void signOutUser() {
-        FirebaseAuth.getInstance().signOut();
-    }
-
-
     private void enterFullScreen() {
         getActivity().getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -417,10 +453,8 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
         if (!mayRequestContacts()) {
             return;
         }
-
-        getLoaderManager().initLoader(0, null, null);
+        getLoaderManager().initLoader(0, null, this);
     }
-
 
     private boolean mayRequestContacts() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -430,7 +464,7 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
             return true;
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(binding.email, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(binding.emailEditText, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok, new View.OnClickListener() {
                         @Override
                         @TargetApi(Build.VERSION_CODES.M)
@@ -448,8 +482,7 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
      * Callback received when a permissions request has been completed.
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_READ_CONTACTS) {
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 populateAutoComplete();
@@ -457,24 +490,19 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
-
-        if (mAuthTask != null) {
-            return;
-        }
+    private void attemptEmailPasswordLogin() {
 
         // Reset errors.
-        binding.email.setError(null);
+        binding.emailEditText.setError(null);
         binding.passwordEditText.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = binding.email.getText().toString();
+        String email = binding.emailEditText.getText().toString();
         String password = binding.passwordEditText.getText().toString();
 
         boolean cancel = false;
@@ -489,12 +517,12 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            binding.email.setError(getString(R.string.error_field_required));
-            focusView = binding.email;
+            binding.emailEditText.setError(getString(R.string.error_field_required));
+            focusView = binding.emailEditText;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            binding.email.setError(getString(R.string.error_invalid_email));
-            focusView = binding.email;
+            binding.emailEditText.setError(getString(R.string.error_invalid_email));
+            focusView = binding.emailEditText;
             cancel = true;
         }
 
@@ -506,18 +534,15 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            checkEmailPasswordLogin(email, password);
         }
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() > 4;
     }
 
@@ -558,8 +583,8 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(getContext(),
+    public android.support.v4.content.Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        return new android.support.v4.content.CursorLoader(getContext(),
                 // Retrieve data rows for the device user's 'profile' contact.
                 Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
                         ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
@@ -575,19 +600,18 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+    public void onLoadFinished(@NonNull android.support.v4.content.Loader<Cursor> loader, Cursor cursor) {
         List<String> emails = new ArrayList<>();
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             emails.add(cursor.getString(ProfileQuery.ADDRESS));
             cursor.moveToNext();
         }
-
         addEmailsToAutoComplete(emails);
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+    public void onLoaderReset(@NonNull android.support.v4.content.Loader<Cursor> loader) {
 
     }
 
@@ -596,8 +620,7 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(getContext(),
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        binding.email.setAdapter(adapter);
+        binding.emailEditText.setAdapter(adapter);
     }
 
 
@@ -611,61 +634,5 @@ public class LoginFragment extends Fragment implements LoaderCallbacks<Cursor> {
         int IS_PRIMARY = 1;
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                //finish();
-            } else {
-                binding.passwordEditText.setError(getString(R.string.error_incorrect_password));
-                binding.passwordEditText.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-    }
 }
 

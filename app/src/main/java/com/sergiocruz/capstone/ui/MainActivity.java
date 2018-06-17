@@ -30,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser == null) {
             startFragment = new LoginFragment();
             fragmentTag = LoginFragment.class.getSimpleName();
-        } else {
+        }
+        else {
             startFragment = new PagerFragment();
             fragmentTag = PagerFragment.class.getSimpleName();
         }

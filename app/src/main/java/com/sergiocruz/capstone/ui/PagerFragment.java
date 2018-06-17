@@ -1,5 +1,6 @@
 package com.sergiocruz.capstone.ui;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sergiocruz.capstone.R;
+import com.sergiocruz.capstone.databinding.FragmentPagerBinding;
 
 
 /**
@@ -25,9 +27,14 @@ public class PagerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_pager, container, false);
-        return view;
+
+        // Inflate view and obtain an instance of the binding class.
+        FragmentPagerBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_pager, container, false);
+
+        // Specify the current fragment as the lifecycle owner.
+        binding.setLifecycleOwner(this);
+
+        return binding.getRoot();
     }
 
 }

@@ -4,11 +4,14 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
     <color name="overlayLight">#0affffff</color>
     <color name="overlayFull">#64ffffff</color>
     <color name="transparent">#00000000</color>
     <color name="crane_dark">#4f1646</color>
     <color name="crane_light">#7c1e72</color>
     <color name="email_light">#d99e3a</color>
+    <color name="email_light_transparent">#96d99e3a</color>
     <color name="email_dark">#b48028</color>
+    <color name="orange">#ce5d00</color>
 </resources>

@@ -16,9 +16,6 @@
     <string name="facebook_app_id">1954128804597114</string>
     <string name="fb_login_protocol_scheme">fb1954128804597114</string>
 
-    <!--Twitter login-->
-    <string name="com.twitter.sdk.android.CONSUMER_KEY">XXXXXXXXXXX</string>
-    <string name="com.twitter.sdk.android.CONSUMER_SECRET">XXXXXXXXXXX</string>
     <string name="skip_login">Enter anonymously ></string>
     <string name="title_activity_pager">PagerActivity</string>
     <string name="title_home">Home</string>

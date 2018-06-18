@@ -4,19 +4,15 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.LoaderManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -62,23 +57,22 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class LoginFragment extends Fragment {
 
-    public static final int RC_SIGN_IN = 3;
-    // Id to identity READ_CONTACTS permission request
-    private static final int REQUEST_READ_CONTACTS = 0;
+    // onActivityResult Request Codes
+    public static final int RC_GOOGLE = 3;
+    public static final int RC_FACEBOOK = 64206;
+    public static final int RC_TWITTER = 140;
 
+    // Facebook permissions
     private static final String EMAIL_PERMISSION = "email";
     private static final String PUBLIC_PROFILE_PERMISSION = "public_profile";
+
     // UI android dataBinding references
     FragmentEntryLoginBinding binding;
 
@@ -88,6 +82,7 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
     private CallbackManager fbCallbackManager;
     private FirebaseAuth mFirebaseAuth;
     private GoogleSignInClient mGoogleSignInClient;
+
 
     @Nullable
     @Override
@@ -102,9 +97,6 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
 
         enterFullScreen();
 
-        // Set up the login form.
-        populateAutoComplete();
-
         binding.passwordEditText.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attemptEmailPasswordLogin();
@@ -115,10 +107,7 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
 
         binding.emailSignInButton.setOnClickListener(view -> attemptEmailPasswordLogin());
 
-        binding.anonymousLogin.setOnClickListener(view -> startAnonimousLogin());
-
-        // Initialize Firebase Auth
-        mFirebaseAuth = FirebaseAuth.getInstance();
+        binding.anonymousLogin.setOnClickListener(view -> startAnonymousLogin());
 
         setupAppLoginOptions();
 
@@ -132,6 +121,8 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
     private void setupAppLoginOptions() {
+        // Initialize Firebase Authentication
+        mFirebaseAuth = FirebaseAuth.getInstance();
         setupGoogleSignIn();
         setupFacebookLogin();
         setupTwitterLogin();
@@ -245,7 +236,6 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
             }
         });
 
-        //LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList(EMAIL_PERMISSION, PUBLIC_PROFILE_PERMISSION));
     }
 
     private void setupTwitterLogin() {
@@ -265,7 +255,7 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
         });
     }
 
-    private void startAnonimousLogin() {
+    private void startAnonymousLogin() {
         mFirebaseAuth.signInAnonymously()
                 .addOnCompleteListener((Task<AuthResult> task) -> {
                     if (task.isSuccessful()) {
@@ -362,19 +352,21 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
     private void signInWithGoogle() {
-        showProgress(true);
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        startActivityForResult(signInIntent, RC_GOOGLE);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Handle Facebook callback
-        fbCallbackManager.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_FACEBOOK) {
+            fbCallbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == RC_GOOGLE) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 // Google Sign In was successful, authenticate with Firebase
@@ -382,21 +374,13 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
                 handleAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Log.w("Sergio> ", "Google sign in failed", e);
-                // ...
+                Log.w("Sergio> ", "Google sign in failed. Status code: " + e.getStatusCode() + e.getLocalizedMessage(), e);
             }
         }
 
-        // Pass the activity result to the Twitter login button.
-        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
-
-        // If using the TwitterLoginButton in a Fragment, use the following steps instead.
-        // Inside the Activity hosting the Fragment, pass the result from the Activity to the Fragment
-        // Pass the activity result to the fragment, which will then pass the result to the login
-        // button.
-        Fragment fragment = getFragmentManager().findFragmentByTag(LoginFragment.class.getSimpleName());
-        if (fragment != null) {
-            fragment.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_TWITTER) {
+            // Pass the activity result to the Twitter login button.
+            twitterLoginButton.onActivityResult(requestCode, resultCode, data);
         }
 
 
@@ -417,7 +401,15 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public void onPause() {
         super.onPause();
+        binding.videoView.suspend();
+        binding.videoView.stopPlayback();
         binding.videoView.setVideoURI(null);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
     }
 
     private void signOutUser() {
@@ -455,47 +447,6 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
         getActivity().getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    }
-
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (getActivity().checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(binding.emailEditText, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
     }
 
     /**
@@ -590,57 +541,6 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
         }
     }
 
-    @Override
-    public android.support.v4.content.Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new android.support.v4.content.CursorLoader(getContext(),
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
-
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(@NonNull android.support.v4.content.Loader<Cursor> loader, Cursor cursor) {
-        List<String> emails = new ArrayList<>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull android.support.v4.content.Loader<Cursor> loader) {
-
-    }
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(getContext(),
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-        binding.emailEditText.setAdapter(adapter);
-    }
-
-
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
 
 }
 

@@ -3,6 +3,7 @@ package com.sergiocruz.capstone.ui;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
@@ -12,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -83,6 +83,11 @@ public class LoginFragment extends Fragment {
     private FirebaseAuth mFirebaseAuth;
     private GoogleSignInClient mGoogleSignInClient;
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
 
     @Nullable
     @Override
@@ -168,7 +173,7 @@ public class LoginFragment extends Fragment {
                 });
     }
 
-    // Must be initialized before binding views... rolling eyes...
+    // Must be initialized before binding views...
     private void initializeTwitter() {
         TwitterConfig twitterConfig = new TwitterConfig.Builder(getContext())
                 .logger(new DefaultLogger(Log.DEBUG))
@@ -192,7 +197,7 @@ public class LoginFragment extends Fragment {
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
-        if (account != null) {
+        if (account != null && !account.isExpired()) {
             // TODO Jump to pager fragment
         }
 
@@ -388,11 +393,12 @@ public class LoginFragment extends Fragment {
 
     private void updateUI(FirebaseUser currentUser) {
         showProgress(false);
+
         if (currentUser != null) {
-            FragmentManager fragmentManager = getChildFragmentManager();
-            fragmentManager
+            //getFragmentManager()
+            getActivity().getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.main_fragment, new PagerFragment(), PagerFragment.class.getSimpleName())
+                    .replace(R.id.main_fragment_container, new PagerFragment(), PagerFragment.class.getSimpleName())
                     .commit();
         }
 
@@ -401,8 +407,8 @@ public class LoginFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        binding.videoView.suspend();
         binding.videoView.stopPlayback();
+        binding.videoView.suspend();
         binding.videoView.setVideoURI(null);
     }
 

@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.FragmentPagerBinding;
 
@@ -33,8 +35,23 @@ public class PagerFragment extends Fragment {
 
         // Specify the current fragment as the lifecycle owner.
         binding.setLifecycleOwner(this);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        binding.buttonLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.main_fragment_container, new LoginFragment(), LoginFragment.class.getSimpleName())
+                    .commit();
+        });
 
         return binding.getRoot();
     }
 
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+    }
 }

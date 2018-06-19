@@ -25,8 +25,6 @@ public class MainActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        FirebaseAuth.getInstance().signOut();
-
         Fragment startFragment;
         String fragmentTag;
         if (currentUser == null) {
@@ -38,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         }
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_fragment, startFragment, fragmentTag)
+                .add(R.id.main_fragment_container, startFragment, fragmentTag)
                 .commit();
     }
 

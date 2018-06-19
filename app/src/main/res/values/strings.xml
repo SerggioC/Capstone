@@ -16,7 +16,7 @@
     <string name="facebook_app_id">1954128804597114</string>
     <string name="fb_login_protocol_scheme">fb1954128804597114</string>
 
-    <string name="skip_login">Enter anonymously ></string>
+    <string name="skip_login">Skip login ></string>
     <string name="title_activity_pager">PagerActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>

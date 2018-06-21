@@ -5,13 +5,13 @@
         android:id="@+id/menu_online"
         android:title="Online Recipes"
         android:icon="@drawable/common_full_open_on_phone"
-        app:showAsAction="always">
+        app:showAsAction="never">
     </item>
     <item
         android:id="@+id/menu_favorite"
         android:title="Favorite Recipes"
         android:icon="@drawable/messenger_bubble_large_white"
-        app:showAsAction="always">
+        app:showAsAction="never">
     </item>
 
 </menu>

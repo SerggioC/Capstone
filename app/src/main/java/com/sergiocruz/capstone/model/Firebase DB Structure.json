@@ -1,0 +1,234 @@
+{
+  "travel-pack-comments": {
+    "travel pack ID 1": {
+      "Comment ID1": {
+        "user ID1": {
+          "Content": "This is the comment content",
+          "Date": "12 Jan 2012",
+          "stars": 5
+        }
+      },
+      "Comment ID2": {
+        "user ID1": {
+          "Content": "This is the comment content",
+          "Date": "12 Jan 2012",
+          "stars": 5
+        }
+      }
+    },
+    "travel pack ID 2": {
+      "Comment ID1": {
+        "user ID1": {
+          "Content": "This is the comment content",
+          "Date": "12 Jan 2012",
+          "stars": 5
+        }
+      },
+      "Comment ID2": {
+        "user ID1": {
+          "Content": "This is the comment content",
+          "Date": "12 Jan 2012",
+          "stars": 5
+        }
+      },
+      "Comment ID3": {
+        "user ID2": {
+          "Content": "This is the comment content",
+          "Date": "12 Jan 2012",
+          "stars": 5
+        }
+      }
+    }
+  },
+  "travel-pack-stars": {
+    "pack ID1": {
+      "math": {
+        "average_stars": 4.7,
+        "total_stars": 40
+      },
+      "stars": {
+        "comment ID1": 4,
+        "comment ID2": 5,
+        "comment ID3": 4.5,
+        "comment ID4": 3.5
+      }
+    },
+    "pack ID2": {
+      "average_stars": 4.8,
+      "total_stars": 409,
+      "user ID1": 4,
+      "user ID2": 5,
+      "user ID3": 4.5,
+      "user ID4": 3.5
+    },
+    "pack ID3": {
+      "average_stars": 4.9,
+      "total_stars": 450,
+      "user ID1": 4,
+      "user ID2": 5,
+      "user ID3": 4.5,
+      "user ID4": 3.5
+    }
+  },
+  "travel-packs": {
+    "Pack id 1": {
+      "Description": "Description of Jamaica travel",
+      "Name": "Jamaica",
+      "Price": "100€",
+      "available": true,
+      "pack-type": [
+        "North America",
+        "Exotic",
+        "Beach",
+        "promotion"
+      ]
+    },
+    "Pack id 2": {
+      "Description": "Description of Paris travel",
+      "Price": "50€",
+      "Title": "Travel to Paris",
+      "available": true,
+      "pack-type": [
+        "vacation",
+        "honeymoon"
+      ]
+    },
+    "Pack id 3": {
+      "Description": "Description of Açores travel",
+      "Name": "Açores",
+      "Price": "20€",
+      "available": true,
+      "pack-type": [
+        "vacation",
+        "cruzeiro"
+      ]
+    },
+    "Pack id 4": {
+      "Description": "Description of Maiorca travel",
+      "Name": "Maiorca",
+      "Price": "380€",
+      "available": true,
+      "pack-type": [
+        "Beach",
+        "vacation"
+      ]
+    },
+    "Pack id 5": {
+      "Description": "Description of Jamaica travel",
+      "Name": "Marraquexe",
+      "Price": "50€",
+      "available": false,
+      "option1": "Voo Directo",
+      "pack-type": [
+        "Beach",
+        "vacation"
+      ]
+    }
+  },
+  "user-bookings": {
+    "user ID1": {
+      "user booked ID1": {
+        "comment": "some comments by user ID1 here",
+        "date": "Today",
+        "pack ID": "packID 2"
+      },
+      "user booked ID2": {
+        "comment": "some comments by the user here",
+        "date": "Tomorrow",
+        "pack ID": "packID 1"
+      }
+    },
+    "user ID2": {
+      "user booked ID1": {
+        "comment": "some comments here",
+        "date": "Today",
+        "pack ID": "packID 2"
+      },
+      "user booked ID2": {
+        "comment": "some comments here",
+        "date": "Tomorrow",
+        "pack ID": "packID 1"
+      }
+    }
+  },
+  "user-favorites": {
+    "user ID1": [
+      "pack ID1",
+      "pack ID2",
+      "pack ID3"
+    ],
+    "user ID2": [
+      "pack ID1",
+      "pack ID2",
+      "pack ID3"
+    ]
+  },
+  "user-travels": {
+    "user ID1": {
+      "user traveled ID1": {
+        "comment": "some comments here",
+        "date": "Today",
+        "description": "Description of trip to Portugal",
+        "name": "Trip to Portugal",
+        "pack ID": "packID 2",
+        "price": "free",
+        "rating": 5
+      },
+      "user traveled ID2": {
+        "comment": "some comments here",
+        "date": "Tomorrow",
+        "description": "Description of Paris travel to disneyland",
+        "name": "viagem a Disneyland",
+        "pack ID": "packID 1",
+        "price": "500€",
+        "rating": 5
+      }
+    },
+    "user ID2": {
+      "user traveled ID1": {
+        "comment": "some comments here",
+        "date": "Today",
+        "description": "Description of trip to Portugal",
+        "name": "Trip to Portugal",
+        "pack ID": "packID 2",
+        "price": "free",
+        "rating": 5
+      },
+      "user traveled ID2": {
+        "comment": "some comments here",
+        "date": "Tomorrow",
+        "description": "Description of Paris travel to disneyland",
+        "name": "Trip to Disneyland",
+        "pack ID": "packID 1",
+        "price": "500€",
+        "rating": 5
+      }
+    }
+  },
+  "users": {
+    "user ID 1": {
+      "auth_provider": "Google",
+      "avatar-uri": "http://some-uri-to-an-image/image,jpg",
+      "email": "mail1@mail.com",
+      "name": "Sergio"
+    },
+    "user ID 2": {
+      "auth_provider": "Facebook",
+      "avatar-uri": "http://some-uri-to-an-image/image,jpg",
+      "email": "mail1@mail.com",
+      "name": "Sergio"
+    },
+    "user ID 3": {
+      "auth_provider": "Twitter",
+      "avatar-uri": "http://some-uri-to-an-image/image,jpg",
+      "email": "mail1@mail.com",
+      "name": "Sergio"
+    },
+    "user ID 4": {
+      "auth_provider": "Anonymous",
+      "avatar-uri": "http://some-uri-to-an-image/image,jpg",
+      "email": "mail1@mail.com",
+      "name": "Sergio"
+    }
+  }
+}

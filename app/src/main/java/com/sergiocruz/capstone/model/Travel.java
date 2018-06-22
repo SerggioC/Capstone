@@ -1,8 +1,15 @@
 package com.sergiocruz.capstone.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+
 import java.util.List;
 
+@Entity
 public class Travel {
+
+    @PrimaryKey(autoGenerate = false)
     int travelID;
     String travelName;
     String description;
@@ -10,8 +17,9 @@ public class Travel {
     long date; // in System.currentTimeMillis()
     List<String> imagesList;
     List<String> videosList;
+    int isFavorite;
 
-    public Travel(int travelID, String travelName, String description, String price, long date, List<String> imagesList, List<String> videosList) {
+    public Travel(int travelID, String travelName, String description, String price, long date, List<String> imagesList, List<String> videosList, int isFavorite) {
         this.travelID = travelID;
         this.travelName = travelName;
         this.description = description;
@@ -19,6 +27,7 @@ public class Travel {
         this.date = date;
         this.imagesList = imagesList;
         this.videosList = videosList;
+        this.isFavorite = isFavorite;
     }
 
     public int getTravelID() {
@@ -77,6 +86,15 @@ public class Travel {
         this.videosList = videosList;
     }
 
+    public int isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(int favorite) {
+        isFavorite = favorite;
+    }
+
+    @Ignore
     @Override
     public String toString() {
         StringBuilder imageListString = new StringBuilder();

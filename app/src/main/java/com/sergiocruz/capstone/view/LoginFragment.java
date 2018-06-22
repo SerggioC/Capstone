@@ -284,6 +284,7 @@ public class LoginFragment extends Fragment {
                         Log.w("Sergio> ", "Anonymous signInWithCredential:failure", task.getException());
                         message = "Anonymous Authentication failed.";
                     }
+
                     updateUI(task.isSuccessful(), message);
                 });
     }

@@ -1,5 +1,7 @@
 package com.sergiocruz.capstone.repository;
 
+import android.content.Context;
+
 public class Repository {
     public static String userName = "the name";
     private static Repository sInstance;
@@ -12,9 +14,9 @@ public class Repository {
         this.localRepository = localRepository;
     }
 
-    public static Repository getInstance() {
+    public static Repository getInstance(Context applicationContext) {
         if (sInstance == null) {
-            sInstance = new Repository(FirebaseRepository.getInstance(), LocalRepository);
+            sInstance = new Repository(FirebaseRepository.getInstance(), LocalRepository.getInstance(applicationContext));
         }
         return sInstance;
     }

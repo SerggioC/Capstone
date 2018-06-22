@@ -6,12 +6,9 @@
     xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
-
-        <import type="android.view.View"/>
-
         <variable
-            name="user"
-            type="com.sergiocruz.capstone.model.User"/>
+            name="viewModel"
+            type="com.sergiocruz.capstone.viewmodel.HomePageViewModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -20,10 +17,11 @@
         android:layout_height="match_parent"
         tools:context=".ui.PagerFragment">
 
+        <!--bind:viewmodel="@{viewmodel}"-->
         <include
             android:id="@+id/toolbar_layout"
             layout="@layout/toolbar_layout"
-            bind:user="@{user}"
+
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -43,13 +41,21 @@
             android:id="@+id/message_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:text="@string/title_home"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_logout"/>
+
+        <TextView
+            android:id="@+id/username_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@{viewModel.userHere.userName}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/message_textview"/>
 
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/bottom_navigation"
@@ -62,6 +68,8 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:menu="@menu/bottom_navigation_menu"/>
+
+
 
     </android.support.constraint.ConstraintLayout>
 

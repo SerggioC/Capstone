@@ -1,5 +1,6 @@
 package com.sergiocruz.capstone.ui;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.FragmentPagerBinding;
 import com.sergiocruz.capstone.model.User;
+import com.sergiocruz.capstone.viewmodel.HomePageViewModel;
 
 
 /**
@@ -66,12 +68,12 @@ public class PagerFragment extends Fragment {
         // Required empty public constructor
     }
 
-    @BindingAdapter(value = {"imageUrl"})
-    public void setImageUrl(ImageView imageView, String url) {
-        Glide.with(this).load(url == null ? R.drawable.ic_user_icon_48dp : url)
+    @BindingAdapter("imageUrl")
+    public static void setImageUrl(ImageView imageView, String url) {
+        Glide.with(imageView.getContext()).load(url == null ? R.drawable.ic_user_icon_48dp : url)
                 .apply(RequestOptions.circleCropTransform())
                 .into(imageView)
-                .onLoadFailed(ContextCompat.getDrawable(getContext(), R.drawable.ic_user_icon_48dp));
+                .onLoadFailed(ContextCompat.getDrawable(imageView.getContext(), R.drawable.ic_user_icon_48dp));
     }
 
     @Override
@@ -88,6 +90,13 @@ public class PagerFragment extends Fragment {
         // Specify the current fragment as the lifecycle owner.
         binding.setLifecycleOwner(this);
 
+        // Obtain the ViewModel component.
+        HomePageViewModel viewModel = ViewModelProviders.of(this).get(HomePageViewModel.class);
+
+        // variable name in xml <data><variable>
+        binding.setViewModel(viewModel);
+
+
         binding.buttonLogout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             LoginManager.getInstance().logOut();
@@ -101,6 +110,15 @@ public class PagerFragment extends Fragment {
         binding.bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         // setup the menu and toolbar
+        setupToolbar();
+
+        getAuthenticatedUserData();
+        setupFirebase();
+
+        return binding.getRoot();
+    }
+
+    private void setupToolbar() {
         setHasOptionsMenu(true);
         ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbarLayout.toolbar);
 
@@ -116,11 +134,6 @@ public class PagerFragment extends Fragment {
                 Toast.makeText(getContext(), "Should Open Account Drawer", Toast.LENGTH_LONG).show();
             }
         });
-
-        getAuthUserData();
-        setupFirebase();
-
-        return binding.getRoot();
     }
 
     private void setupFirebase() {
@@ -145,7 +158,7 @@ public class PagerFragment extends Fragment {
     }
 
     // get Firebase Authenticated user
-    private void getAuthUserData() {
+    private void getAuthenticatedUserData() {
         firebaseAuth = FirebaseAuth.getInstance();
         copyUser();
         authStateListener = firebaseAuth -> {

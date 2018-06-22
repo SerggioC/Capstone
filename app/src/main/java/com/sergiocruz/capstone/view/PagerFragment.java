@@ -1,4 +1,4 @@
-package com.sergiocruz.capstone.ui;
+package com.sergiocruz.capstone.view;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.BindingAdapter;
@@ -128,23 +128,19 @@ public class PagerFragment extends Fragment {
                 .into(binding.toolbarLayout.userIcon)
                 .onLoadFailed(ContextCompat.getDrawable(getContext(), R.drawable.ic_user_icon_48dp));
 
-        binding.toolbarLayout.userIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "Should Open Account Drawer", Toast.LENGTH_LONG).show();
-            }
-        });
+        binding.toolbarLayout.userIcon.setOnClickListener(v ->
+                Toast.makeText(getContext(), "Should Open Account Drawer", Toast.LENGTH_LONG).show());
     }
 
     private void setupFirebase() {
         mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseReference reference = mFirebaseDatabase.child("users/" + user.getUserID() + "/");
         reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
 
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    Toast.makeText(getContext(), "Logged in user " + snapshot.child("userName").getValue(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Logged in as " + snapshot.child("userName").getValue(), Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getContext(), "Error: Login failed", Toast.LENGTH_LONG).show();
                 }

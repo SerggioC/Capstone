@@ -1,18 +1,33 @@
 package com.sergiocruz.capstone.viewmodel;
 
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
+import android.support.annotation.NonNull;
 
-import com.sergiocruz.capstone.Repository;
+import com.sergiocruz.capstone.repository.Repository;
 import com.sergiocruz.capstone.model.User;
 
-public class HomePageViewModel extends ViewModel {
+public class HomePageViewModel extends AndroidViewModel {
+    Repository repository;
     LiveData userLiveData;
-    User userHere;
+    User user;
 
-    public HomePageViewModel() {
+    public HomePageViewModel(@NonNull Application application) {
+        super(application);
+
+        if (this.repository != null) {
+            // ViewModel is created per Activity, so instantiate once
+            // we know the userId won't change
+            return;
+        }
+        if (repository == null) {
+            this.repository = Repository.getInstance();
+        }
+
+
         String result = Repository.userName;
-        userHere = new User(
+        user = new User(
                 null,
                 "some user anonymous",
                 null,
@@ -22,11 +37,11 @@ public class HomePageViewModel extends ViewModel {
                 true);
     }
 
-    public User getUserHere() {
-        return userHere;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserHere(User userHere) {
-        this.userHere = userHere;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

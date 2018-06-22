@@ -4,10 +4,9 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <variable
-            name="user"
-            type="com.sergiocruz.capstone.model.User"/>
+            name="viewModel"
+            type="com.sergiocruz.capstone.viewmodel.HomePageViewModel"/>
     </data>
 
     <android.support.design.widget.AppBarLayout
@@ -34,7 +33,7 @@
                     android:layout_gravity="start|center_vertical"
                     android:background="@drawable/circle_white"
                     android:contentDescription="@string/user_image"
-                    app:imageUrl="@{user.userPhotoUri}"
+                    app:imageUrl="@{viewModel.user.userPhotoUri}"
                     tools:src="@drawable/ic_user_icon_48dp"/>
 
                 <TextView

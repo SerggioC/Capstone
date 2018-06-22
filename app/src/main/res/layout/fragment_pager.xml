@@ -15,13 +15,13 @@
         android:id="@+id/pager_frame_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.PagerFragment">
+        tools:context=".view.PagerFragment">
 
         <!--bind:viewmodel="@{viewmodel}"-->
         <include
             android:id="@+id/toolbar_layout"
             layout="@layout/toolbar_layout"
-
+            bind:viewmodel="@{viewmodel}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="@{viewModel.userHere.userName}"
+            android:text="@{viewModel.user.userName}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/message_textview"/>
 
@@ -69,12 +69,6 @@
             app:layout_constraintRight_toRightOf="parent"
             app:menu="@menu/bottom_navigation_menu"/>
 
-
-
     </android.support.constraint.ConstraintLayout>
-
-
-
-
 
 </layout>

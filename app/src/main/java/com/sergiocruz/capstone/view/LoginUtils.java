@@ -1,4 +1,4 @@
-package com.sergiocruz.capstone.ui;
+package com.sergiocruz.capstone.view;
 
 public class LoginUtils {
 

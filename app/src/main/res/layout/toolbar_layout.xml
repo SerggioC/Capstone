@@ -2,7 +2,17 @@
 
 <!-- <layout> tag for android DataBinding-->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="user"
+            type="com.sergiocruz.capstone.model.User"/>
+    </data>
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_toolbar"
@@ -27,6 +37,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|center_vertical"
                     android:background="@drawable/circle_white"
+                    android:contentDescription="@string/user_image"
+                    app:imageUrl="@{user.userPhotoUri}"
                     tools:src="@drawable/ic_user_icon_48dp"/>
 
                 <TextView

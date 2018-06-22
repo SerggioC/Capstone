@@ -1,5 +1,6 @@
 package com.sergiocruz.capstone.ui;
 
+import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -64,6 +66,14 @@ public class PagerFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @BindingAdapter(value = {"imageUrl"})
+    public void setImageUrl(ImageView imageView, String url) {
+        Glide.with(this).load(url == null ? R.drawable.ic_user_icon_48dp : url)
+                .apply(RequestOptions.circleCropTransform())
+                .into(imageView)
+                .onLoadFailed(ContextCompat.getDrawable(getContext(), R.drawable.ic_user_icon_48dp));
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +100,6 @@ public class PagerFragment extends Fragment {
 
         binding.bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-
         // setup the menu and toolbar
         setHasOptionsMenu(true);
         ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbarLayout.toolbar);
@@ -115,10 +124,8 @@ public class PagerFragment extends Fragment {
     }
 
     private void setupFirebase() {
-
         mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseReference reference = mFirebaseDatabase.child("users/" + user.getUserID() + "/");
-
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -128,16 +135,13 @@ public class PagerFragment extends Fragment {
                 } else {
                     Toast.makeText(getContext(), "Error: Login failed", Toast.LENGTH_LONG).show();
                 }
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(getContext(), "Database Error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
             }
-
         });
-
     }
 
     // get Firebase Authenticated user
@@ -154,13 +158,19 @@ public class PagerFragment extends Fragment {
     private void copyUser() {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         if (firebaseUser != null) {
+
+            String email = firebaseUser.getEmail();
+            if (email == null) {
+                email = firebaseUser.getProviderData().get(1).getEmail();
+            }
+
             user = new User(
                     firebaseUser.getUid(),
                     firebaseUser.getDisplayName(),
-                    firebaseUser.getPhotoUrl().toString(),
-                    firebaseUser.getEmail(),
+                    String.valueOf(firebaseUser.getPhotoUrl()),
+                    email,
                     firebaseUser.getPhoneNumber(),
-                    firebaseUser.getProviders().get(0),
+                    firebaseUser.getProviders() != null ? firebaseUser.getProviders().get(0) : null,
                     firebaseUser.isAnonymous());
 
         } else {
@@ -176,7 +186,6 @@ public class PagerFragment extends Fragment {
         }
         Log.i("Sergio>", this + " copyUser copied user ");
     }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

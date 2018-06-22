@@ -63,6 +63,7 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * A login screen that offers login via email/password.
@@ -143,19 +144,17 @@ public class LoginFragment extends Fragment {
                 .addOnCompleteListener(this.getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        FirebaseUser firebaseUser = null;
                         String message;
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
+                            // Sign in success
                             Log.d("Sergio >", "createUserWithEmail:success");
-                            firebaseUser = mFirebaseAuth.getCurrentUser();
                             message = "Created new Email/Password login!";
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("Sergio >", "createUserWithEmail:failure", task.getException());
                             message = "Authentication failed.";
                         }
-                        updateUI(firebaseUser, message);
+                        updateUI(task.isSuccessful(), message);
                     }
                 });
     }
@@ -163,15 +162,13 @@ public class LoginFragment extends Fragment {
     private void checkEmailPasswordLogin(String email, String password) {
         mFirebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Task<AuthResult> task) -> {
-                    FirebaseUser firebaseUser = null;
                     String message;
 
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("Sergio >", "signInWithEmail:success");
-                        firebaseUser = mFirebaseAuth.getCurrentUser();
                         message = "Signed In With Email successfully!";
-                        updateUI(firebaseUser, message);
+                        updateUI(true, message);
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w("Sergio >", "signInWithEmail:failure", task.getException());
@@ -180,7 +177,7 @@ public class LoginFragment extends Fragment {
                         binding.passwordEditText.setError("Could not log in");
                         binding.emailEditText.requestFocus();
                         message = "Sign In With Email Failed!";
-                        updateUI(null, message);
+                        updateUI(false, message);
                         // TODO: Register window
                     }
                 });
@@ -268,7 +265,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void failure(TwitterException exception) {
                 Log.w("Sergio >", "twitterLogin:failure", exception);
-                updateUI(null, "twitter login failure");
+                updateUI(false, "twitter login failure");
             }
         });
     }
@@ -276,20 +273,18 @@ public class LoginFragment extends Fragment {
     private void startAnonymousLogin() {
         mFirebaseAuth.signInAnonymously()
                 .addOnCompleteListener((Task<AuthResult> task) -> {
-                    FirebaseUser firebaseUser = null;
                     String message;
 
                     if (task.isSuccessful()) {
                         // Sign in success
                         Log.d("Sergio> ", "Anonymous signIn:success");
-                        firebaseUser = mFirebaseAuth.getCurrentUser();
                         message = "Anonymous sign in";
                     } else {
                         // Sign in fails
                         Log.w("Sergio> ", "Anonymous signInWithCredential:failure", task.getException());
                         message = "Anonymous Authentication failed.";
                     }
-                    updateUI(firebaseUser, message);
+                    updateUI(task.isSuccessful(), message);
                 });
     }
 
@@ -299,20 +294,17 @@ public class LoginFragment extends Fragment {
         AuthCredential credential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
         mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener((Task<AuthResult> task) -> {
-                    FirebaseUser firebaseUser = null;
                     String message;
-
                     if (task.isSuccessful()) {
                         // Sign in success
                         Log.d("Sergio> ", "Google signInWithCredential:success");
-                        firebaseUser = mFirebaseAuth.getCurrentUser();
                         message = "Google sign in success!";
                     } else {
                         // Sign in fails
                         Log.w("Sergio> ", "Google signInWithCredential:failure", task.getException());
                         message = "Google Authentication failed.";
                     }
-                    updateUI(firebaseUser, message);
+                    updateUI(task.isSuccessful(), message);
                 });
     }
 
@@ -322,20 +314,17 @@ public class LoginFragment extends Fragment {
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener((Task<AuthResult> task) -> {
-                    FirebaseUser firebaseUser = null;
                     String message;
-
                     if (task.isSuccessful()) {
                         // Sign in success
                         Log.d("Sergio> ", "facebook signInWithCredential:success");
-                        firebaseUser = mFirebaseAuth.getCurrentUser();
                         message = "facebook sign in success";
                     } else {
                         // Sign in fails
                         Log.w("Sergio> ", "signInWithCredential:failure", task.getException());
                         message = "Facebook Authentication failed.";
                     }
-                    updateUI(firebaseUser, message);
+                    updateUI(task.isSuccessful(), message);
                 });
     }
 
@@ -350,19 +339,17 @@ public class LoginFragment extends Fragment {
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        FirebaseUser firebaseUser = null;
                         String message;
                         if (task.isSuccessful()) {
                             // Sign in success
                             Log.d("sergio >", "Twitter signInWithCredential:success");
-                            firebaseUser = mFirebaseAuth.getCurrentUser();
                             message = "Twitter sign in success";
                         } else {
                             // Sign in fails
                             Log.w("Sergio >", "Twitter signInWithCredential:failure", task.getException());
                             message = "Twitter Authentication failed.";
                         }
-                        updateUI(firebaseUser, message);
+                        updateUI(task.isSuccessful(), message);
                     }
                 });
     }
@@ -374,8 +361,8 @@ public class LoginFragment extends Fragment {
         FirebaseUser currentUser = mFirebaseAuth.getCurrentUser();
         if (currentUser != null) {
             // User is signed in!
-            String message = "Authenticated with " + currentUser.getProviders().get(0);
-            updateUI(currentUser, message);
+            String message = "Authenticated with " + Objects.requireNonNull(currentUser.getProviders()).get(0);
+            updateUI(true, message);
         }
 
     }
@@ -415,55 +402,56 @@ public class LoginFragment extends Fragment {
 
     }
 
-    private void updateUI(FirebaseUser firebaseUser, String message) {
+    private void updateUI(boolean taskIsSuccessful, String message) {
         showProgress(false);
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 
-        if (firebaseUser != null) {
-            String userID = firebaseUser.getUid();
-            DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
-            DatabaseReference reference = mFirebaseDatabase.child("users/" + userID + "/");
+        if (!taskIsSuccessful) return;
 
-            // Check if the user is in the database, and listen only once
-            // addValueEventListener always listens and has to be removed
-            reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    // User exists in database or user logged in anonymously, show content
-                    if (snapshot.exists() || firebaseUser.isAnonymous()) {
-                        goToPagerFragment();
-                    } else {
-                        // User does not exist in database and it's not anonymous, create new user
-                        String email = firebaseUser.getEmail();
-                        if (email == null) {
-                            email = firebaseUser.getProviderData().get(1).getEmail();
-                        }
+        FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
+        String userID = firebaseUser != null ? firebaseUser.getUid() : null;
+        DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference reference = mFirebaseDatabase.child("users/" + userID + "/");
 
-                        User user = new User(
-                                firebaseUser.getUid(),
-                                firebaseUser.getDisplayName(),
-                                String.valueOf(firebaseUser.getPhotoUrl()),
-                                email,
-                                firebaseUser.getPhoneNumber(),
-                                firebaseUser.getProviders() != null ? firebaseUser.getProviders().get(0) : null,
-                                false);
-
-                        writeNewUserToDB(user, mFirebaseDatabase);
+        // Check if the user is in the database, and listen only once
+        // addValueEventListener always listens and has to be removed
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                // User exists in database or user logged in anonymously, show content
+                if (snapshot.exists() || (firebaseUser != null && firebaseUser.isAnonymous())) {
+                    goToPagerFragment();
+                } else {
+                    // User does not exist in database and it's not anonymous, create new user
+                    String email = firebaseUser.getEmail();
+                    if (email == null) {
+                        email = firebaseUser.getProviderData().get(1).getEmail();
                     }
-                    Log.i("Sergio>", this + " onDataChange\nsnapshot= " +
-                            snapshot.getValue() == null ? "null snapshot" : String.valueOf(snapshot.getValue()));
+
+                    User user = new User(
+                            firebaseUser.getUid(),
+                            firebaseUser.getDisplayName(),
+                            String.valueOf(firebaseUser.getPhotoUrl()),
+                            email,
+                            firebaseUser.getPhoneNumber(),
+                            firebaseUser.getProviders() != null ? firebaseUser.getProviders().get(0) : null,
+                            false);
+
+                    writeNewUserToDB(user, mFirebaseDatabase);
                 }
+                Log.i("Sergio>", this + " onDataChange\nsnapshot= " +
+                        snapshot.getValue() == null ? "null snapshot" : String.valueOf(snapshot.getValue()));
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    System.out.println("The read failed: " + databaseError.getMessage());
-                    Toast.makeText(getContext(), "Database Error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getMessage());
+                Toast.makeText(getContext(), "Database Error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
 
-                }
+            }
 
-            });
+        });
 
-        }
 
     }
 

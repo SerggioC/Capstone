@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,8 +20,15 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.FragmentPagerBinding;
+import com.sergiocruz.capstone.model.User;
 
 
 /**
@@ -47,6 +55,10 @@ public class PagerFragment extends Fragment {
             return false;
         }
     };
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private DatabaseReference mFirebaseDatabase;
+    private User user;
 
     public PagerFragment() {
         // Required empty public constructor
@@ -78,6 +90,7 @@ public class PagerFragment extends Fragment {
 
         binding.bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+
         // setup the menu and toolbar
         setHasOptionsMenu(true);
         ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbarLayout.toolbar);
@@ -95,7 +108,73 @@ public class PagerFragment extends Fragment {
             }
         });
 
+        getAuthUserData();
+        setupFirebase();
+
         return binding.getRoot();
+    }
+
+    private void setupFirebase() {
+
+        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference reference = mFirebaseDatabase.child("users/" + user.getUserID() + "/");
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+                if (snapshot.exists()) {
+                    Toast.makeText(getContext(), "Logged in user " + snapshot.child("userName").getValue(), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getContext(), "Error: Login failed", Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getContext(), "Database Error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+
+        });
+
+    }
+
+    // get Firebase Authenticated user
+    private void getAuthUserData() {
+        firebaseAuth = FirebaseAuth.getInstance();
+        copyUser();
+        authStateListener = firebaseAuth -> {
+            PagerFragment.this.firebaseAuth = firebaseAuth;
+            copyUser();
+        };
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+    private void copyUser() {
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        if (firebaseUser != null) {
+            user = new User(
+                    firebaseUser.getUid(),
+                    firebaseUser.getDisplayName(),
+                    firebaseUser.getPhotoUrl().toString(),
+                    firebaseUser.getEmail(),
+                    firebaseUser.getPhoneNumber(),
+                    firebaseUser.getProviders().get(0),
+                    firebaseUser.isAnonymous());
+
+        } else {
+
+            user = new User(
+                    null,
+                    getString(R.string.anonymous),
+                    null,
+                    null,
+                    null,
+                    null,
+                    true);
+        }
+        Log.i("Sergio>", this + " copyUser copied user ");
     }
 
 
@@ -108,6 +187,6 @@ public class PagerFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-
+        firebaseAuth.removeAuthStateListener(authStateListener);
     }
 }

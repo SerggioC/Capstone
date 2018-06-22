@@ -1,90 +1,90 @@
 package com.sergiocruz.capstone.model;
 
 public class User {
-    int userID;
-    String email;
-    String firstName;
-    String lastName;
-    String avatar;
-    String country;
-    String city;
+    String userID;
+    String userName;
+    String userPhotoUri;
+    String userEmail;
+    String userPhoneNumber;
+    String authProvider;
+    boolean isAnonymous;
 
-    public User(int userID, String email, String firstName, String lastName, String avatar, String country, String city) {
+    public User(String userID, String userName, String userPhotoUri, String userEmail, String userPhoneNumber, String authProvider, boolean isAnonymous) {
         this.userID = userID;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.avatar = avatar;
-        this.country = country;
-        this.city = city;
+        this.userName = userName;
+        this.userPhotoUri = userPhotoUri;
+        this.userEmail = userEmail;
+        this.userPhoneNumber = userPhoneNumber;
+        this.authProvider = authProvider;
+        this.isAnonymous = isAnonymous;
     }
 
-    public int getUserID() {
+    public String getUserID() {
         return userID;
     }
 
-    public void setUserID(int userID) {
+    public void setUserID(String userID) {
         this.userID = userID;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getUserPhotoUri() {
+        return userPhotoUri;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setUserPhotoUri(String userPhotoUri) {
+        this.userPhotoUri = userPhotoUri;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUserPhoneNumber() {
+        return userPhoneNumber;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUserPhoneNumber(String userPhoneNumber) {
+        this.userPhoneNumber = userPhoneNumber;
     }
 
-    public String getCountry() {
-        return country;
+    public String getAuthProvider() {
+        return authProvider;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setAuthProvider(String authProvider) {
+        this.authProvider = authProvider;
     }
 
-    public String getCity() {
-        return city;
+    public boolean getIsAnonymous() {
+        return this.isAnonymous;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setAnonymous(boolean anonymous) {
+        this.isAnonymous = anonymous;
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "userID=" + userID +
-                ", email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", avatar='" + avatar + '\'' +
-                ", country='" + country + '\'' +
-                ", city='" + city + '\'' +
+                "userID='" + userID + '\'' +
+                ", userName='" + userName + '\'' +
+                ", userPhotoUri=" + userPhotoUri +
+                ", userEmail='" + userEmail + '\'' +
+                ", userPhoneNumber='" + userPhoneNumber + '\'' +
+                ", authProvider='" + authProvider + '\'' +
+                ", isAnonymous=" + isAnonymous +
                 '}';
     }
 }

@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -44,9 +43,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.TwitterAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.BuildConfig;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.FragmentEntryLoginBinding;
+import com.sergiocruz.capstone.model.User;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
@@ -138,17 +143,19 @@ public class LoginFragment extends Fragment {
                 .addOnCompleteListener(this.getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        FirebaseUser firebaseUser = null;
+                        String message;
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("Sergio >", "createUserWithEmail:success");
-                            FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                            updateUI(user);
+                            firebaseUser = mFirebaseAuth.getCurrentUser();
+                            message = "Created new Email/Password login!";
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("Sergio >", "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_LONG).show();
-                            updateUI(null);
+                            message = "Authentication failed.";
                         }
+                        updateUI(firebaseUser, message);
                     }
                 });
     }
@@ -156,11 +163,15 @@ public class LoginFragment extends Fragment {
     private void checkEmailPasswordLogin(String email, String password) {
         mFirebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Task<AuthResult> task) -> {
+                    FirebaseUser firebaseUser = null;
+                    String message;
+
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("Sergio >", "signInWithEmail:success");
-                        FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                        updateUI(user);
+                        firebaseUser = mFirebaseAuth.getCurrentUser();
+                        message = "Signed In With Email successfully!";
+                        updateUI(firebaseUser, message);
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w("Sergio >", "signInWithEmail:failure", task.getException());
@@ -168,7 +179,9 @@ public class LoginFragment extends Fragment {
                         binding.emailEditText.setError("Could not log in");
                         binding.passwordEditText.setError("Could not log in");
                         binding.emailEditText.requestFocus();
-                        updateUI(null);
+                        message = "Sign In With Email Failed!";
+                        updateUI(null, message);
+                        // TODO: Register window
                     }
                 });
     }
@@ -232,12 +245,12 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void onCancel() {
-                // App code
+                //
             }
 
             @Override
             public void onError(FacebookException exception) {
-                // App code
+                Toast.makeText(getContext(), "Error: Facebook Login", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -255,7 +268,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void failure(TwitterException exception) {
                 Log.w("Sergio >", "twitterLogin:failure", exception);
-                updateUI(null);
+                updateUI(null, "twitter login failure");
             }
         });
     }
@@ -263,17 +276,20 @@ public class LoginFragment extends Fragment {
     private void startAnonymousLogin() {
         mFirebaseAuth.signInAnonymously()
                 .addOnCompleteListener((Task<AuthResult> task) -> {
+                    FirebaseUser firebaseUser = null;
+                    String message;
+
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d("Sergio >", "signInAnonymously:success");
-                        FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                        updateUI(user);
+                        // Sign in success
+                        Log.d("Sergio> ", "Anonymous signIn:success");
+                        firebaseUser = mFirebaseAuth.getCurrentUser();
+                        message = "Anonymous sign in";
                     } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w("Sergio >", "signInAnonymously:failure", task.getException());
-                        Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_LONG).show();
-                        updateUI(null);
+                        // Sign in fails
+                        Log.w("Sergio> ", "Anonymous signInWithCredential:failure", task.getException());
+                        message = "Anonymous Authentication failed.";
                     }
+                    updateUI(firebaseUser, message);
                 });
     }
 
@@ -283,18 +299,20 @@ public class LoginFragment extends Fragment {
         AuthCredential credential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
         mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener((Task<AuthResult> task) -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d("Sergio> ", "google signInWithCredential:success");
-                        FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                        updateUI(user);
+                    FirebaseUser firebaseUser = null;
+                    String message;
 
+                    if (task.isSuccessful()) {
+                        // Sign in success
+                        Log.d("Sergio> ", "Google signInWithCredential:success");
+                        firebaseUser = mFirebaseAuth.getCurrentUser();
+                        message = "Google sign in success!";
                     } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w("Sergio> ", "signInWithCredential:failure", task.getException());
-                        Snackbar.make(binding.rootView, "Google Authentication Failed.", Snackbar.LENGTH_LONG).show();
-                        updateUI(null);
+                        // Sign in fails
+                        Log.w("Sergio> ", "Google signInWithCredential:failure", task.getException());
+                        message = "Google Authentication failed.";
                     }
+                    updateUI(firebaseUser, message);
                 });
     }
 
@@ -304,17 +322,20 @@ public class LoginFragment extends Fragment {
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener((Task<AuthResult> task) -> {
+                    FirebaseUser firebaseUser = null;
+                    String message;
+
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
+                        // Sign in success
                         Log.d("Sergio> ", "facebook signInWithCredential:success");
-                        FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                        updateUI(user);
+                        firebaseUser = mFirebaseAuth.getCurrentUser();
+                        message = "facebook sign in success";
                     } else {
-                        // If sign in fails, display a message to the user.
+                        // Sign in fails
                         Log.w("Sergio> ", "signInWithCredential:failure", task.getException());
-                        Toast.makeText(getContext(), "Facebook Authentication failed.", Toast.LENGTH_LONG).show();
-                        updateUI(null);
+                        message = "Facebook Authentication failed.";
                     }
+                    updateUI(firebaseUser, message);
                 });
     }
 
@@ -329,17 +350,19 @@ public class LoginFragment extends Fragment {
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        FirebaseUser firebaseUser = null;
+                        String message;
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
+                            // Sign in success
                             Log.d("sergio >", "Twitter signInWithCredential:success");
-                            FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                            updateUI(user);
+                            firebaseUser = mFirebaseAuth.getCurrentUser();
+                            message = "Twitter sign in success";
                         } else {
-                            // If sign in fails, display a message to the user.
+                            // Sign in fails
                             Log.w("Sergio >", "Twitter signInWithCredential:failure", task.getException());
-                            Toast.makeText(getContext(), "Twitter Authentication failed.", Toast.LENGTH_SHORT).show();
-                            updateUI(null);
+                            message = "Twitter Authentication failed.";
                         }
+                        updateUI(firebaseUser, message);
                     }
                 });
     }
@@ -351,7 +374,8 @@ public class LoginFragment extends Fragment {
         FirebaseUser currentUser = mFirebaseAuth.getCurrentUser();
         if (currentUser != null) {
             // User is signed in!
-            updateUI(currentUser);
+            String message = "Authenticated with " + currentUser.getProviders().get(0);
+            updateUI(currentUser, message);
         }
 
     }
@@ -391,18 +415,102 @@ public class LoginFragment extends Fragment {
 
     }
 
-    private void updateUI(FirebaseUser currentUser) {
+    private void updateUI(FirebaseUser firebaseUser, String message) {
         showProgress(false);
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 
-        if (currentUser != null) {
-            //getFragmentManager()
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_fragment_container, new PagerFragment(), PagerFragment.class.getSimpleName())
-                    .commit();
+        if (firebaseUser != null) {
+            String userID = firebaseUser.getUid();
+            DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+            DatabaseReference reference = mFirebaseDatabase.child("users/" + userID + "/");
+
+            // Check if the user is in the database, and listen only once
+            // addValueEventListener always listens and has to be removed
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    // User exists in database or user logged in anonymously, show content
+                    if (snapshot.exists() || firebaseUser.isAnonymous()) {
+                        goToPagerFragment();
+                    } else {
+                        // User does not exist in database and it's not anonymous, create new user
+                        String email = firebaseUser.getEmail();
+                        if (email == null) {
+                            email = firebaseUser.getProviderData().get(1).getEmail();
+                        }
+
+                        User user = new User(
+                                firebaseUser.getUid(),
+                                firebaseUser.getDisplayName(),
+                                String.valueOf(firebaseUser.getPhotoUrl()),
+                                email,
+                                firebaseUser.getPhoneNumber(),
+                                firebaseUser.getProviders() != null ? firebaseUser.getProviders().get(0) : null,
+                                false);
+
+                        writeNewUserToDB(user, mFirebaseDatabase);
+                    }
+                    Log.i("Sergio>", this + " onDataChange\nsnapshot= " +
+                            snapshot.getValue() == null ? "null snapshot" : String.valueOf(snapshot.getValue()));
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    System.out.println("The read failed: " + databaseError.getMessage());
+                    Toast.makeText(getContext(), "Database Error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+
+                }
+
+            });
+
         }
 
     }
+
+    private void writeNewUserToDB(User newUser, DatabaseReference databaseReference) {
+        Toast.makeText(getContext(), "Creating new User", Toast.LENGTH_LONG).show();
+        Log.i("Sergio>", this + " writeNewUserToDB\nuser= " + newUser.toString());
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("users").child(newUser.getUserID()).setValue(newUser)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) goToPagerFragment();
+                    }
+                });
+        //FirebaseDatabase.getInstance().getReference().child("users").setValue(newUser);
+//        databaseReference.child("users").push().setValue(newUser.getUserID(), new DatabaseReference.CompletionListener() {
+//            @Override
+//            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference2) {
+//                DatabaseReference reference = databaseReference2.child(newUser.getUserID());
+//                reference.push().setValue(newUser).addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.w("Sergio>", this + "onFailure: \n" + "error= " + e);
+//                    }
+//                });
+//            }
+//        });
+
+    }
+
+    private void goToPagerFragment() {
+        exitFullScreen();
+
+        //getFragmentManager()
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_fragment_container, new PagerFragment(), PagerFragment.class.getSimpleName())
+                .commit();
+    }
+
+    private void exitFullScreen() {
+
+        this.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+    }
+
 
     @Override
     public void onPause() {

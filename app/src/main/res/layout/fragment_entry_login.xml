@@ -94,7 +94,7 @@
                         android:inputType="textEmailAddress"
                         android:maxLines="1"
                         android:singleLine="true"
-                        android:text="@{user.firstName}"/>
+                        android:text="@{user.userName}"/>
 
                 </android.support.design.widget.TextInputLayout>
 

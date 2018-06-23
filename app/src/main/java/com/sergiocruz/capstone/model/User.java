@@ -1,6 +1,7 @@
 package com.sergiocruz.capstone.model;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
@@ -16,6 +17,7 @@ public class User {
     String authProvider;
     boolean isAnonymous;
 
+    @Ignore
     public User() {
         // No Arg constructor for firebase
     }

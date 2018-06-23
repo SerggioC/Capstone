@@ -16,20 +16,10 @@ public class HomePageViewModel extends AndroidViewModel {
     public HomePageViewModel(@NonNull Application application) {
         super(application);
 
-        user = new User(
-                null,
-                "test username",
-                null,
-                null,
-                null,
-                null,
-                true);
-
         if (this.repository == null) {
             this.repository = Repository.getInstance(application.getApplicationContext());
         }
-
-
+        
     }
 
     public User getUser() {

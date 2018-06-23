@@ -14,7 +14,7 @@
         android:id="@+id/pager_frame_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.PagerFragment">
+        tools:context=".view.fragment.HomeFragment">
 
         <!--bind:viewmodel="@{viewmodel}"-->
         <include
@@ -49,11 +49,13 @@
 
         <TextView
             android:id="@+id/username_textView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="@{viewModel.user.userName}"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/message_textview"/>
 
@@ -68,6 +70,18 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:menu="@menu/bottom_navigation_menu"/>
+
+        <TextView
+            android:id="@+id/textViewTest"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@{viewModel.user.userName}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/username_textView"/>
 
     </android.support.constraint.ConstraintLayout>
 

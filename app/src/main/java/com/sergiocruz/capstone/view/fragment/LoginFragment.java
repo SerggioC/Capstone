@@ -1,4 +1,4 @@
-package com.sergiocruz.capstone.view;
+package com.sergiocruz.capstone.view.fragment;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -50,7 +50,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.BuildConfig;
 import com.sergiocruz.capstone.R;
-import com.sergiocruz.capstone.databinding.FragmentEntryLoginBinding;
+import com.sergiocruz.capstone.databinding.FragmentLoginBinding;
 import com.sergiocruz.capstone.model.User;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
@@ -80,7 +80,7 @@ public class LoginFragment extends Fragment {
     private static final String PUBLIC_PROFILE_PERMISSION = "public_profile";
 
     // UI android dataBinding references
-    FragmentEntryLoginBinding binding;
+    FragmentLoginBinding binding;
 
     private TwitterLoginButton twitterLoginButton;
 
@@ -101,7 +101,7 @@ public class LoginFragment extends Fragment {
         initializeTwitter();
 
         // Inflate view and obtain an instance of the binding class.
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_entry_login, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false);
 
         // Specify the current fragment as the lifecycle owner.
         binding.setLifecycleOwner(this);
@@ -490,7 +490,7 @@ public class LoginFragment extends Fragment {
         //getFragmentManager()
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_fragment_container, new PagerFragment(), PagerFragment.class.getSimpleName())
+                .replace(R.id.main_fragment_container, new HomeFragment(), HomeFragment.class.getSimpleName())
                 .commit();
     }
 

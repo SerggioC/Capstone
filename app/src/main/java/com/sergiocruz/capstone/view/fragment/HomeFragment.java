@@ -1,4 +1,4 @@
-package com.sergiocruz.capstone.view;
+package com.sergiocruz.capstone.view.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.BindingAdapter;
@@ -30,17 +30,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.R;
-import com.sergiocruz.capstone.databinding.FragmentPagerBinding;
+import com.sergiocruz.capstone.databinding.FragmentHomeBinding;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.viewmodel.HomePageViewModel;
-
 
 /**
  * Main Fragment with App content, a ViewPager with bottom navigation in this case.
  */
-public class PagerFragment extends Fragment {
+public class HomeFragment extends Fragment {
 
-    private FragmentPagerBinding binding;
+    private FragmentHomeBinding binding;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -64,7 +63,7 @@ public class PagerFragment extends Fragment {
     private DatabaseReference mFirebaseDatabase;
     private User user;
 
-    public PagerFragment() {
+    public HomeFragment() {
         // Required empty public constructor
     }
 
@@ -85,7 +84,7 @@ public class PagerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate view and obtain an instance of the binding class.
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_pager, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
 
         // Specify the current fragment as the lifecycle owner.
         binding.setLifecycleOwner(this);
@@ -158,7 +157,7 @@ public class PagerFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         copyUser();
         authStateListener = firebaseAuth -> {
-            PagerFragment.this.firebaseAuth = firebaseAuth;
+            HomeFragment.this.firebaseAuth = firebaseAuth;
             copyUser();
         };
         firebaseAuth.addAuthStateListener(authStateListener);

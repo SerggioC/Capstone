@@ -1,6 +1,13 @@
 package com.sergiocruz.capstone.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
+@Entity
 public class User {
+    @NonNull
+    @PrimaryKey(autoGenerate = false)
     String userID;
     String userName;
     String userPhotoUri;
@@ -8,6 +15,10 @@ public class User {
     String userPhoneNumber;
     String authProvider;
     boolean isAnonymous;
+
+    public User() {
+        // No Arg constructor for firebase
+    }
 
     public User(String userID, String userName, String userPhotoUri, String userEmail, String userPhoneNumber, String authProvider, boolean isAnonymous) {
         this.userID = userID;

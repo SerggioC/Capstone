@@ -96,7 +96,7 @@
             android:label="@string/title_activity_pager">
         </activity>
         <activity
-            android:name=".DrawerActivity"
+            android:name=".view.DrawerActivity"
             android:label="@string/title_activity_drawer"
             android:theme="@style/AppTheme">
         </activity>

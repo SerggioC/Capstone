@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.sergiocruz.capstone.R;
+import com.sergiocruz.capstone.view.fragment.HomeFragment;
+import com.sergiocruz.capstone.view.fragment.LoginFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
             startFragment = new LoginFragment();
             fragmentTag = LoginFragment.class.getSimpleName();
         } else {
-            startFragment = new PagerFragment();
-            fragmentTag = PagerFragment.class.getSimpleName();
+            startFragment = new HomeFragment();
+            fragmentTag = HomeFragment.class.getSimpleName();
         }
         getSupportFragmentManager()
                 .beginTransaction()

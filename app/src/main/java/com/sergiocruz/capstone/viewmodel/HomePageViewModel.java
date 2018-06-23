@@ -3,15 +3,16 @@ package com.sergiocruz.capstone.viewmodel;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 
-import com.sergiocruz.capstone.repository.Repository;
 import com.sergiocruz.capstone.model.User;
+import com.sergiocruz.capstone.repository.Repository;
 
 public class HomePageViewModel extends AndroidViewModel {
     private Repository repository;
-    LiveData userLiveData;
-    User user;
+
+    public ObservableField<User> user = new ObservableField<>();
 
     public HomePageViewModel(@NonNull Application application) {
         super(application);
@@ -20,21 +21,19 @@ public class HomePageViewModel extends AndroidViewModel {
             this.repository = Repository.getInstance(application.getApplicationContext());
         }
 
-        user = new User(
-                null,
-                "some user anonymous",
-                null,
-                null,
-                null,
-                null,
-                true);
     }
 
     public User getUser() {
-        return repository.getUser();
+        LiveData<User> user = repository.getUser();
+        return user.getValue();
+    }
+
+    public LiveData<User> getUserLiveData() {
+        LiveData<User> user = repository.getUser();
+        return user;
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.user.set(user);
     }
 }

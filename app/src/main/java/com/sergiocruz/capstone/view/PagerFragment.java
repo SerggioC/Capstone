@@ -93,7 +93,7 @@ public class PagerFragment extends Fragment {
         // Obtain the ViewModel component.
         HomePageViewModel viewModel = ViewModelProviders.of(this).get(HomePageViewModel.class);
 
-        // variable name in xml <data><variable>
+        // variable name "viewModel" in xml <data><variable> + set prefix.
         binding.setViewModel(viewModel);
 
 
@@ -112,8 +112,8 @@ public class PagerFragment extends Fragment {
         // setup the menu and toolbar
         setupToolbar();
 
-        getAuthenticatedUserData();
-        setupFirebase();
+//        getAuthenticatedUserData();
+//        setupFirebase();
 
         return binding.getRoot();
     }

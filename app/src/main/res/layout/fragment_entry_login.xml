@@ -5,9 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <import type="android.view.View"/>
-
         <variable
             name="user"
             type="com.sergiocruz.capstone.model.User"/>
@@ -149,7 +146,6 @@
                     android:textSize="18sp"
                     android:textStyle="bold"/>
             </LinearLayout>
-
 
         </ScrollView>
 

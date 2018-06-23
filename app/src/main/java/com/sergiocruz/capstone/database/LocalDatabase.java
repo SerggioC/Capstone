@@ -9,7 +9,7 @@ import android.content.Context;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 
-@Database(entities = {User.class, Travel.class}, version = 1)
+@Database(entities = {User.class, Travel.class}, version = 1, exportSchema = false)
 @TypeConverters(DateConverter.class)
 public abstract class LocalDatabase extends RoomDatabase {
     private static final Object LOCK = new Object();

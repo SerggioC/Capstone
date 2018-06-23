@@ -3,6 +3,9 @@ package com.sergiocruz.capstone.model;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.TypeConverters;
+
+import com.sergiocruz.capstone.database.StringListConverter;
 
 import java.util.List;
 
@@ -15,7 +18,9 @@ public class Travel {
     String description;
     String price;
     long date; // in System.currentTimeMillis()
+    @TypeConverters(StringListConverter.class)
     List<String> imagesList;
+    @TypeConverters(StringListConverter.class)
     List<String> videosList;
     int isFavorite;
 

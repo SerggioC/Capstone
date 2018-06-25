@@ -2,12 +2,10 @@ package com.sergiocruz.capstone.view.fragment;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -122,19 +122,61 @@ public class LoginFragment extends Fragment {
 
         binding.passwordEditText.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                attemptEmailPasswordLogin();
+                validateEmail();
                 return true;
             }
             return false;
         });
 
-        binding.emailSignInButton.setOnClickListener(view -> attemptEmailPasswordLogin());
+        binding.emailSignInButton.setOnClickListener(view -> validateEmail());
 
-        binding.anonymousLogin.setOnClickListener(view -> startAnonymousLogin());
+        //binding.emailSignInButton.setOnClickListener(this::animateViews);
+
+        binding.skipLogin.setOnClickListener(view -> startAnonymousLogin());
 
         setupAppLoginOptions();
 
         return binding.getRoot();
+    }
+
+    private void slideToPassword() {
+        Animation slideOutLeft = AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_left);
+        slideOutLeft.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                binding.emailInputLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        binding.emailInputLayout.startAnimation(slideOutLeft);
+
+        Animation slideInLeft = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_left);
+        slideInLeft.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                binding.passwordInputLayout.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        binding.passwordInputLayout.startAnimation(slideInLeft);
     }
 
     @Override
@@ -178,20 +220,6 @@ public class LoginFragment extends Fragment {
 
     private void checkEmailPasswordLogin(String email, String password) {
 
-        mFirebaseAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
-            @Override
-            public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
-                if (task.isSuccessful()) {
-                    SignInMethodQueryResult result = task.getResult();
-                    List<String> methods = result.getSignInMethods();
-
-                } else {
-
-                }
-
-            }
-        });
-
         mFirebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
 
@@ -214,6 +242,102 @@ public class LoginFragment extends Fragment {
                     // TODO: Register window?
 
                 });
+    }
+
+    private void checkEmailExists(String email) {
+        mFirebaseAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+            @Override
+            public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+
+                SignInMethodQueryResult result = task.getResult();
+                List<String> methods = result.getSignInMethods();
+                if (methods != null && methods.size() > 0) {
+                    // Email already present -> ask password
+                    slideToPassword();
+                    binding.emailSignInButton.setText("Sign in");
+
+                } else {
+                    // Email not present -> register ?
+                    Log.w("Sergio>", this + "onComplete: \n" + "= " + task.getException());
+                    binding.emailSignInButton.setText("Register");
+
+                }
+
+
+            }
+        });
+    }
+
+    private void validateEmail() {
+        binding.emailEditText.setError(null);
+        String email = binding.emailEditText.getText().toString();
+
+        boolean cancel = false;
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            binding.emailEditText.setError(getString(R.string.error_field_required));
+            cancel = true;
+        } else if (!isEmailValid(email)) {
+            binding.emailEditText.setError(getString(R.string.error_invalid_email));
+            cancel = true;
+        }
+
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            binding.emailEditText.requestFocus();
+        } else {
+            // Show a progress spinner, and kick off a background task to
+            // perform the user login attempt.
+            showProgress(true);
+            checkEmailExists(email);
+        }
+    }
+
+
+    /**
+     * Attempts to sign in or register the account specified by the login form.
+     * If there are form errors (invalid email, missing fields, etc.), the
+     * errors are presented and no actual login attempt is made.
+     */
+    private void attemptEmailPasswordLogin() {
+
+        // Reset errors.
+        binding.passwordEditText.setError(null);
+
+        // Store values at the time of the login attempt.
+        String password = binding.passwordEditText.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        // Check for a valid password, if the user entered one.
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
+            binding.passwordEditText.setError(getString(R.string.error_invalid_password));
+            focusView = binding.passwordEditText;
+            cancel = true;
+        }
+
+
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else {
+            // Show a progress spinner, and kick off a background task to
+            // perform the user login attempt.
+            showProgress(true);
+            checkEmailPasswordLogin("email", password);
+        }
+    }
+
+    private boolean isEmailValid(String email) {
+        // Additional validation?
+        return email.contains("@");
+    }
+
+    private boolean isPasswordValid(String password) {
+        return password.length() > 4;
     }
 
     // Must be initialized before binding views...
@@ -586,95 +710,32 @@ public class LoginFragment extends Fragment {
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
-    private void attemptEmailPasswordLogin() {
-
-        // Reset errors.
-        binding.emailEditText.setError(null);
-        binding.passwordEditText.setError(null);
-
-        // Store values at the time of the login attempt.
-        String email = binding.emailEditText.getText().toString();
-        String password = binding.passwordEditText.getText().toString();
-
-        boolean cancel = false;
-        View focusView = null;
-
-        // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
-            binding.passwordEditText.setError(getString(R.string.error_invalid_password));
-            focusView = binding.passwordEditText;
-            cancel = true;
-        }
-
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            binding.emailEditText.setError(getString(R.string.error_field_required));
-            focusView = binding.emailEditText;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            binding.emailEditText.setError(getString(R.string.error_invalid_email));
-            focusView = binding.emailEditText;
-            cancel = true;
-        }
-
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            checkEmailPasswordLogin(email, password);
-        }
-    }
-
-    private boolean isEmailValid(String email) {
-        return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        return password.length() > 4;
-    }
-
-    /**
      * Shows the progress UI and hides the login form.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            binding.emailLoginForm.setVisibility(show ? View.GONE : View.VISIBLE);
-            binding.emailLoginForm.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    binding.emailLoginForm.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
+        int animationTime = getResources().getInteger(android.R.integer.config_mediumAnimTime);
 
-            binding.loginProgress.setVisibility(show ? View.VISIBLE : View.GONE);
-            binding.loginProgress.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    binding.loginProgress.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            binding.loginProgress.setVisibility(show ? View.VISIBLE : View.GONE);
-            binding.emailLoginForm.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+        binding.loginForms.setVisibility(show ? View.GONE : View.VISIBLE);
+        binding.loginForms.animate().setDuration(animationTime).alpha(show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                binding.loginForms.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+
+        });
+
+        binding.loginProgress.setVisibility(show ? View.VISIBLE : View.GONE);
+        binding.loginProgress.animate().setDuration(animationTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                binding.loginProgress.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
+
     }
 
 

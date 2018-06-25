@@ -10,4 +10,5 @@
     <dimen name="user_icon_size">40dp</dimen>
     <dimen name="bottom_nav_elevation">8dp</dimen>
     <dimen name="bottom_navigation_height">56dp</dimen>
+    <integer name="animation_duration">400</integer>
 </resources>

@@ -109,6 +109,15 @@ public class LoginFragment extends Fragment {
 
         enterFullScreen();
 
+        binding.emailEditText.setOnEditorActionListener((textView, id, keyEvent) -> {
+            if (id == EditorInfo.IME_ACTION_NEXT) {
+                binding.passwordEditText.requestFocus();
+                return true;
+            }
+            return false;
+
+        });
+
         binding.passwordEditText.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attemptEmailPasswordLogin();

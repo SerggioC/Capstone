@@ -1,7 +1,5 @@
 package com.sergiocruz.capstone.view.fragment;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -54,6 +52,7 @@ import com.sergiocruz.capstone.BuildConfig;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.FragmentLoginBinding;
 import com.sergiocruz.capstone.model.User;
+import com.sergiocruz.capstone.view.RegisterDialog;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
@@ -71,7 +70,7 @@ import java.util.Objects;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment implements RegisterDialog.onOKClicked, RegisterDialog.onCancelClicked{
 
     // onActivityResult Request Codes
     public static final int RC_GOOGLE = 3;
@@ -91,6 +90,10 @@ public class LoginFragment extends Fragment {
     private CallbackManager fbCallbackManager;
     private FirebaseAuth mFirebaseAuth;
     private GoogleSignInClient mGoogleSignInClient;
+
+    private static boolean isEmailValid = false;
+    private static boolean isPasswordValid = false;
+    private boolean register = false;
 
 
     @Override
@@ -113,26 +116,24 @@ public class LoginFragment extends Fragment {
 
         binding.emailEditText.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_NEXT) {
-                binding.passwordEditText.requestFocus();
-                return true;
-            }
-            return false;
-
-        });
-
-        binding.passwordEditText.setOnEditorActionListener((textView, id, keyEvent) -> {
-            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
+                //binding.passwordEditText.requestFocus();
                 validateEmail();
                 return true;
             }
             return false;
         });
 
-        binding.emailSignInButton.setOnClickListener(view -> validateEmail());
+        binding.passwordEditText.setOnEditorActionListener((textView, id, keyEvent) -> {
+            if (id == EditorInfo.IME_ACTION_GO || id == EditorInfo.IME_NULL) {
+                validatePassword();
+                return true;
+            }
+            return false;
+        });
 
-        //binding.emailSignInButton.setOnClickListener(this::animateViews);
+        binding.emailSignInButton.setOnClickListener(this::startEmailPasswordLogin);
 
-        binding.skipLogin.setOnClickListener(view -> startAnonymousLogin());
+        binding.skipLogin.setOnClickListener(this::startAnonymousLogin);
 
         setupAppLoginOptions();
 
@@ -179,6 +180,44 @@ public class LoginFragment extends Fragment {
         binding.passwordInputLayout.startAnimation(slideInLeft);
     }
 
+    private void slideToEmail() {
+        Animation slideInRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_right);
+        slideInRight.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                binding.emailInputLayout.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        binding.emailInputLayout.startAnimation(slideInRight);
+
+        Animation slideOutRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_right);
+        slideOutRight.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                binding.passwordInputLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        binding.passwordInputLayout.startAnimation(slideOutRight);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -193,7 +232,164 @@ public class LoginFragment extends Fragment {
         setupTwitterLogin();
     }
 
-    private void createNewEmailLogin(String email, String password) {
+    private void startEmailPasswordLogin(View view) {
+        if (!isEmailValid) {
+            validateEmail();
+        } else if (!isEmailValid){
+            validatePassword();
+        } else if (register) {
+            createNewEmailLogin();
+        }
+    }
+
+    private void validateEmail() {
+        // Clear Errors
+        binding.emailEditText.setError(null);
+        String email = binding.emailEditText.getText().toString();
+
+        boolean cancel = false;
+        String errorMessage = "";
+
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            errorMessage = getString(R.string.error_field_required);
+            cancel = true;
+        } else if (!isEmailValid(email)) {
+            errorMessage = getString(R.string.error_invalid_email);
+            cancel = true;
+        }
+
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            binding.emailEditText.setError(errorMessage);
+            binding.emailEditText.requestFocus();
+        } else {
+            // Show a progress spinner, and kick off a background task to
+            // perform the user login attempt.
+            checkEmailExists(email);
+        }
+    }
+
+    private void validatePassword() {
+        if (!isEmailValid) {
+            slideToEmail();
+            binding.emailEditText.setError("Invalid e-mail");
+            return;
+        } else if (isEmailValid && isPasswordValid && register){
+            createNewEmailLogin();
+            return;
+        }
+
+        // Reset errors.
+        binding.passwordEditText.setError(null);
+
+        // Store values at the time of the login attempt.
+        String password = binding.passwordEditText.getText().toString();
+
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            binding.passwordEditText.setError(getString(R.string.error_invalid_password));
+            binding.passwordEditText.requestFocus();
+            isPasswordValid = false;
+        } else {
+            // Show a progress spinner, and kick off a background task to
+            // perform the user login attempt.
+            isPasswordValid = true;
+            checkEmailPasswordLogin();
+        }
+    }
+
+    private void checkEmailPasswordLogin() {
+        showProgress(true);
+        String password = binding.passwordEditText.getText().toString();
+        String email = binding.emailEditText.getText().toString();
+        mFirebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+
+                    String message;
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d("Sergio >", "signInWithEmail:success");
+                        message = "Signed In With Email successfully!";
+                    } else {
+                        Log.w("Sergio >", "signInWithEmail:failure");
+                        message = "Signed In With Email Failed";
+                        slideToEmail();
+                    }
+                    updateUI(task.isSuccessful(), message);
+
+                })
+                .addOnFailureListener(e -> {
+
+                    // Sign in fails
+                    Log.w("Sergio >", "signInWithEmail:failure", e.getCause());
+                    binding.emailEditText.setError(e.getLocalizedMessage());
+                    binding.passwordEditText.setError("Could not log in");
+                    binding.emailEditText.requestFocus();
+                    slideToEmail();
+                    updateUI(false, e.getLocalizedMessage());
+
+                });
+    }
+
+    private void checkEmailExists(String email) {
+        showProgress(true);
+        mFirebaseAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+            @Override
+            public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+
+                SignInMethodQueryResult result = task.getResult();
+                List<String> methods = result.getSignInMethods();
+                if (methods != null && methods.size() > 0) {
+                    // Email already present -> ask password
+                    slideToPassword();
+                    binding.emailSignInButton.setText("Sign in");
+                    isEmailValid = true;
+                } else {
+                    // Email not present -> register ?
+                    Log.w("Sergio>", this + "onComplete: \n" + "= " + task.getException());
+                    binding.emailEditText.setError("Unregistered e-mail");
+                    isEmailValid = false;
+                    registerDialog(email);
+                }
+                showProgress(false);
+            }
+        });
+    }
+
+    private void registerDialog(String email) {
+        RegisterDialog dialog = RegisterDialog.newInstance(this, this, email);
+        dialog.show(getActivity().getSupportFragmentManager(), null);
+    }
+
+    @Override
+    public void onOKClicked() {
+        binding.emailSignInButton.setText("Register");
+        slideToPassword();
+        isEmailValid = true;
+        register = true;
+    }
+
+    @Override
+    public void onCancelClicked() {
+        isEmailValid = false;
+        register = false;
+    }
+
+    private boolean isEmailValid(String email) {
+        // Additional validation?
+        return email.contains("@");
+    }
+
+    private boolean isPasswordValid(String password) {
+        return password.length() > 4;
+    }
+
+    private void createNewEmailLogin() {
+        String password = binding.passwordEditText.getText().toString();
+        String email = binding.emailEditText.getText().toString();
         mFirebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this.getActivity(), task -> {
                     String message;
@@ -216,128 +412,6 @@ public class LoginFragment extends Fragment {
 
                     updateUI(false, e.getLocalizedMessage());
                 });
-    }
-
-    private void checkEmailPasswordLogin(String email, String password) {
-
-        mFirebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d("Sergio >", "signInWithEmail:success");
-                    String message = "Signed In With Email successfully!";
-                    updateUI(true, message);
-
-                })
-                .addOnFailureListener(e -> {
-
-                    // Sign in fails
-                    Log.w("Sergio >", "signInWithEmail:failure", e.getCause());
-                    binding.emailEditText.setError(e.getLocalizedMessage());
-                    binding.passwordEditText.setError("Could not log in");
-                    binding.emailEditText.requestFocus();
-
-                    updateUI(false, e.getLocalizedMessage());
-
-                    // TODO: Register window?
-
-                });
-    }
-
-    private void checkEmailExists(String email) {
-        mFirebaseAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
-            @Override
-            public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
-
-                SignInMethodQueryResult result = task.getResult();
-                List<String> methods = result.getSignInMethods();
-                if (methods != null && methods.size() > 0) {
-                    // Email already present -> ask password
-                    slideToPassword();
-                    binding.emailSignInButton.setText("Sign in");
-
-                } else {
-                    // Email not present -> register ?
-                    Log.w("Sergio>", this + "onComplete: \n" + "= " + task.getException());
-                    binding.emailSignInButton.setText("Register");
-
-                }
-
-
-            }
-        });
-    }
-
-    private void validateEmail() {
-        binding.emailEditText.setError(null);
-        String email = binding.emailEditText.getText().toString();
-
-        boolean cancel = false;
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            binding.emailEditText.setError(getString(R.string.error_field_required));
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            binding.emailEditText.setError(getString(R.string.error_invalid_email));
-            cancel = true;
-        }
-
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            binding.emailEditText.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            checkEmailExists(email);
-        }
-    }
-
-
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
-    private void attemptEmailPasswordLogin() {
-
-        // Reset errors.
-        binding.passwordEditText.setError(null);
-
-        // Store values at the time of the login attempt.
-        String password = binding.passwordEditText.getText().toString();
-
-        boolean cancel = false;
-        View focusView = null;
-
-        // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
-            binding.passwordEditText.setError(getString(R.string.error_invalid_password));
-            focusView = binding.passwordEditText;
-            cancel = true;
-        }
-
-
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            checkEmailPasswordLogin("email", password);
-        }
-    }
-
-    private boolean isEmailValid(String email) {
-        // Additional validation?
-        return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        return password.length() > 4;
     }
 
     // Must be initialized before binding views...
@@ -427,7 +501,7 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    private void startAnonymousLogin() {
+    private void startAnonymousLogin(View view) {
         mFirebaseAuth.signInAnonymously()
                 .addOnCompleteListener((Task<AuthResult> task) -> {
                     String message;
@@ -595,7 +669,7 @@ public class LoginFragment extends Fragment {
                             firebaseUser.getProviders() != null ? firebaseUser.getProviders().get(0) : null,
                             false);
 
-                    writeNewUserToDB(user, mFirebaseDatabase);
+                    writeNewUserToDB(user);
                 }
                 Log.i("Sergio>", this + " onDataChange\nsnapshot= " +
                         snapshot.getValue() == null ? "null snapshot" : String.valueOf(snapshot.getValue()));
@@ -613,7 +687,7 @@ public class LoginFragment extends Fragment {
 
     }
 
-    private void writeNewUserToDB(User newUser, DatabaseReference databaseReference) {
+    private void writeNewUserToDB(User newUser) {
         Toast.makeText(getContext(), "Creating new User", Toast.LENGTH_LONG).show();
         Log.i("Sergio>", this + " writeNewUserToDB\nuser= " + newUser.toString());
 
@@ -622,23 +696,13 @@ public class LoginFragment extends Fragment {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) goToMainContainerFragment();
+                        if (task.isSuccessful()) {
+                            goToMainContainerFragment();
+                        } else {
+                            Toast.makeText(getContext(), "Could not create new user. Database error!", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
-        //FirebaseDatabase.getInstance().getReference().child("users").setValue(newUser);
-//        databaseReference.child("users").push().setValue(newUser.getUserID(), new DatabaseReference.CompletionListener() {
-//            @Override
-//            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference2) {
-//                DatabaseReference reference = databaseReference2.child(newUser.getUserID());
-//                reference.push().setValue(newUser).addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w("Sergio>", this + "onFailure: \n" + "error= " + e);
-//                    }
-//                });
-//            }
-//        });
-
     }
 
     private void goToMainContainerFragment() {
@@ -656,10 +720,12 @@ public class LoginFragment extends Fragment {
         getActivity().getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //getActivity().getWindow().setNavigationBarColor(R.color.transparent);
     }
 
     private void exitFullScreen() {
         this.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         this.getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
     }
 
@@ -713,28 +779,30 @@ public class LoginFragment extends Fragment {
      * Shows the progress UI and hides the login form.
      */
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-
-        int animationTime = getResources().getInteger(android.R.integer.config_mediumAnimTime);
-
-        binding.loginForms.setVisibility(show ? View.GONE : View.VISIBLE);
-        binding.loginForms.animate().setDuration(animationTime).alpha(show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                binding.loginForms.setVisibility(show ? View.GONE : View.VISIBLE);
-            }
-
-        });
 
         binding.loginProgress.setVisibility(show ? View.VISIBLE : View.GONE);
-        binding.loginProgress.animate().setDuration(animationTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                binding.loginProgress.setVisibility(show ? View.VISIBLE : View.GONE);
-            }
-        });
+
+//        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+//        // for very easy animations. If available, use these APIs to fade-in
+//        // the progress spinner.
+//
+//        int animationTime = getResources().getInteger(android.R.integer.config_mediumAnimTime);
+//
+//        binding.loginForms.setVisibility(show ? View.GONE : View.VISIBLE);
+//        binding.loginForms.animate().setDuration(animationTime).alpha(show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                binding.loginForms.setVisibility(show ? View.GONE : View.VISIBLE);
+//            }
+//
+//        });
+//
+//        binding.loginProgress.setVisibility(show ? View.VISIBLE : View.GONE);
+//        binding.loginProgress.animate().setDuration(animationTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//            }
+//        });
 
     }
 

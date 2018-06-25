@@ -13,3 +13,6 @@ Firebase Realtime Database
 
 https://firebase.google.com/docs/database/android/start/
 https://github.com/firebase/quickstart-android/tree/master/database
+
+Custom Bottom navigation
+https://github.com/aurelhubert/ahbottomnavigation/blob/master/README.md

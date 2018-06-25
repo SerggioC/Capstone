@@ -9,11 +9,11 @@ import android.support.annotation.NonNull;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.repository.Repository;
 
-public class HomePageViewModel extends AndroidViewModel {
+public class MainViewModel extends AndroidViewModel {
     private Repository repository;
     public User user;
 
-    public HomePageViewModel(@NonNull Application application) {
+    public MainViewModel(@NonNull Application application) {
         super(application);
 
         if (this.repository == null) {

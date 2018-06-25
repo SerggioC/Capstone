@@ -10,6 +10,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.view.fragment.HomeFragment;
 import com.sergiocruz.capstone.view.fragment.LoginFragment;
+import com.sergiocruz.capstone.view.fragment.MainContainerFragment;
+
+import static com.sergiocruz.capstone.view.fragment.HomeFragment.ROOT_FRAGMENT_NAME;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,12 +36,14 @@ public class MainActivity extends AppCompatActivity {
             startFragment = new LoginFragment();
             fragmentTag = LoginFragment.class.getSimpleName();
         } else {
-            startFragment = new HomeFragment();
-            fragmentTag = HomeFragment.class.getSimpleName();
+            startFragment = new MainContainerFragment();
+            fragmentTag = MainContainerFragment.class.getSimpleName();
         }
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.main_fragment_container, startFragment, fragmentTag)
+                .replace(R.id.root_fragment_container, startFragment, fragmentTag)
+                .add(R.id.frame_content_holder, new HomeFragment(), HomeFragment.class.getSimpleName())
+                .addToBackStack(HomeFragment.class.getSimpleName())
                 .commit();
     }
 
@@ -49,6 +54,22 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(LoginFragment.class.getSimpleName());
         if (fragment != null) {
             fragment.onActivityResult(requestCode, resultCode, data);
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        int stackEntryCount = fragmentManager.getBackStackEntryCount();
+
+        if (stackEntryCount >= 2) {
+            // pop out upto HomeFragment exclusivé
+            fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, 0);
+        } else {
+            finish();
         }
 
     }

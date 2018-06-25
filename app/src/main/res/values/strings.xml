@@ -17,10 +17,7 @@
     <string name="fb_login_protocol_scheme">fb1954128804597114</string>
 
     <string name="skip_login">Skip login ></string>
-    <string name="title_activity_pager">PagerActivity</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
     <string name="title_activity_drawer">DrawerActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -28,7 +25,14 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+
     <string name="anonymous">Anonymous</string>
     <string name="user_image">User image</string>
+    <string name="title_explore">Explore</string>
+    <string name="title_promos">Promotions</string>
+    <string name="title_profile">Profile</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

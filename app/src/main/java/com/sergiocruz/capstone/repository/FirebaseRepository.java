@@ -8,12 +8,15 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.model.User;
+
+import java.util.List;
 
 public class FirebaseRepository{
     private static FirebaseRepository sInstance;
@@ -87,15 +90,24 @@ public class FirebaseRepository{
 
     private User convertUser(FirebaseUser firebaseUser) {
         if (firebaseUser != null) {
+
             String email = firebaseUser.getEmail();
-            if (email == null) email = firebaseUser.getProviderData().get(1).getEmail();
+            List<? extends UserInfo> providerData = firebaseUser.getProviderData();
+            if (email == null && providerData != null && providerData.size() > 1) {
+                email = providerData.get(1).getEmail();
+            }
+
+            String authProvider = "";
+            List<String> providers = firebaseUser.getProviders();
+            if (providers != null && providers.size() > 0) authProvider = providers.get(0);
+
             return new User(
                     firebaseUser.getUid(),
                     firebaseUser.getDisplayName(),
                     String.valueOf(firebaseUser.getPhotoUrl()),
                     email,
                     firebaseUser.getPhoneNumber(),
-                    firebaseUser.getProviders() != null ? firebaseUser.getProviders().get(0) : null,
+                    authProvider,
                     firebaseUser.isAnonymous());
 
         } else {

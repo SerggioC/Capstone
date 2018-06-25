@@ -10,6 +10,7 @@ android {
 
     compileSdkVersion 27
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         applicationId "com.sergiocruz.capstone"
         minSdkVersion 21
         targetSdkVersion 27
@@ -55,6 +56,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:support-v4:$supportlibversion"
     implementation "com.android.support:design:$supportlibversion"
+    implementation 'com.android.support:support-v4:27.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -91,6 +93,9 @@ dependencies {
     implementation 'android.arch.paging:runtime:1.0.0'
     // Firebase JobDispatcher
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
+
+    //
+    implementation 'com.aurelhubert:ahbottomnavigation:2.1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

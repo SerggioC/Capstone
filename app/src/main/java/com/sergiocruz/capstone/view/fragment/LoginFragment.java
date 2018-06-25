@@ -27,6 +27,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -421,7 +422,7 @@ public class LoginFragment extends Fragment {
             public void onDataChange(DataSnapshot snapshot) {
                 // User exists in database or user logged in anonymously, show content
                 if (snapshot.exists() || (firebaseUser != null && firebaseUser.isAnonymous())) {
-                    goToPagerFragment();
+                    goToMainContainerFragment();
                 } else {
                     // User does not exist in database and it's not anonymous, create new user
                     String email = firebaseUser.getEmail();
@@ -465,7 +466,7 @@ public class LoginFragment extends Fragment {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) goToPagerFragment();
+                        if (task.isSuccessful()) goToMainContainerFragment();
                     }
                 });
         //FirebaseDatabase.getInstance().getReference().child("users").setValue(newUser);
@@ -484,22 +485,26 @@ public class LoginFragment extends Fragment {
 
     }
 
-    private void goToPagerFragment() {
+    private void goToMainContainerFragment() {
         exitFullScreen();
 
         //getFragmentManager()
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_fragment_container, new HomeFragment(), HomeFragment.class.getSimpleName())
+                .replace(R.id.root_fragment_container, new MainContainerFragment(), MainContainerFragment.class.getSimpleName())
                 .commit();
     }
 
-    private void exitFullScreen() {
+    private void enterFullScreen() {
+        getActivity().getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
 
+    private void exitFullScreen() {
         this.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         this.getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
     }
-
 
     @Override
     public void onPause() {
@@ -517,6 +522,7 @@ public class LoginFragment extends Fragment {
 
     private void signOutUser() {
         FirebaseAuth.getInstance().signOut();
+        LoginManager.getInstance().logOut();
     }
 
     private void prepareBackgroundVideo() {
@@ -544,12 +550,6 @@ public class LoginFragment extends Fragment {
 
             mediaPlayer.setLooping(true);
         });
-    }
-
-    private void enterFullScreen() {
-        getActivity().getWindow().setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     /**

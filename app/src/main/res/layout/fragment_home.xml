@@ -2,52 +2,34 @@
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="viewModel"
-            type="com.sergiocruz.capstone.viewmodel.HomePageViewModel"/>
+            type="com.sergiocruz.capstone.viewmodel.MainViewModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/pager_frame_layout"
+        android:id="@+id/home_frame_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".view.fragment.HomeFragment">
 
-        <!--bind:viewmodel="@{viewmodel}"-->
-        <include
-            android:id="@+id/toolbar_layout"
-            layout="@layout/toolbar_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            bind:viewModel="@{viewModel}"/>
-
-        <Button
-            android:id="@+id/button_logout"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Log out from Firebase"
-            android:textAllCaps="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"/>
-
         <TextView
             android:id="@+id/message_textview"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="@string/title_home"
             android:textSize="16sp"
+            android:background="@color/orange"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_logout"/>
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
             android:id="@+id/username_textView"
@@ -56,24 +38,24 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:background="@color/orange"
             android:text="@{viewModel.user.userName}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/message_textview"/>
 
-        <android.support.design.widget.BottomNavigationView
-            android:id="@+id/bottom_navigation"
+        <TextView
+            android:id="@+id/textView2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="0dp"
-            android:layout_marginStart="0dp"
-            app:itemBackground="@color/colorPrimary"
-            app:itemIconTint="@color/email_light"
-            app:itemTextColor="@color/email_light"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:menu="@menu/bottom_navigation_menu"/>
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTTextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView extViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView TextViewTextViewTextViewTextView "
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/username_textView"/>
+
 
     </android.support.constraint.ConstraintLayout>
 

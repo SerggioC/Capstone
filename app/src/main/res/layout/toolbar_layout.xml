@@ -56,7 +56,6 @@
                     android:layout_marginStart="16dp"
                     android:text="@string/app_name"
                     android:textColor="@color/email_light"
-                    android:fontFamily="@font/merriweather"
                     android:textSize="20sp"
                     android:textStyle="bold"/>
 

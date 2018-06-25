@@ -142,45 +142,51 @@ public class LoginFragment extends Fragment {
 
     private void createNewEmailLogin(String email, String password) {
         mFirebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this.getActivity(), new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        String message;
-                        if (task.isSuccessful()) {
-                            // Sign in success
-                            Log.d("Sergio >", "createUserWithEmail:success");
-                            message = "Created new Email/Password login!";
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("Sergio >", "createUserWithEmail:failure", task.getException());
-                            message = "Authentication failed.";
-                        }
-                        updateUI(task.isSuccessful(), message);
+                .addOnCompleteListener(this.getActivity(), task -> {
+                    String message;
+                    if (task.isSuccessful()) {
+                        // Sign in success
+                        Log.d("Sergio >", "createUserWithEmail:success");
+                        message = "Created new Email/Password login!";
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w("Sergio >", "createUserWithEmail:failure", task.getException());
+                        message = "Authentication failed.";
                     }
+                    updateUI(task.isSuccessful(), message);
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("Sergio >", "signInWithEmail:failure", e.getCause());
+                    binding.emailEditText.setError(e.getLocalizedMessage());
+                    binding.passwordEditText.setError("Could not log in");
+                    binding.emailEditText.requestFocus();
+
+                    updateUI(false, e.getLocalizedMessage());
                 });
     }
 
     private void checkEmailPasswordLogin(String email, String password) {
         mFirebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener((Task<AuthResult> task) -> {
-                    String message;
+                .addOnCompleteListener(task -> {
 
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d("Sergio >", "signInWithEmail:success");
-                        message = "Signed In With Email successfully!";
-                        updateUI(true, message);
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w("Sergio >", "signInWithEmail:failure", task.getException());
-                        Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_LONG).show();
-                        binding.emailEditText.setError("Could not log in");
-                        binding.passwordEditText.setError("Could not log in");
-                        binding.emailEditText.requestFocus();
-                        message = "Sign In With Email Failed!";
-                        updateUI(false, message);
-                        // TODO: Register window
-                    }
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d("Sergio >", "signInWithEmail:success");
+                    String message = "Signed In With Email successfully!";
+                    updateUI(true, message);
+
+                })
+                .addOnFailureListener(e -> {
+
+                    // Sign in fails
+                    Log.w("Sergio >", "signInWithEmail:failure", e.getCause());
+                    binding.emailEditText.setError(e.getLocalizedMessage());
+                    binding.passwordEditText.setError("Could not log in");
+                    binding.emailEditText.requestFocus();
+
+                    updateUI(false, e.getLocalizedMessage());
+
+                    // TODO: Register window?
+
                 });
     }
 
@@ -488,10 +494,11 @@ public class LoginFragment extends Fragment {
     private void goToMainContainerFragment() {
         exitFullScreen();
 
-        //getFragmentManager()
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.root_fragment_container, new MainContainerFragment(), MainContainerFragment.class.getSimpleName())
+                .add(R.id.frame_content_holder, new HomeFragment(), HomeFragment.class.getSimpleName())
+                .addToBackStack(HomeFragment.class.getSimpleName())
                 .commit();
     }
 
@@ -571,7 +578,7 @@ public class LoginFragment extends Fragment {
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
             binding.passwordEditText.setError(getString(R.string.error_invalid_password));
             focusView = binding.passwordEditText;
             cancel = true;

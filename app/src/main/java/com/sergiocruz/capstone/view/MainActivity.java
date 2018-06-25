@@ -3,6 +3,7 @@ package com.sergiocruz.capstone.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,20 +32,25 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         Fragment startFragment;
-        String fragmentTag;
         if (currentUser == null) {
+
+            // Boot up to login
             startFragment = new LoginFragment();
-            fragmentTag = LoginFragment.class.getSimpleName();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.root_fragment_container, startFragment, startFragment.getClass().getSimpleName())
+                    .commit();
         } else {
+
+            // Dual Boot to main content holder fragment + content fragment
             startFragment = new MainContainerFragment();
-            fragmentTag = MainContainerFragment.class.getSimpleName();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.root_fragment_container, startFragment, startFragment.getClass().getSimpleName())
+                    .add(R.id.frame_content_holder, new HomeFragment(), HomeFragment.class.getSimpleName())
+                    .addToBackStack(HomeFragment.class.getSimpleName())
+                    .commit();
         }
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.root_fragment_container, startFragment, fragmentTag)
-                .add(R.id.frame_content_holder, new HomeFragment(), HomeFragment.class.getSimpleName())
-                .addToBackStack(HomeFragment.class.getSimpleName())
-                .commit();
     }
 
     @Override
@@ -62,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
 
-        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         int stackEntryCount = fragmentManager.getBackStackEntryCount();
 
         if (stackEntryCount >= 2) {

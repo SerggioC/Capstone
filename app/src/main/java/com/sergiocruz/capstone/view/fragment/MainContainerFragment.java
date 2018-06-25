@@ -5,8 +5,6 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -104,17 +102,6 @@ public class MainContainerFragment extends Fragment {
         return binding.getRoot();
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-//        getActivity()
-//                .getSupportFragmentManager()
-//                .beginTransaction()
-//                .add(R.id.frame_content_holder, new HomeFragment(), HomeFragment.class.getSimpleName())
-//                .addToBackStack(HomeFragment.class.getSimpleName())
-//                .commit();
-
-    }
 
     private void setupBottomNavigation() {
         binding.bottomNavigationAh.setOnTabSelectedListener(this::switchFragmentContent);
@@ -132,7 +119,6 @@ public class MainContainerFragment extends Fragment {
         binding.bottomNavigationAh.setDefaultBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         binding.bottomNavigationAh.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
     }
-
 
     private boolean switchFragmentContent(int position, boolean wasSelected) {
         if (wasSelected) return true;

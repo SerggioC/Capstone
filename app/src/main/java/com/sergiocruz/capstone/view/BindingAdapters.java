@@ -27,7 +27,7 @@ public class BindingAdapters {
                 .apply(options)
                 .into(imageView);
 
-        if (url == null) {
+        if (url == null || url.equals("null")) {
             Drawable placeHolder = ContextCompat.getDrawable(imageView.getContext(), R.drawable.ic_user_icon_48dp);
             imageView.setImageDrawable(placeHolder);
         }

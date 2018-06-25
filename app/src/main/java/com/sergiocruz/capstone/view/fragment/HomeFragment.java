@@ -12,9 +12,6 @@ import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.FragmentHomeBinding;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
-/**
- * Main Fragment with App content, a ViewPager with bottom navigation in this case.
- */
 public class HomeFragment extends Fragment {
 
     public static final String ROOT_FRAGMENT_NAME = HomeFragment.class.getSimpleName();

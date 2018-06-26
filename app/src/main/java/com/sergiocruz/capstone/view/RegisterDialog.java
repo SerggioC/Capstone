@@ -7,15 +7,19 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
+import com.sergiocruz.capstone.R;
+
+import java.util.Objects;
+
 public class RegisterDialog extends DialogFragment {
-    private static onOKClicked onOKClickedInterface;
-    private onCancelClicked onCancelClickedInterface;
+    private OnOKClickedCallback onOKClickedCallback;
+    private OnCancelClickedCallback onCancelClickedCallback;
     private String email;
 
-    public static RegisterDialog newInstance(onOKClicked onOKClickedInterface, onCancelClicked onCancelClickedInterface, String email) {
+    public static RegisterDialog newInstance(OnOKClickedCallback onOKClickedCallback, OnCancelClickedCallback onCancelClickedCallback, String email) {
         RegisterDialog dialog = new RegisterDialog();
-        dialog.onOKClickedInterface = onOKClickedInterface;
-        dialog.onCancelClickedInterface = onCancelClickedInterface;
+        dialog.onOKClickedCallback = onOKClickedCallback;
+        dialog.onCancelClickedCallback = onCancelClickedCallback;
         dialog.email = email;
         return dialog;
     }
@@ -23,22 +27,25 @@ public class RegisterDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+        AlertDialog alertDialog = new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
                 .setCancelable(false)
-                .setMessage("Register with this email?\n" + email)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> onOKClickedInterface.onOKClicked())
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> onCancelClickedInterface.onCancelClicked())
+                .setMessage(getString(R.string.email) + "\n" +
+                        email +
+                        getString(R.string.not_in_database) + "\n" +
+                        getString(R.string.register_email))
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> onOKClickedCallback.onOKClicked())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> onCancelClickedCallback.onCancelClicked())
                 .create();
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.setCancelable(true);
         return alertDialog;
     }
 
-    public interface onOKClicked {
+    public interface OnOKClickedCallback {
         void onOKClicked();
     }
 
-    public interface onCancelClicked {
+    public interface OnCancelClickedCallback {
         void onCancelClicked();
     }
 

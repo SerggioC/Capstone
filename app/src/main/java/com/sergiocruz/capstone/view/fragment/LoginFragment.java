@@ -68,9 +68,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login via multiple providers
+ * including email/password through Firebase Authentication.
  */
-public class LoginFragment extends Fragment implements RegisterDialog.onOKClicked, RegisterDialog.onCancelClicked{
+public class LoginFragment extends Fragment implements RegisterDialog.OnOKClickedCallback, RegisterDialog.OnCancelClickedCallback {
 
     // onActivityResult Request Codes
     public static final int RC_GOOGLE = 3;
@@ -91,9 +92,10 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
     private FirebaseAuth mFirebaseAuth;
     private GoogleSignInClient mGoogleSignInClient;
 
-    private static boolean isEmailValid = false;
-    private static boolean isPasswordValid = false;
-    private boolean register = false;
+    private boolean isEmailValid = false;
+    private boolean isPasswordValid = false;
+    private boolean isRegistering = false;
+    private boolean isSigningIn = false;
 
 
     @Override
@@ -140,84 +142,6 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
         return binding.getRoot();
     }
 
-    private void slideToPassword() {
-        Animation slideOutLeft = AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_left);
-        slideOutLeft.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                binding.emailInputLayout.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        binding.emailInputLayout.startAnimation(slideOutLeft);
-
-        Animation slideInLeft = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_left);
-        slideInLeft.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                binding.passwordInputLayout.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        binding.passwordInputLayout.startAnimation(slideInLeft);
-    }
-
-    private void slideToEmail() {
-        Animation slideInRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_right);
-        slideInRight.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                binding.emailInputLayout.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        binding.emailInputLayout.startAnimation(slideInRight);
-
-        Animation slideOutRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_right);
-        slideOutRight.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                binding.passwordInputLayout.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        binding.passwordInputLayout.startAnimation(slideOutRight);
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -235,9 +159,9 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
     private void startEmailPasswordLogin(View view) {
         if (!isEmailValid) {
             validateEmail();
-        } else if (!isEmailValid){
+        } else if (isEmailValid && !isPasswordValid) {
             validatePassword();
-        } else if (register) {
+        } else if (isRegistering) {
             createNewEmailLogin();
         }
     }
@@ -276,7 +200,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
             slideToEmail();
             binding.emailEditText.setError("Invalid e-mail");
             return;
-        } else if (isEmailValid && isPasswordValid && register){
+        } else if (isEmailValid && isPasswordValid && isRegistering) {
             createNewEmailLogin();
             return;
         }
@@ -327,7 +251,6 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
                     Log.w("Sergio >", "signInWithEmail:failure", e.getCause());
                     binding.emailEditText.setError(e.getLocalizedMessage());
                     binding.passwordEditText.setError("Could not log in");
-                    binding.emailEditText.requestFocus();
                     slideToEmail();
                     updateUI(false, e.getLocalizedMessage());
 
@@ -345,23 +268,25 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
                 if (methods != null && methods.size() > 0) {
                     // Email already present -> ask password
                     slideToPassword();
-                    binding.emailSignInButton.setText("Sign in");
+                    binding.emailSignInButton.setText(getString(R.string.action_sign_in_short));
                     isEmailValid = true;
+                    isSigningIn = true;
                 } else {
-                    // Email not present -> register ?
+                    // Email not present -> register?
                     Log.w("Sergio>", this + "onComplete: \n" + "= " + task.getException());
                     binding.emailEditText.setError("Unregistered e-mail");
+                    binding.emailEditText.requestFocus();
                     isEmailValid = false;
-                    registerDialog(email);
+                    showRegisterDialog(email);
                 }
                 showProgress(false);
             }
         });
     }
 
-    private void registerDialog(String email) {
+    private void showRegisterDialog(String email) {
         RegisterDialog dialog = RegisterDialog.newInstance(this, this, email);
-        dialog.show(getActivity().getSupportFragmentManager(), null);
+        dialog.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), null);
     }
 
     @Override
@@ -369,13 +294,13 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
         binding.emailSignInButton.setText("Register");
         slideToPassword();
         isEmailValid = true;
-        register = true;
+        isRegistering = true;
     }
 
     @Override
     public void onCancelClicked() {
         isEmailValid = false;
-        register = false;
+        isRegistering = false;
     }
 
     private boolean isEmailValid(String email) {
@@ -384,14 +309,14 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
     }
 
     private boolean isPasswordValid(String password) {
-        return password.length() > 4;
+        return password.length() > 5;
     }
 
     private void createNewEmailLogin() {
         String password = binding.passwordEditText.getText().toString();
         String email = binding.emailEditText.getText().toString();
         mFirebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this.getActivity(), task -> {
+                .addOnCompleteListener(Objects.requireNonNull(this.getActivity()), task -> {
                     String message;
                     if (task.isSuccessful()) {
                         // Sign in success
@@ -416,7 +341,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
 
     // Must be initialized before binding views...
     private void initializeTwitter() {
-        TwitterConfig twitterConfig = new TwitterConfig.Builder(getContext())
+        TwitterConfig twitterConfig = new TwitterConfig.Builder(Objects.requireNonNull(getContext()))
                 .logger(new DefaultLogger(Log.DEBUG))
                 .twitterAuthConfig(new TwitterAuthConfig(BuildConfig.TWITTER_API_KEY, BuildConfig.TWITTER_API_SECRET))
                 .debug(true)
@@ -433,14 +358,14 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
                 .build();
 
         // Build a GoogleSignInClient with the options specified by googleSignInOptions.
-        mGoogleSignInClient = GoogleSignIn.getClient(getContext(), googleSignInOptions);
+        mGoogleSignInClient = GoogleSignIn.getClient(Objects.requireNonNull(getContext()), googleSignInOptions);
 
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
-        if (account != null && !account.isExpired()) {
-            // TODO Jump to pager fragment
-        }
+        //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+        //if (account != null && !account.isExpired()) {
+        //    // TODO Jump to pager fragment
+        //}
 
         binding.rootView.findViewById(R.id.google_sign_in_button)
                 .setOnClickListener(v -> signInWithGoogle());
@@ -567,23 +492,19 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
                 session.getAuthToken().token,
                 session.getAuthToken().secret);
 
-        mFirebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        String message;
-                        if (task.isSuccessful()) {
-                            // Sign in success
-                            Log.d("sergio >", "Twitter signInWithCredential:success");
-                            message = "Twitter sign in success";
-                        } else {
-                            // Sign in fails
-                            Log.w("Sergio >", "Twitter signInWithCredential:failure", task.getException());
-                            message = "Twitter Authentication failed.";
-                        }
-                        updateUI(task.isSuccessful(), message);
-                    }
-                });
+        mFirebaseAuth.signInWithCredential(credential).addOnCompleteListener(task -> {
+            String message;
+            if (task.isSuccessful()) {
+                // Sign in success
+                Log.d("sergio >", "Twitter signInWithCredential:success");
+                message = "Twitter sign in success";
+            } else {
+                // Sign in fails
+                Log.w("Sergio >", "Twitter signInWithCredential:failure", task.getException());
+                message = "Twitter Authentication failed.";
+            }
+            updateUI(task.isSuccessful(), message);
+        });
     }
 
     @Override
@@ -649,13 +570,13 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
         // addValueEventListener always listens and has to be removed
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // User exists in database or user logged in anonymously, show content
                 if (snapshot.exists() || (firebaseUser != null && firebaseUser.isAnonymous())) {
                     goToMainContainerFragment();
                 } else {
                     // User does not exist in database and it's not anonymous, create new user
-                    String email = firebaseUser.getEmail();
+                    String email = firebaseUser != null ? firebaseUser.getEmail() : null;
                     if (email == null) {
                         email = firebaseUser.getProviderData().get(1).getEmail();
                     }
@@ -684,7 +605,6 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
 
         });
 
-
     }
 
     private void writeNewUserToDB(User newUser) {
@@ -693,14 +613,11 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
 
         FirebaseDatabase.getInstance().getReference()
                 .child("users").child(newUser.getUserID()).setValue(newUser)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            goToMainContainerFragment();
-                        } else {
-                            Toast.makeText(getContext(), "Could not create new user. Database error!", Toast.LENGTH_LONG).show();
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        goToMainContainerFragment();
+                    } else {
+                        Toast.makeText(getContext(), "Could not create new user. Database error!", Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -743,6 +660,19 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
 
     }
 
+    public void onLoginBackPressed() {
+        if (isRegistering || isSigningIn) {
+            if (binding.passwordInputLayout.getVisibility() == View.VISIBLE) {
+                slideToEmail();
+                isSigningIn = false;
+                isRegistering = false;
+                isEmailValid = false;
+            }
+        } else if (binding.emailInputLayout.getVisibility() == View.VISIBLE) {
+            getActivity().finish();
+        }
+    }
+
     private void signOutUser() {
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
@@ -775,8 +705,87 @@ public class LoginFragment extends Fragment implements RegisterDialog.onOKClicke
         });
     }
 
+    private void slideToEmail() {
+        Animation slideInRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_right);
+        slideInRight.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                binding.emailInputLayout.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                binding.emailEditText.requestFocus();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        binding.emailInputLayout.startAnimation(slideInRight);
+
+        Animation slideOutRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_right);
+        slideOutRight.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                binding.passwordInputLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        binding.passwordInputLayout.startAnimation(slideOutRight);
+    }
+
+    private void slideToPassword() {
+        Animation slideOutLeft = AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_left);
+        slideOutLeft.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                binding.emailInputLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        binding.emailInputLayout.startAnimation(slideOutLeft);
+
+        Animation slideInLeft = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_left);
+        slideInLeft.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                binding.passwordInputLayout.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                binding.passwordEditText.requestFocus();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        binding.passwordInputLayout.startAnimation(slideInLeft);
+    }
+
     /**
-     * Shows the progress UI and hides the login form.
+     * Shows the progress bar
      */
     private void showProgress(final boolean show) {
 

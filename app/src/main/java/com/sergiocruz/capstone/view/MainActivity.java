@@ -64,19 +64,25 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        //super.onBackPressed();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        int stackEntryCount = fragmentManager.getBackStackEntryCount();
 
-        if (stackEntryCount >= 2) {
-            // pop out upto HomeFragment exclusivé
-            fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, 0);
+        Fragment loginFragment = fragmentManager.findFragmentByTag(LoginFragment.class.getSimpleName());
+        if (loginFragment != null && loginFragment.isVisible()) {
+            ((LoginFragment) loginFragment).onLoginBackPressed();
         } else {
-            finish();
+            int stackEntryCount = fragmentManager.getBackStackEntryCount();
+            if (stackEntryCount >= 2) {
+                // pop out upto HomeFragment exclusivé
+                fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, 0);
+            } else {
+                finish();
+            }
         }
-
     }
+
 }

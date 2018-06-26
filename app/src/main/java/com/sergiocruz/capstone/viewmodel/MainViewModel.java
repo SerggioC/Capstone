@@ -10,16 +10,17 @@ import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.repository.Repository;
 
 public class MainViewModel extends AndroidViewModel {
+    private static final Object LOCK = new Object();
     private Repository repository;
     public User user;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-
-        if (this.repository == null) {
-            this.repository = Repository.getInstance(application.getApplicationContext());
+        synchronized (LOCK) {
+            if (this.repository == null) {
+                this.repository = Repository.getInstance(application.getApplicationContext());
+            }
         }
-        
     }
 
     public User getUser() {

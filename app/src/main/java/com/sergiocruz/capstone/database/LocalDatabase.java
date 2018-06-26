@@ -31,7 +31,6 @@ public abstract class LocalDatabase extends RoomDatabase {
         }
     }
 
-
     public abstract DatabaseDAO DatabaseDAO();
 
 }

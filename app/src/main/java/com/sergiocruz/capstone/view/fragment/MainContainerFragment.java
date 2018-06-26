@@ -88,7 +88,7 @@ public class MainContainerFragment extends Fragment {
         binding.setLifecycleOwner(this);
 
         // Obtain the ViewModel component.
-        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        final MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         // variable name "viewModel" in xml <data><variable> + set prefix.
         binding.setViewModel(viewModel);
@@ -120,6 +120,10 @@ public class MainContainerFragment extends Fragment {
         binding.bottomNavigationAh.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
     }
 
+    public void selectHomeNavigation() {
+        binding.bottomNavigationAh.setCurrentItem(0);
+    }
+
     private boolean switchFragmentContent(int position, boolean wasSelected) {
         if (wasSelected) return true;
 
@@ -134,7 +138,7 @@ public class MainContainerFragment extends Fragment {
                 break;
             case 1:
                 //binding.messageTextview.setText(R.string.title_explore);
-
+                fragment = new MapFragment();
                 break;
             case 2:
                 //binding.messageTextview.setText(R.string.title_promos);
@@ -149,15 +153,18 @@ public class MainContainerFragment extends Fragment {
         if (fragment != null) {
             int stackEntryCount = fragmentManager.getBackStackEntryCount();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-
+            tagName = fragment.getClass().getSimpleName();
             if (stackEntryCount >= 2) {
                 // pop out upto HomeFragment exclusivé
                 fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, 0);
                 transaction.add(R.id.frame_content_holder, fragment);
                 if (!tagName.equals(ROOT_FRAGMENT_NAME))
                     transaction.addToBackStack(tagName);
-                transaction.commit();
+            } else {
+                transaction.add(R.id.frame_content_holder, fragment);
+                transaction.addToBackStack(tagName);
             }
+            transaction.commit();
 
         }
         return true;

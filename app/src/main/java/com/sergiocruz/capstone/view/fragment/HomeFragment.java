@@ -36,7 +36,7 @@ public class HomeFragment extends Fragment {
         binding.setLifecycleOwner(this);
 
         // Obtain the ViewModel component.
-        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        final MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         // variable name "viewModel" in xml <data><variable> + set prefix.
         binding.setViewModel(viewModel);

@@ -79,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
             if (stackEntryCount >= 2) {
                 // pop out upto HomeFragment exclusivé
                 fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, 0);
+                Fragment container = fragmentManager.findFragmentByTag(MainContainerFragment.class.getSimpleName());
+                ((MainContainerFragment) container).selectHomeNavigation();
             } else {
                 finish();
             }

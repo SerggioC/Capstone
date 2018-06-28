@@ -11,7 +11,7 @@
         <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
 
-        <item name="android:fontFamily">@font/merriweather</item>
+        <item name="android:fontFamily">@font/muli_regular</item>
 
         <!--// Display color under navigation bar (API 21+)-->
         <item name="android:windowTranslucentNavigation">false</item>

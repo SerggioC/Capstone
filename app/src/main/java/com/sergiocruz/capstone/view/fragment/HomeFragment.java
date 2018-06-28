@@ -41,6 +41,7 @@ public class HomeFragment extends Fragment {
         // variable name "viewModel" in xml <data><variable> + set prefix.
         binding.setViewModel(viewModel);
 
+
         return binding.getRoot();
     }
 

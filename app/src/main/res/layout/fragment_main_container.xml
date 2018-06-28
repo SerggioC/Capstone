@@ -28,9 +28,10 @@
             android:layout_marginTop="56dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:nestedScrollingEnabled="false"
             android:background="@drawable/gradient_background"/>
 
-
+        <!--android:layout_height="@dimen/bottom_navigation_height"-->
         <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
             android:id="@+id/bottom_navigation_ah"
             android:layout_width="match_parent"

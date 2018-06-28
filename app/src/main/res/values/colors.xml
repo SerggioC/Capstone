@@ -16,4 +16,5 @@
     <color name="email_dark">#b48028</color>
     <color name="orange">#e65100</color>
     <color name="amber50">#FFF8E1</color>
+    <color name="amber100">#ffecb3</color>
 </resources>

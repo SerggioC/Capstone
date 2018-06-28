@@ -1,6 +1,8 @@
 {
 
   "rules": {
+    // Only accessible to authenticated users
+    ".validate": "auth != null",
     // User profiles are only readable/writable by the user who owns it
     "users": {
       "$UID": {

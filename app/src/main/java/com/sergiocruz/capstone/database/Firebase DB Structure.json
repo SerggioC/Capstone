@@ -72,11 +72,24 @@
   },
   "travel-packs": {
     "Pack id 1": {
-      "Description": "Description of Jamaica travel",
-      "Name": "Jamaica",
-      "Price": "100€",
+      "description": "Description of Jamaica travel",
+      "name": "Jamaica",
+      "price": "100€",
       "available": true,
-      "pack-type": [
+      "date": 12345,
+      "images": [
+        "url ... North America",
+        "Exotic",
+        "Beach",
+        "promotion"
+      ],
+      "videos": [
+        "url ... North America",
+        "Exotic",
+        "Beach",
+        "promotion"
+      ],
+      "types": [
         "North America",
         "Exotic",
         "Beach",

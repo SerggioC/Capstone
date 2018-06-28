@@ -13,18 +13,26 @@ import java.util.List;
 public class Travel {
 
     @PrimaryKey(autoGenerate = false)
-    int travelID;
-    String travelName;
-    String description;
-    String price;
-    long date; // in System.currentTimeMillis()
+    private int travelID;
+    private String travelName;
+    private String description;
+    private String price;
+    private long date; // in System.currentTimeMillis(), or FBDB timestamp ServerValue.TIMESTAMP
     @TypeConverters(StringListConverter.class)
-    List<String> imagesList;
+    private List<String> imagesList;
     @TypeConverters(StringListConverter.class)
-    List<String> videosList;
-    int isFavorite;
+    private List<String> videosList;
+    @TypeConverters(StringListConverter.class)
+    private List<String> travelTypes;
+    private int isAvailable;
+    private int isFavorite;
 
-    public Travel(int travelID, String travelName, String description, String price, long date, List<String> imagesList, List<String> videosList, int isFavorite) {
+    @Ignore
+    public Travel() {
+        // No Arg constructor for Firebase
+    }
+
+    public Travel(int travelID, String travelName, String description, String price, long date, List<String> imagesList, List<String> videosList, List<String> travelTypes, int isFavorite, int isAvailable) {
         this.travelID = travelID;
         this.travelName = travelName;
         this.description = description;
@@ -32,7 +40,9 @@ public class Travel {
         this.date = date;
         this.imagesList = imagesList;
         this.videosList = videosList;
+        this.travelTypes = travelTypes;
         this.isFavorite = isFavorite;
+        this.isAvailable = isAvailable;
     }
 
     public int getTravelID() {
@@ -91,12 +101,28 @@ public class Travel {
         this.videosList = videosList;
     }
 
-    public int isFavorite() {
+    public List<String> getTravelTypes() {
+        return travelTypes;
+    }
+
+    public void setTravelTypes(List<String> travelTypes) {
+        this.travelTypes = travelTypes;
+    }
+
+    public int getIsFavorite() {
         return isFavorite;
     }
 
-    public void setFavorite(int favorite) {
-        isFavorite = favorite;
+    public void setIsFavorite(int isFavorite) {
+        this.isFavorite = isFavorite;
+    }
+
+    public int getIsAvailable() {
+        return isAvailable;
+    }
+
+    public void setIsAvailable(int isAvailable) {
+        this.isAvailable = isAvailable;
     }
 
     @Ignore
@@ -111,14 +137,22 @@ public class Travel {
             videosListString.append(videosList.get(i));
         }
 
+        StringBuilder travelListString = new StringBuilder();
+        for (int i = 0; i < travelTypes.size(); i++) {
+            travelListString.append(travelTypes.get(i));
+        }
+
         return "Travel{" +
-                "travelID=" + travelID +
-                ", travelName='" + travelName + '\'' +
-                ", description='" + description + '\'' +
-                ", price='" + price + '\'' +
-                ", date=" + date +
-                ", imagesList=" + imageListString +
-                ", videosList=" + videosListString +
+                "travelID= " + travelID +
+                ", travelName= '" + travelName + '\'' +
+                ", description= '" + description + '\'' +
+                ", price= '" + price + '\'' +
+                ", date= " + date +
+                ", imagesList= " + imageListString +
+                ", videosList= " + videosListString +
+                ", travelTypes= " + travelListString +
+                ", isFavorite= " + isFavorite +
+                ", isAvailable= " + isAvailable +
                 '}';
     }
 }

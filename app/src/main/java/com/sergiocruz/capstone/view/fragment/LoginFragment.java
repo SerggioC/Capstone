@@ -63,9 +63,11 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * A login screen that offers login via multiple providers
@@ -679,8 +681,22 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     }
 
     private void prepareBackgroundVideo() {
-        // Setup Background Video
-        Uri uri = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.beach_fly_over);
+        // Setup Random Background Video
+
+        // List Raw files
+        Field[] fields = R.raw.class.getFields();
+
+        // Pick a random one
+        int videoResourceID;
+        try {
+            int random = new Random().nextInt(fields.length);
+            videoResourceID = fields[random].getInt(fields[random]);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        Uri uri = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + videoResourceID);
         binding.videoView.setVideoURI(uri);
         binding.videoView.start();
 

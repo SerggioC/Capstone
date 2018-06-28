@@ -127,46 +127,40 @@ public class MainContainerFragment extends Fragment {
     private boolean switchFragmentContent(int position, boolean wasSelected) {
         if (wasSelected) return true;
 
-        Fragment fragment = null;
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        String tagName = null;
+        Fragment fragment = null;
+        Boolean isHomeFragment = false;
 
         switch (position) {
             case 0:
-                //binding.frameContent.messageTextview.setText(R.string.title_home);
-
+                isHomeFragment = true;
                 break;
             case 1:
-                //binding.messageTextview.setText(R.string.title_explore);
                 fragment = new MapFragment();
                 break;
             case 2:
-                //binding.messageTextview.setText(R.string.title_promos);
 
                 break;
             case 3:
-                //binding.messageTextview.setText(R.string.title_profile);
 
                 break;
         }
 
-        if (fragment != null) {
-            int stackEntryCount = fragmentManager.getBackStackEntryCount();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            tagName = fragment.getClass().getSimpleName();
-            if (stackEntryCount >= 2) {
-                // pop out upto HomeFragment exclusivé
-                fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, 0);
-                transaction.add(R.id.frame_content_holder, fragment);
-                if (!tagName.equals(ROOT_FRAGMENT_NAME))
-                    transaction.addToBackStack(tagName);
-            } else {
-                transaction.add(R.id.frame_content_holder, fragment);
-                transaction.addToBackStack(tagName);
-            }
-            transaction.commit();
-
+        int stackEntryCount = fragmentManager.getBackStackEntryCount();
+        if (stackEntryCount >= 2) {
+            // pop out upto HomeFragment exclusivé
+            fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, 0);
         }
+
+        if (!isHomeFragment) {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            String tagName = fragment.getClass().getSimpleName();
+
+            transaction.add(R.id.frame_content_holder, fragment);
+            transaction.addToBackStack(tagName);
+            transaction.commit();
+        }
+
         return true;
     }
 

@@ -3,7 +3,6 @@ package com.sergiocruz.capstone.viewmodel;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-
 import android.support.annotation.NonNull;
 
 import com.sergiocruz.capstone.model.User;
@@ -34,6 +33,7 @@ public class MainViewModel extends AndroidViewModel {
         LiveData<User> user = repository.getUser();
         return user;
     }
+
 
 
 }

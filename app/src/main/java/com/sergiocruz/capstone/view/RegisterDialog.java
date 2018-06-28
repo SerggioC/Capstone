@@ -30,7 +30,7 @@ public class RegisterDialog extends DialogFragment {
         AlertDialog alertDialog = new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
                 .setCancelable(false)
                 .setMessage(getString(R.string.email) + "\n" +
-                        email +
+                        email + "\n" +
                         getString(R.string.not_in_database) + "\n" +
                         getString(R.string.register_email))
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> onOKClickedCallback.onOKClicked())

@@ -3,24 +3,22 @@ package com.sergiocruz.capstone.viewmodel;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-
 import android.support.annotation.NonNull;
 
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.repository.Repository;
 
 public class MainViewModel extends AndroidViewModel {
-    private static final Object LOCK = new Object();
     private Repository repository;
     public User user;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-        synchronized (LOCK) {
-            if (this.repository == null) {
-                this.repository = Repository.getInstance(application.getApplicationContext());
-            }
+
+        if (this.repository == null) {
+            this.repository = Repository.getInstance(application.getApplicationContext());
         }
+        
     }
 
     public User getUser() {
@@ -34,6 +32,7 @@ public class MainViewModel extends AndroidViewModel {
         LiveData<User> user = repository.getUser();
         return user;
     }
+
 
 
 }

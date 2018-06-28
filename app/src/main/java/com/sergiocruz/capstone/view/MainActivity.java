@@ -77,10 +77,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             int stackEntryCount = fragmentManager.getBackStackEntryCount();
             if (stackEntryCount >= 2) {
+
                 // pop out upto HomeFragment exclusivé
                 fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, 0);
 
-                // Update selected navigation icon
+                // Update selected navigation icon on bottom navigation bar
                 Fragment container = fragmentManager.findFragmentByTag(MainContainerFragment.class.getSimpleName());
                 if (container != null && container.isVisible()) {
                     ((MainContainerFragment) container).selectHomeNavigation();

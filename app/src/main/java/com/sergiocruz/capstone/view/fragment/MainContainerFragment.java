@@ -88,7 +88,7 @@ public class MainContainerFragment extends Fragment {
         binding.setLifecycleOwner(this);
 
         // Obtain the ViewModel component.
-        final MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         // variable name "viewModel" in xml <data><variable> + set prefix.
         binding.setViewModel(viewModel);
@@ -128,32 +128,37 @@ public class MainContainerFragment extends Fragment {
         if (wasSelected) return true;
 
         Fragment fragment = null;
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        String tagName = null;
+        Boolean isHomeFragment = false;
 
         switch (position) {
             case 0:
-                //binding.frameContent.messageTextview.setText(R.string.title_home);
-
+                isHomeFragment = true;
                 break;
             case 1:
-                //binding.messageTextview.setText(R.string.title_explore);
                 fragment = new MapFragment();
+
                 break;
             case 2:
-                //binding.messageTextview.setText(R.string.title_promos);
 
                 break;
             case 3:
-                //binding.messageTextview.setText(R.string.title_profile);
 
                 break;
         }
 
-        if (fragment != null) {
-            int stackEntryCount = fragmentManager.getBackStackEntryCount();
+
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        int stackEntryCount = fragmentManager.getBackStackEntryCount();
+        if (isHomeFragment) {
+            if (stackEntryCount >= 2) {
+                // pop out upto HomeFragment exclusivé
+                fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, 0);
+            }
+        } else if (fragment != null) {
+
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            tagName = fragment.getClass().getSimpleName();
+            String tagName = fragment.getClass().getSimpleName();
+
             if (stackEntryCount >= 2) {
                 // pop out upto HomeFragment exclusivé
                 fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, 0);
@@ -165,8 +170,8 @@ public class MainContainerFragment extends Fragment {
                 transaction.addToBackStack(tagName);
             }
             transaction.commit();
-
         }
+
         return true;
     }
 

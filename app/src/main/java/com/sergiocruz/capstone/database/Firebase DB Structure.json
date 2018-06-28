@@ -72,16 +72,29 @@
   },
   "travel-packs": {
     "Pack id 1": {
-      "Description": "Description of Jamaica travel",
-      "Name": "Jamaica",
-      "Price": "100€",
+      "description": "Description of Jamaica travel",
+      "name": "Jamaica",
+      "price": "100€",
       "available": true,
-      "pack-type": [
-        "North America",
-        "Exotic",
-        "Beach",
-        "promotion"
-      ]
+      "date": 12345,
+      "images": {
+        "url1": "url ... North America",
+        "url2": "Exotic",
+        "url3": "Beach",
+        "url4": "promotion"
+      },
+      "videos": {
+        "url1": "url ... North America",
+        "url2": "Exotic",
+        "url3": "Beach",
+        "url4": "promotion"
+      },
+      "types": {
+        "url1": "url ... North America",
+        "url2": "Exotic",
+        "url3": "Beach",
+        "url4": "promotion"
+      }
     },
     "Pack id 2": {
       "Description": "Description of Paris travel",
@@ -206,29 +219,38 @@
     }
   },
   "users": {
-    "user ID 1": {
-      "auth_provider": "Google",
-      "avatar-uri": "http://some-uri-to-an-image/image,jpg",
-      "email": "mail1@mail.com",
-      "name": "Sergio"
+    "fns94hf94uhwt09jPj3A4s2" : {
+      "authProvider" : "google.com",
+      "isAnonymous" : false,
+      "userEmail" : "yourmail@gmail.com",
+      "userID" : "asduy213908nqwye0932",
+      "userName" : "Sérgio Cruz",
+      "userPhotoUri" : "https://lh4.googleusercontent.com/-cuRN9cK_8Z0/AAAAAAAAAAI/AAAAAAAAAAA/K1IO6ReviHg/s96-c/photo.jpg"
     },
-    "user ID 2": {
-      "auth_provider": "Facebook",
-      "avatar-uri": "http://some-uri-to-an-image/image,jpg",
-      "email": "mail1@mail.com",
-      "name": "Sergio"
+    "user ID 1" : {
+      "auth_provider" : "Google",
+      "avatar-uri" : "http://some-uri-to-an-image/image,jpg",
+      "email" : "mail1@mail.com",
+      "name" : "Sergio"
     },
-    "user ID 3": {
-      "auth_provider": "Twitter",
-      "avatar-uri": "http://some-uri-to-an-image/image,jpg",
-      "email": "mail1@mail.com",
-      "name": "Sergio"
+    "user ID 2" : {
+      "auth_provider" : "Facebook",
+      "avatar-uri" : "http://some-uri-to-an-image/image,jpg",
+      "email" : "mail1@mail.com",
+      "name" : "Sergio"
     },
-    "user ID 4": {
-      "auth_provider": "Anonymous",
-      "avatar-uri": "http://some-uri-to-an-image/image,jpg",
-      "email": "mail1@mail.com",
-      "name": "Sergio"
-    }
+    "user ID 3" : {
+      "auth_provider" : "Twitter",
+      "avatar-uri" : "http://some-uri-to-an-image/image,jpg",
+      "email" : "mail1@mail.com",
+      "name" : "Sergio"
+    },
+    "user ID 4" : {
+      "auth_provider" : "Anonymous",
+      "avatar-uri" : "http://some-uri-to-an-image/image,jpg",
+      "email" : "mail1@mail.com",
+      "name" : "Sergio"
+    },
+
   }
 }

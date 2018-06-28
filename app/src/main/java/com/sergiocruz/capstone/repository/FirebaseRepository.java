@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -14,17 +15,21 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 
 import java.util.List;
 
-public class FirebaseRepository{
+public class FirebaseRepository {
     private static FirebaseRepository sInstance;
     private DatabaseReference databaseReference;
     private User user;
+    private ValueListener valueListener;
 
     private FirebaseRepository(FirebaseDatabase firebaseDatabase) {
+        firebaseDatabase.setPersistenceEnabled(true); // Enable Offline Capabilities of Firebase https://firebase.google.com/docs/database/android/offline-capabilities
         databaseReference = firebaseDatabase.getReference();
+        getTravelPacksList();
     }
 
     public static FirebaseRepository getInstance() {
@@ -34,14 +39,46 @@ public class FirebaseRepository{
         return sInstance;
     }
 
-    ValueListener valueListener;
+    public void getTravelPacksList() {
+        DatabaseReference packsReference = databaseReference.child("travel-packs").child("Pack id 1");
+        packsReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+/*
+                HashMap<String, String> value11 = (HashMap<String, String>) dataSnapshot.getValue();
+                List<String> images = Collections.singletonList(value11.get("images"));*/
 
-    public interface ValueListener {
-        void onValueEvent(DataSnapshot dataSnapshot);
+//                HashMap<String, String> value1 = (HashMap<String, String>) dataSnapshot.child("images").getValue();
+                //HashMap<String, String> value1 = (HashMap<String, String>) dataSnapshot.child("pack-type").getValue();
+//                for (Map.Entry entry : value1.entrySet()) {
+//                    System.out.println("Key: " + entry.getKey() + " & Value: " + entry.getValue());
+//                }
+
+                @SuppressWarnings("unchecked")
+                List<String> imageUrlList = (List<String>) dataSnapshot.child("images").getValue();
+
+                if (dataSnapshot.hasChildren()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String key = snapshot.getKey();
+                        Object value = snapshot.child(key).getValue();
+                        snapshot.getValue();
+                    }
+                } else {
+                    String key = dataSnapshot.getKey();
+                    Object value = dataSnapshot.child(key).getValue();
+                }
+                Travel travel = dataSnapshot.getValue(Travel.class);
+                Log.i("Sergio>", this + " onDataChange\nTravel= " + travel.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        })
     }
 
-
-    public LiveData<User> getUser(FirebaseRepository.ValueListener valueListener) {
+    public LiveData<User> getUser(ValueListener valueListener) {
         final MutableLiveData<User> data = new MutableLiveData<>();
 
         if (user != null) {
@@ -87,7 +124,6 @@ public class FirebaseRepository{
         return data;
     }
 
-
     private User convertUser(FirebaseUser firebaseUser) {
         if (firebaseUser != null) {
 
@@ -122,7 +158,6 @@ public class FirebaseRepository{
         }
     }
 
-
     public DatabaseReference getDBUserRef(String userID) {
         DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseReference reference = mFirebaseDatabase.child("users/" + userID + "/");
@@ -150,5 +185,11 @@ public class FirebaseRepository{
             }
         });
     }
+
+    public interface ValueListener {
+        void onValueEvent(DataSnapshot dataSnapshot);
+
+    }
+
 
 }

@@ -28,8 +28,8 @@
                 android:orientation="horizontal">
 
                 <FrameLayout
-                    android:layout_height="42dp"
-                    android:layout_width="42dp">
+                    android:layout_height="38dp"
+                    android:layout_width="38dp">
 
                     <ImageView
                         android:id="@+id/user_icon"
@@ -41,8 +41,8 @@
                         tools:src="@drawable/ic_user_icon_48dp"/>
 
                     <ImageView
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:layout_gravity="center"
                         android:src="@drawable/circle_white"
                         tools:ignore="ContentDescription"/>

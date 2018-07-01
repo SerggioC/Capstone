@@ -11,9 +11,9 @@
     the demo app.
     -->
     <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
-        AIzaSyC_EPHfCRJgO3cFHWopXqt8hC5nRzSF6w4
+        
     </string>
     <string name="com.google.android.geo.API_KEY" translatable="false" templateMergeStrategy="preserve">
-        AIzaSyCXNsMgvnS3Ok3tdjzqTcReX6KLwx_C9oA
+        
     </string>
 </resources>

@@ -75,7 +75,7 @@ public class FirebaseRepository {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        })
+        });
     }
 
     public LiveData<User> getUser(ValueListener valueListener) {

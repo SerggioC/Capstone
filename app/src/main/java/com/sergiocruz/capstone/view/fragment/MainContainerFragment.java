@@ -23,7 +23,6 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.sergiocruz.capstone.R;
-import com.sergiocruz.capstone.databinding.FragmentMainContainerBinding;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
 import static com.sergiocruz.capstone.view.fragment.HomeFragment.ROOT_FRAGMENT_NAME;
@@ -41,7 +40,7 @@ public class MainContainerFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    FragmentMainContainerBinding binding;
+    com.sergiocruz.capstone.databinding.FragmentMainContainerBinding binding;
     private String mParam1;
     private String mParam2;
     private OnFragmentInteractionListener mListener;

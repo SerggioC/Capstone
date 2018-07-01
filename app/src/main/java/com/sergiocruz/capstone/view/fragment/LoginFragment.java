@@ -50,7 +50,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.BuildConfig;
 import com.sergiocruz.capstone.R;
-import com.sergiocruz.capstone.databinding.FragmentLoginBinding;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.view.RegisterDialog;
 import com.twitter.sdk.android.core.Callback;
@@ -85,7 +84,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     private static final String PUBLIC_PROFILE_PERMISSION = "public_profile";
 
     // UI android dataBinding references
-    FragmentLoginBinding binding;
+    com.sergiocruz.capstone.databinding.FragmentLoginBinding binding;
 
     private TwitterLoginButton twitterLoginButton;
 

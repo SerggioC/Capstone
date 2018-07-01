@@ -9,13 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sergiocruz.capstone.R;
-import com.sergiocruz.capstone.databinding.FragmentHomeBinding;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
 public class HomeFragment extends Fragment {
 
     public static final String ROOT_FRAGMENT_NAME = HomeFragment.class.getSimpleName();
-    private FragmentHomeBinding binding;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -30,7 +29,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate view and obtain an instance of the binding class.
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
+        com.sergiocruz.capstone.databinding.FragmentHomeBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
 
         // Specify the current fragment as the lifecycle owner.
         binding.setLifecycleOwner(this);

@@ -30,7 +30,7 @@
                 <FrameLayout
                     android:layout_height="38dp"
                     android:layout_width="38dp">
-
+<!---->
                     <ImageView
                         android:id="@+id/user_icon"
                         android:layout_gravity="center"

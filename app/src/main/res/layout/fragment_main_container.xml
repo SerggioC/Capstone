@@ -16,11 +16,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.sergiocruz.capstone.view.fragment.MainContainerFragment">
-
+<!---->
         <include
             android:id="@+id/toolbar_layout"
             layout="@layout/toolbar_layout"
-            bind:viewModel="@{viewModel}"/>
+            bind:viewModel="@{viewModel}"
+            />
         <!--            android:background="@drawable/gradient_background"
         -->
         <FrameLayout

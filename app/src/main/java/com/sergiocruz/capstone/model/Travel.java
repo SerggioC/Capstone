@@ -4,6 +4,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
+import android.support.annotation.NonNull;
 
 import com.sergiocruz.capstone.database.StringListConverter;
 
@@ -12,19 +13,20 @@ import java.util.List;
 @Entity
 public class Travel {
 
+    @NonNull
     @PrimaryKey(autoGenerate = false)
-    private int travelID;
-    private String travelName;
+    private String ID;
+    private String name;
     private String description;
     private String price;
     private long date; // in System.currentTimeMillis(), or FBDB timestamp ServerValue.TIMESTAMP
     @TypeConverters(StringListConverter.class)
-    private List<String> imagesList;
+    private List<String> images;
     @TypeConverters(StringListConverter.class)
-    private List<String> videosList;
+    private List<String> videos;
     @TypeConverters(StringListConverter.class)
-    private List<String> travelTypes;
-    private int isAvailable;
+    private List<String> types;
+    private Boolean available;
     private int isFavorite;
 
     @Ignore
@@ -32,33 +34,33 @@ public class Travel {
         // No Arg constructor for Firebase
     }
 
-    public Travel(int travelID, String travelName, String description, String price, long date, List<String> imagesList, List<String> videosList, List<String> travelTypes, int isFavorite, int isAvailable) {
-        this.travelID = travelID;
-        this.travelName = travelName;
+    public Travel(String ID, String name, String description, String price, long date, List<String> images, List<String> videos, List<String> types, int isFavorite, Boolean available) {
+        this.ID = ID;
+        this.name = name;
         this.description = description;
         this.price = price;
         this.date = date;
-        this.imagesList = imagesList;
-        this.videosList = videosList;
-        this.travelTypes = travelTypes;
+        this.images = images;
+        this.videos = videos;
+        this.types = types;
         this.isFavorite = isFavorite;
-        this.isAvailable = isAvailable;
+        this.available = available;
     }
 
-    public int getTravelID() {
-        return travelID;
+    public String getID() {
+        return ID;
     }
 
-    public void setTravelID(int travelID) {
-        this.travelID = travelID;
+    public void setID(String ID) {
+        this.ID = ID;
     }
 
-    public String getTravelName() {
-        return travelName;
+    public String getName() {
+        return name;
     }
 
-    public void setTravelName(String travelName) {
-        this.travelName = travelName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -85,28 +87,28 @@ public class Travel {
         this.date = date;
     }
 
-    public List<String> getImagesList() {
-        return imagesList;
+    public List<String> getImages() {
+        return images;
     }
 
-    public void setImagesList(List<String> imagesList) {
-        this.imagesList = imagesList;
+    public void setImages(List<String> images) {
+        this.images = images;
     }
 
-    public List<String> getVideosList() {
-        return videosList;
+    public List<String> getVideos() {
+        return videos;
     }
 
-    public void setVideosList(List<String> videosList) {
-        this.videosList = videosList;
+    public void setVideos(List<String> videos) {
+        this.videos = videos;
     }
 
-    public List<String> getTravelTypes() {
-        return travelTypes;
+    public List<String> getTypes() {
+        return types;
     }
 
-    public void setTravelTypes(List<String> travelTypes) {
-        this.travelTypes = travelTypes;
+    public void setTypes(List<String> types) {
+        this.types = types;
     }
 
     public int getIsFavorite() {
@@ -117,12 +119,12 @@ public class Travel {
         this.isFavorite = isFavorite;
     }
 
-    public int getIsAvailable() {
-        return isAvailable;
+    public Boolean getAvailable() {
+        return available;
     }
 
-    public void setIsAvailable(int isAvailable) {
-        this.isAvailable = isAvailable;
+    public void setAvailable(Boolean available) {
+        this.available = available;
     }
 
     @Ignore
@@ -130,37 +132,37 @@ public class Travel {
     public String toString() {
 
         StringBuilder imageListString = new StringBuilder();
-        if (imagesList != null && imagesList.size() > 0) {
-            for (int i = 0; i < imagesList.size(); i++) {
-                imageListString.append(imagesList.get(i));
+        if (images != null && images.size() > 0) {
+            for (int i = 0; i < images.size(); i++) {
+                imageListString.append(images.get(i));
             }
         }
 
         StringBuilder videosListString = new StringBuilder();
-        if (videosList != null && videosList.size() > 0) {
-            for (int i = 0; i < videosList.size(); i++) {
-                videosListString.append(videosList.get(i));
+        if (videos != null && videos.size() > 0) {
+            for (int i = 0; i < videos.size(); i++) {
+                videosListString.append(videos.get(i));
             }
         }
 
         StringBuilder travelListString = new StringBuilder();
-        if (travelTypes != null && travelTypes.size() > 0) {
-            for (int i = 0; i < travelTypes.size(); i++) {
-                travelListString.append(travelTypes.get(i));
+        if (types != null && types.size() > 0) {
+            for (int i = 0; i < types.size(); i++) {
+                travelListString.append(types.get(i));
             }
         }
 
         return "Travel{" +
-                "travelID= " + travelID +
-                ", travelName= '" + travelName + '\'' +
+                "ID= " + ID +
+                ", name= '" + name + '\'' +
                 ", description= '" + description + '\'' +
                 ", price= '" + price + '\'' +
                 ", date= " + date +
-                ", imagesList= " + imageListString +
-                ", videosList= " + videosListString +
-                ", travelTypes= " + travelListString +
+                ", images= " + imageListString +
+                ", videos= " + videosListString +
+                ", types= " + travelListString +
                 ", isFavorite= " + isFavorite +
-                ", isAvailable= " + isAvailable +
+                ", available= " + available +
                 '}';
     }
 }

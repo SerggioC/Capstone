@@ -56,7 +56,8 @@ public class FirebaseRepository {
 
                 @SuppressWarnings("unchecked")
                 List<String> imageUrlList = (List<String>) dataSnapshot.child("images").getValue();
-
+                Travel travel = dataSnapshot.getValue(Travel.class);
+                Log.i("Sergio>", this + " onDataChange\nTravel= " + travel.toString());
                 if (dataSnapshot.hasChildren()) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         String key = snapshot.getKey();
@@ -67,8 +68,7 @@ public class FirebaseRepository {
                     String key = dataSnapshot.getKey();
                     Object value = dataSnapshot.child(key).getValue();
                 }
-                Travel travel = dataSnapshot.getValue(Travel.class);
-                Log.i("Sergio>", this + " onDataChange\nTravel= " + travel.toString());
+
             }
 
             @Override

@@ -51,6 +51,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.BuildConfig;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.model.User;
+import com.sergiocruz.capstone.repository.FirebaseRepository;
 import com.sergiocruz.capstone.view.RegisterDialog;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
@@ -564,7 +565,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
         FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
         String userID = firebaseUser != null ? firebaseUser.getUid() : null;
-        DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mFirebaseDatabase = FirebaseRepository.getInstance().getDatabaseReference();
         DatabaseReference reference = mFirebaseDatabase.child("users/" + userID + "/");
 
         // Check if the user is in the database, and listen only once

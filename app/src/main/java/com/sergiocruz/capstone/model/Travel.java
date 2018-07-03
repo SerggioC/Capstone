@@ -47,11 +47,12 @@ public class Travel {
         this.available = available;
     }
 
+    @NonNull
     public String getID() {
         return ID;
     }
 
-    public void setID(String ID) {
+    public void setID(@NonNull String ID) {
         this.ID = ID;
     }
 
@@ -111,20 +112,20 @@ public class Travel {
         this.types = types;
     }
 
-    public int getIsFavorite() {
-        return isFavorite;
-    }
-
-    public void setIsFavorite(int isFavorite) {
-        this.isFavorite = isFavorite;
-    }
-
     public Boolean getAvailable() {
         return available;
     }
 
     public void setAvailable(Boolean available) {
         this.available = available;
+    }
+
+    public int getIsFavorite() {
+        return isFavorite;
+    }
+
+    public void setIsFavorite(int isFavorite) {
+        this.isFavorite = isFavorite;
     }
 
     @Ignore

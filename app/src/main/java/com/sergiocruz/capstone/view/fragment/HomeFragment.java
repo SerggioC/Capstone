@@ -1,20 +1,19 @@
 package com.sergiocruz.capstone.view.fragment;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.adapter.TravelsAdapter;
 import com.sergiocruz.capstone.model.Travel;
+import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
 import java.util.List;
@@ -48,14 +47,10 @@ public class HomeFragment extends Fragment {
         // variable name "viewModel" in xml <data><variable> + set prefix.
         binding.setViewModel(viewModel);
 
-        viewModel.getTravelPacks().observe(this, new Observer<List<Travel>>() {
-            @Override
-            public void onChanged(@Nullable List<Travel> travels) {
-                populateRecyclerView(travels);
-                Log.i("Sergio>", this + " onChanged\ntravels= " + travels);
-            }
-        });
-        
+        viewModel.getUser().observe(this, this::onUserInfo);
+
+        viewModel.getTravelPacks().observe(this, this::populateRecyclerView);
+
         return binding.getRoot();
     }
 
@@ -74,4 +69,7 @@ public class HomeFragment extends Fragment {
     }
 
 
+    private void onUserInfo(User user) {
+        Toast.makeText(getContext(), "Logged in as " + user.getUserName(), Toast.LENGTH_LONG).show();
+    }
 }

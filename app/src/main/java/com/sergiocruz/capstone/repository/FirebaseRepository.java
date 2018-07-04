@@ -21,14 +21,13 @@ import java.util.List;
 public class FirebaseRepository {
     private static FirebaseRepository sInstance;
     private static FirebaseDatabase firebaseDatabase;
-    private final TravelPackLiveData travelPacks;
+    private TravelPackLiveData travelPacks;
     private DatabaseReference databaseReference;
     private User user;
 
     private FirebaseRepository() {
         firebaseDatabase.setPersistenceEnabled(true); // Enable Offline Capabilities of Firebase https://firebase.google.com/docs/database/android/offline-capabilities
         databaseReference = firebaseDatabase.getReference();
-        travelPacks = new TravelPackLiveData(databaseReference);
     }
 
     public static FirebaseRepository getInstance() {
@@ -47,24 +46,27 @@ public class FirebaseRepository {
     }
 
     @NonNull
-    public LiveData<List<Travel>> getTravelPacksLiveData() {
+    public LiveData<List<Travel>> getTravelPacks() {
+        if (travelPacks == null) {
+            travelPacks = new TravelPackLiveData(databaseReference);
+        }
         return travelPacks;
     }
 
 
     public LiveData<User> getUser() {
-        final MutableLiveData<User> data = new MutableLiveData<>();
+        final MutableLiveData<User> userMutableLiveData = new MutableLiveData<>();
 
         if (user != null) {
-            data.setValue(user);
-            return data;
+            userMutableLiveData.setValue(user);
+            return userMutableLiveData;
         }
 
         // Authenticated user info
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         user = convertUser(firebaseUser);
-        data.setValue(user);
+        userMutableLiveData.setValue(user);
 
         // Database user info
         DatabaseReference reference = databaseReference.child("users/" + firebaseUser.getUid() + "/");
@@ -74,21 +76,21 @@ public class FirebaseRepository {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     user = snapshot.getValue(User.class);
-                    data.setValue(user);
+                    userMutableLiveData.setValue(user);
                 } else {
                     user = null;
-                    data.setValue(null);
+                    userMutableLiveData.setValue(null);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 user = null;
-                data.setValue(null);
+                userMutableLiveData.setValue(null);
             }
         });
 
-        return data;
+        return userMutableLiveData;
     }
 
     private User convertUser(FirebaseUser firebaseUser) {

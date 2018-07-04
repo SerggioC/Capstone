@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.root_fragment_container, startFragment, startFragment.getClass().getSimpleName())
                     .commit();
         } else {
-
             // Dual Boot to main content holder fragment + content fragment
             startFragment = new MainContainerFragment();
             getSupportFragmentManager()

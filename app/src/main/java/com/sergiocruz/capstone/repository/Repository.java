@@ -20,8 +20,6 @@ public class Repository {
     private Repository(FirebaseRepository remoteRepository, LocalRepository localRepository) {
         this.remoteRepository = remoteRepository;
         this.localRepository = localRepository;
-        user = remoteRepository.getUser();
-        travelPacks = remoteRepository.getTravelPacksLiveData();
     }
 
     // Broken multithreaded version
@@ -46,12 +44,14 @@ public class Repository {
     }
 
     public LiveData<User> getUser() {
+        user = remoteRepository.getUser();
         return user;
     }
 
 
     @NonNull
     public LiveData<List<Travel>> getTravelPacks() {
+        travelPacks = remoteRepository.getTravelPacks();
         return travelPacks;
     }
 

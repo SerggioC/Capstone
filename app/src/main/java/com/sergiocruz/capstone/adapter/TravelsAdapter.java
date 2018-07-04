@@ -4,19 +4,15 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.sergiocruz.capstone.model.Travel;
 
-public class TravelsAdapter extends FirebaseRecyclerAdapter {
+import java.util.List;
 
-    /**
-     * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
-     * {@link FirebaseRecyclerOptions} for configuration options.
-     *
-     * @param options
-     */
-    public TravelsAdapter(@NonNull FirebaseRecyclerOptions options) {
-        super(options);
+public class TravelsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private List<Travel> travels;
+
+    public TravelsAdapter(List<Travel> travels) {
+        this.travels = travels;
     }
 
     @NonNull
@@ -27,12 +23,14 @@ public class TravelsAdapter extends FirebaseRecyclerAdapter {
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull Object model) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return travels != null ? travels.size() : 0;
     }
+
+
 }

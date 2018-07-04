@@ -4,16 +4,15 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.google.firebase.database.DataSnapshot;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 
 import java.util.List;
 
-public class Repository implements FirebaseRepository.ValueListener{
+public class Repository {
     private static Repository sInstance;
-    private final FirebaseRepository remoteRepository;
-    private final LocalRepository localRepository;
+    private FirebaseRepository remoteRepository;
+    private LocalRepository localRepository;
 
     private LiveData<User> user;
     private LiveData<List<Travel>> travelPacks;
@@ -21,15 +20,8 @@ public class Repository implements FirebaseRepository.ValueListener{
     private Repository(FirebaseRepository remoteRepository, LocalRepository localRepository) {
         this.remoteRepository = remoteRepository;
         this.localRepository = localRepository;
+        user = remoteRepository.getUser();
         travelPacks = remoteRepository.getTravelPacksLiveData();
-    }
-
-    public FirebaseRepository getRemoteRepository() {
-        return remoteRepository;
-    }
-
-    public LocalRepository getLocalRepository() {
-        return localRepository;
     }
 
     // Broken multithreaded version
@@ -45,20 +37,23 @@ public class Repository implements FirebaseRepository.ValueListener{
         return sInstance;
     }
 
+    public FirebaseRepository getRemoteRepository() {
+        return remoteRepository;
+    }
+
+    public LocalRepository getLocalRepository() {
+        return localRepository;
+    }
+
     public LiveData<User> getUser() {
-        return remoteRepository.getUser(this);
+        return user;
     }
 
 
     @NonNull
-    public LiveData<List<Travel>> getTravelPacksLiveData() {
+    public LiveData<List<Travel>> getTravelPacks() {
         return travelPacks;
     }
 
-
-    @Override
-    public void onValueEvent(DataSnapshot dataSnapshot) {
-
-    }
 
 }

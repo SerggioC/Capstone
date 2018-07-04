@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment {
     private void populateRecyclerView(List<Travel> travels) {
         binding.travelsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.travelsRecyclerView.setHasFixedSize(true);
-        TravelsAdapter adapter = new TravelsAdapter();
+        TravelsAdapter adapter = new TravelsAdapter(travels);
         binding.travelsRecyclerView.setAdapter(adapter);
     }
 

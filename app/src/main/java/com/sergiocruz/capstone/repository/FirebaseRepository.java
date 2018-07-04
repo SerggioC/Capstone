@@ -2,9 +2,7 @@ package com.sergiocruz.capstone.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
 import android.support.annotation.NonNull;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,7 +24,6 @@ public class FirebaseRepository {
     private final TravelPackLiveData travelPacks;
     private DatabaseReference databaseReference;
     private User user;
-    private ValueListener valueListener;
 
     private FirebaseRepository() {
         firebaseDatabase.setPersistenceEnabled(true); // Enable Offline Capabilities of Firebase https://firebase.google.com/docs/database/android/offline-capabilities
@@ -55,7 +52,7 @@ public class FirebaseRepository {
     }
 
 
-    public LiveData<User> getUser(ValueListener valueListener) {
+    public LiveData<User> getUser() {
         final MutableLiveData<User> data = new MutableLiveData<>();
 
         if (user != null) {
@@ -76,25 +73,18 @@ public class FirebaseRepository {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-//                    Toast.makeText(context, "Logged in as " + snapshot.child("userName").getValue(), Toast.LENGTH_LONG).show();
                     user = snapshot.getValue(User.class);
                     data.setValue(user);
                 } else {
-//                    Toast.makeText(context, "Error: Login failed", Toast.LENGTH_LONG).show();
                     user = null;
-                    data.setValue(user);
-                }
-
-                if (valueListener != null) {
-                    valueListener.onValueEvent(snapshot);
+                    data.setValue(null);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-//                Toast.makeText(context, "Database Error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
                 user = null;
-                data.setValue(user);
+                data.setValue(null);
             }
         });
 
@@ -135,38 +125,33 @@ public class FirebaseRepository {
         }
     }
 
-    public DatabaseReference getDBUserRef(String userID) {
-        DatabaseReference reference = databaseReference.child("users/" + userID + "/");
-        return reference;
-    }
-
-
-    public void setupFirebaseDB(Context context, String userID) {
-
-        DatabaseReference reference = getDBUserRef(userID);
-
-        reference.addValueEventListener(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    Toast.makeText(context, "Logged in as " + snapshot.child("userName").getValue(), Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(context, "Error: Login failed", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(context, "Database Error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    public interface ValueListener {
-        void onValueEvent(DataSnapshot dataSnapshot);
-
-    }
+//    public DatabaseReference getDBUserRef(String userID) {
+//        DatabaseReference reference = databaseReference.child("users/" + userID + "/");
+//        return reference;
+//    }
+//
+//
+//    public void setupFirebaseDB(Context context, String userID) {
+//
+//        DatabaseReference reference = getDBUserRef(userID);
+//
+//        reference.addValueEventListener(new ValueEventListener() {
+//
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.exists()) {
+//                    Toast.makeText(context, "Logged in as " + snapshot.child("userName").getValue(), Toast.LENGTH_LONG).show();
+//                } else {
+//                    Toast.makeText(context, "Error: Login failed", Toast.LENGTH_LONG).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                Toast.makeText(context, "Database Error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+//            }
+//        });
+//    }
 
 
 }

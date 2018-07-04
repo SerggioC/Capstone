@@ -19,7 +19,7 @@ public class Travel {
     private String name;
     private String description;
     private String price;
-    private long date; // in System.currentTimeMillis(), or FBDB timestamp ServerValue.TIMESTAMP
+    private Long date; // in System.currentTimeMillis(), or FBDB timestamp ServerValue.TIMESTAMP
     @TypeConverters(StringListConverter.class)
     private List<String> images;
     @TypeConverters(StringListConverter.class)
@@ -34,7 +34,7 @@ public class Travel {
         // No Arg constructor for Firebase
     }
 
-    public Travel(String ID, String name, String description, String price, long date, List<String> images, List<String> videos, List<String> types, int isFavorite, Boolean available) {
+    public Travel(String ID, String name, String description, String price, Long date, List<String> images, List<String> videos, List<String> types, int isFavorite, Boolean available) {
         this.ID = ID;
         this.name = name;
         this.description = description;
@@ -80,11 +80,11 @@ public class Travel {
         this.price = price;
     }
 
-    public long getDate() {
+    public Long getDate() {
         return date;
     }
 
-    public void setDate(long date) {
+    public void setDate(Long date) {
         this.date = date;
     }
 
@@ -158,7 +158,7 @@ public class Travel {
                 ", name= '" + name + '\'' +
                 ", description= '" + description + '\'' +
                 ", price= '" + price + '\'' +
-                ", date= " + date +
+                ", date= " + String.valueOf(date) +
                 ", images= " + imageListString +
                 ", videos= " + videosListString +
                 ", types= " + travelListString +

@@ -12,34 +12,34 @@ import com.sergiocruz.capstone.repository.Repository;
 import java.util.List;
 
 public class MainViewModel extends AndroidViewModel {
-    private static Repository repository;
-    public User user;
+    private static final Object LOCK = new Object();
+    private Repository repository;
+    private LiveData<List<Travel>> travelList;
+    private LiveData<User> user;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-
-        if (this.repository == null) {
-            this.repository = Repository.getInstance(application.getApplicationContext());
+        if (repository == null) {
+            synchronized (LOCK) {
+                if (repository == null) {
+                    repository = Repository.getInstance(application.getApplicationContext());
+                }
+            }
         }
-        
     }
 
     public LiveData<List<Travel>> getTravelPacks() {
-        return repository.getTravelPacksLiveData();
+        if (travelList == null) {
+            travelList = repository.getTravelPacks();
+        }
+        return travelList;
     }
 
-    public User getUser() {
-        LiveData<User> user = repository.getUser();
-        this.user = user.getValue();
-        return user.getValue();
-        //return this.user;
-    }
-
-    public LiveData<User> getUserLiveData() {
-        LiveData<User> user = repository.getUser();
+    public LiveData<User> getUser() {
+        if (user == null) {
+            user = repository.getUser();
+        }
         return user;
     }
-
-
 
 }

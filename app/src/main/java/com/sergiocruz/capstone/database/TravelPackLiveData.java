@@ -46,11 +46,8 @@ public class TravelPackLiveData extends LiveData<List<Travel>> {
             List<Travel> travelList = new ArrayList<>();
             if (dataSnapshot.hasChildren()) {
                 for (DataSnapshot snapshotChild : dataSnapshot.getChildren()) {
-
                     Travel travel = snapshotChild.getValue(Travel.class);
                     travelList.add(travel);
-
-                    Log.i("Sergio>", this + "Travel= " + travel.toString());
                 }
             }
             setValue(travelList);

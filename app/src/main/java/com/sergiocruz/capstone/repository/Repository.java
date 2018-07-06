@@ -14,9 +14,6 @@ public class Repository {
     private FirebaseRepository remoteRepository;
     private LocalRepository localRepository;
 
-    private LiveData<User> user;
-    private LiveData<List<Travel>> travelPacks;
-
     private Repository(FirebaseRepository remoteRepository, LocalRepository localRepository) {
         this.remoteRepository = remoteRepository;
         this.localRepository = localRepository;
@@ -44,15 +41,15 @@ public class Repository {
     }
 
     public LiveData<User> getUser() {
-        user = remoteRepository.getUser();
-        return user;
+//        user = remoteRepository.getUser();
+        return remoteRepository.getUser();
     }
 
 
     @NonNull
     public LiveData<List<Travel>> getTravelPacks() {
-        travelPacks = remoteRepository.getTravelPacks();
-        return travelPacks;
+//        travelPacks = remoteRepository.getTravelPacks();
+        return remoteRepository.getTravelPacks();
     }
 
 

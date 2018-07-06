@@ -33,7 +33,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -68,6 +67,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+
+import timber.log.Timber;
 
 /**
  * A login screen that offers login via multiple providers
@@ -237,10 +238,10 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     String message;
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.d("Sergio >", "signInWithEmail:success");
+                        Timber.d("Sergio > signInWithEmail:success");
                         message = "Signed In With Email successfully!";
                     } else {
-                        Log.w("Sergio >", "signInWithEmail:failure");
+                        Timber.w("Sergio > signInWithEmail:failure");
                         message = "Signed In With Email Failed";
                         slideToEmail();
                     }
@@ -250,7 +251,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                 .addOnFailureListener(e -> {
 
                     // Sign in fails
-                    Log.w("Sergio >", "signInWithEmail:failure", e.getCause());
+                    Timber.w("Sergio > signInWithEmail:failure" + e.getCause());
                     binding.emailEditText.setError(e.getLocalizedMessage());
                     binding.passwordEditText.setError("Could not log in");
                     slideToEmail();
@@ -261,28 +262,25 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
     private void checkEmailExists(String email) {
         showProgress(true);
-        mFirebaseAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
-            @Override
-            public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+        mFirebaseAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener(task -> {
 
-                SignInMethodQueryResult result = task.getResult();
-                List<String> methods = result.getSignInMethods();
-                if (methods != null && methods.size() > 0) {
-                    // Email already present -> ask password
-                    slideToPassword();
-                    binding.emailSignInButton.setText(getString(R.string.action_sign_in_short));
-                    isEmailValid = true;
-                    isSigningIn = true;
-                } else {
-                    // Email not present -> register?
-                    Log.w("Sergio>", this + "onComplete: \n" + "= " + task.getException());
-                    binding.emailEditText.setError("Unregistered e-mail");
-                    binding.emailEditText.requestFocus();
-                    isEmailValid = false;
-                    showRegisterDialog(email);
-                }
-                showProgress(false);
+            SignInMethodQueryResult result = task.getResult();
+            List<String> methods = result.getSignInMethods();
+            if (methods != null && methods.size() > 0) {
+                // Email already present -> ask password
+                slideToPassword();
+                binding.emailSignInButton.setText(getString(R.string.action_sign_in_short));
+                isEmailValid = true;
+                isSigningIn = true;
+            } else {
+                // Email not present -> register?
+                Timber.w("Sergio> onComplete: \n" + "= " + task.getException());
+                binding.emailEditText.setError("Unregistered e-mail");
+                binding.emailEditText.requestFocus();
+                isEmailValid = false;
+                showRegisterDialog(email);
             }
+            showProgress(false);
         });
     }
 
@@ -293,7 +291,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
     @Override
     public void onOKClicked() {
-        binding.emailSignInButton.setText("Register");
+        binding.emailSignInButton.setText(R.string.register);
         slideToPassword();
         isEmailValid = true;
         isRegistering = true;
@@ -322,17 +320,17 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     String message;
                     if (task.isSuccessful()) {
                         // Sign in success
-                        Log.d("Sergio >", "createUserWithEmail:success");
+                        Timber.d("Sergio > createUserWithEmail:success");
                         message = "Created new Email/Password login!";
                     } else {
                         // If sign in fails, display a message to the user.
-                        Log.w("Sergio >", "createUserWithEmail:failure", task.getException());
+                        Timber.w("Sergio > createUserWithEmail:failure " + task.getException());
                         message = "Authentication failed.";
                     }
                     updateUI(task.isSuccessful(), message);
                 })
                 .addOnFailureListener(e -> {
-                    Log.w("Sergio >", "signInWithEmail:failure", e.getCause());
+                    Timber.w("Sergio > signInWithEmail:failure" + e.getCause());
                     binding.emailEditText.setError(e.getLocalizedMessage());
                     binding.passwordEditText.setError("Could not log in");
                     binding.emailEditText.requestFocus();
@@ -380,7 +378,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
             Profile profile = Profile.getCurrentProfile();
             String userName = profile.getName();
             Uri userImage = profile.getProfilePictureUri(250, 375); //3:2 aspect ratio
-            Log.i("Sergio>", this + " setupFacebookLogin\nuserName= " + userName + "\n" + userImage);
+            Timber.i("Sergio> setupFacebookLogin\nuserName= " + userName + "\n" + userImage);
         }
 
         fbCallbackManager = CallbackManager.Factory.create();
@@ -416,13 +414,13 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
         twitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                Log.d("Sergio> ", "twitterLogin:success" + result);
+                Timber.d("Sergio> twitterLogin:success" + result);
                 handleTwitterLoginSession(result.data);
             }
 
             @Override
             public void failure(TwitterException exception) {
-                Log.w("Sergio >", "twitterLogin:failure", exception);
+                Timber.w("Sergio > twitterLogin:failure %s", exception);
                 updateUI(false, "twitter login failure");
             }
         });
@@ -435,11 +433,11 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
                     if (task.isSuccessful()) {
                         // Sign in success
-                        Log.d("Sergio> ", "Anonymous signIn:success");
+                        Timber.d("Sergio > Anonymous signIn:success");
                         message = "Anonymous sign in";
                     } else {
                         // Sign in fails
-                        Log.w("Sergio> ", "Anonymous signInWithCredential:failure", task.getException());
+                        Timber.w("Sergio > Anonymous signInWithCredential:failure " + task.getException());
                         message = "Anonymous Authentication failed.";
                     }
 
@@ -448,7 +446,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     }
 
     private void handleAuthWithGoogle(GoogleSignInAccount googleSignInAccount) {
-        Log.d("Sergio> ", "handleAuthWithGoogle:" + googleSignInAccount.getId());
+        Timber.d("Sergio > handleAuthWithGoogle:" + googleSignInAccount.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
         mFirebaseAuth.signInWithCredential(credential)
@@ -456,11 +454,11 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     String message;
                     if (task.isSuccessful()) {
                         // Sign in success
-                        Log.d("Sergio> ", "Google signInWithCredential:success");
+                        Timber.d("Sergio > Google signInWithCredential:success");
                         message = "Google sign in success!";
                     } else {
                         // Sign in fails
-                        Log.w("Sergio> ", "Google signInWithCredential:failure", task.getException());
+                        Timber.w("Sergio > Google signInWithCredential:failure " + task.getException());
                         message = "Google Authentication failed.";
                     }
                     updateUI(task.isSuccessful(), message);
@@ -468,7 +466,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
-        Log.d("Sergio> ", "handleFacebookAccessToken:" + token);
+        Timber.d("Sergio > handleFacebookAccessToken:" + token);
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mFirebaseAuth.signInWithCredential(credential)
@@ -476,11 +474,11 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     String message;
                     if (task.isSuccessful()) {
                         // Sign in success
-                        Log.d("Sergio> ", "facebook signInWithCredential:success");
+                        Timber.d("Sergio > facebook signInWithCredential:success");
                         message = "facebook sign in success";
                     } else {
                         // Sign in fails
-                        Log.w("Sergio> ", "signInWithCredential:failure", task.getException());
+                        Timber.w("Sergio > signInWithCredential:failure " + task.getException());
                         message = "Facebook Authentication failed.";
                     }
                     updateUI(task.isSuccessful(), message);
@@ -488,7 +486,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     }
 
     private void handleTwitterLoginSession(TwitterSession session) {
-        Log.d("Sergio >", "handleTwitterSession:" + session);
+        Timber.d("Sergio > handleTwitterSession:" + session);
 
         AuthCredential credential = TwitterAuthProvider.getCredential(
                 session.getAuthToken().token,
@@ -498,11 +496,11 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
             String message;
             if (task.isSuccessful()) {
                 // Sign in success
-                Log.d("sergio >", "Twitter signInWithCredential:success");
+                Timber.d("Sergio > Twitter signInWithCredential:success");
                 message = "Twitter sign in success";
             } else {
                 // Sign in fails
-                Log.w("Sergio >", "Twitter signInWithCredential:failure", task.getException());
+                Timber.w("Sergio > Twitter signInWithCredential:failure " + task.getException());
                 message = "Twitter Authentication failed.";
             }
             updateUI(task.isSuccessful(), message);
@@ -545,7 +543,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                 handleAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Log.w("Sergio> ", "Google sign in failed. Status code: " + e.getStatusCode() + e.getLocalizedMessage(), e);
+                Timber.w("Sergio > Google sign in failed. Status code: " + e.getStatusCode() + e.getLocalizedMessage());
             }
         }
 
@@ -580,7 +578,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     // User does not exist in database and it's not anonymous, create new user
                     String email = firebaseUser != null ? firebaseUser.getEmail() : null;
                     if (email == null) {
-                        email = firebaseUser.getProviderData().get(1).getEmail();
+                        email = firebaseUser != null ? firebaseUser.getProviderData().get(1).getEmail() : null;
                     }
 
                     User user = new User(
@@ -594,7 +592,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
                     writeNewUserToDB(user);
                 }
-                Log.i("Sergio>", this + " onDataChange\nsnapshot= " +
+                Timber.i("Sergio> onDataChange\nsnapshot= " +
                         snapshot.getValue() == null ? "null snapshot" : String.valueOf(snapshot.getValue()));
             }
 
@@ -602,7 +600,6 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getMessage());
                 Toast.makeText(getContext(), "Database Error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
-
             }
 
         });
@@ -611,7 +608,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
     private void writeNewUserToDB(User newUser) {
         Toast.makeText(getContext(), "Creating new User", Toast.LENGTH_LONG).show();
-        Log.i("Sergio>", this + " writeNewUserToDB\nuser= " + newUser.toString());
+        Timber.i("Sergio> writeNewUserToDB\nuser= " + newUser.toString());
 
         FirebaseDatabase.getInstance().getReference()
                 .child("users").child(newUser.getUserID()).setValue(newUser)

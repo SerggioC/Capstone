@@ -33,4 +33,6 @@ public class TravelsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
 
+
+
 }

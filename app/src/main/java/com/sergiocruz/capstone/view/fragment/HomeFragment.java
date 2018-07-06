@@ -3,6 +3,8 @@ package com.sergiocruz.capstone.view.fragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -61,6 +63,15 @@ public class HomeFragment extends Fragment {
         binding.travelsRecyclerView.setAdapter(adapter);
     }
 
+    private void onUserInfo(User user) {
+        Toast.makeText(getContext(), "Logged in as " + user.getUserName(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+//        Crashlytics.getInstance().crash(); // Force a crash
+    }
 
     @Override
     public void onDetach() {
@@ -68,8 +79,4 @@ public class HomeFragment extends Fragment {
         //remove listeners;
     }
 
-
-    private void onUserInfo(User user) {
-        Toast.makeText(getContext(), "Logged in as " + user.getUserName(), Toast.LENGTH_LONG).show();
-    }
 }

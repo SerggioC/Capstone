@@ -21,8 +21,8 @@ import java.util.List;
 public class FirebaseRepository {
     private static FirebaseRepository sInstance;
     private static FirebaseDatabase firebaseDatabase;
-    private TravelPackLiveData travelPacks;
     private DatabaseReference databaseReference;
+    private TravelPackLiveData travelPacks;
     private User user;
 
     private FirebaseRepository() {

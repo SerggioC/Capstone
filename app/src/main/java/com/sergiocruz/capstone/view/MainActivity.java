@@ -5,11 +5,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.sergiocruz.capstone.R;
+import com.sergiocruz.capstone.util.TimberImplementation;
 import com.sergiocruz.capstone.view.fragment.HomeFragment;
 import com.sergiocruz.capstone.view.fragment.LoginFragment;
 import com.sergiocruz.capstone.view.fragment.MainContainerFragment;
@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TimberImplementation.init();
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState != null) {

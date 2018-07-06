@@ -17,6 +17,7 @@ public class Travel {
     @PrimaryKey(autoGenerate = false)
     private String ID;
     private String name;
+    private String country;
     private String description;
     private String price;
     private Long date; // in System.currentTimeMillis(), or FBDB timestamp ServerValue.TIMESTAMP
@@ -28,23 +29,28 @@ public class Travel {
     private List<String> types;
     private Boolean available;
     private int isFavorite;
+    private double latitude;
+    private double longitude;
 
     @Ignore
     public Travel() {
         // No Arg constructor for Firebase
     }
 
-    public Travel(String ID, String name, String description, String price, Long date, List<String> images, List<String> videos, List<String> types, int isFavorite, Boolean available) {
+    public Travel(@NonNull String ID, String name, String country, String description, String price, Long date, List<String> images, List<String> videos, List<String> types, Boolean available, int isFavorite, double latitude, double longitude) {
         this.ID = ID;
         this.name = name;
+        this.country = country;
         this.description = description;
         this.price = price;
         this.date = date;
         this.images = images;
         this.videos = videos;
         this.types = types;
-        this.isFavorite = isFavorite;
         this.available = available;
+        this.isFavorite = isFavorite;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     @NonNull
@@ -62,6 +68,14 @@ public class Travel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public String getDescription() {
@@ -128,6 +142,22 @@ public class Travel {
         this.isFavorite = isFavorite;
     }
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
     @Ignore
     @Override
     public String toString() {
@@ -155,9 +185,10 @@ public class Travel {
 
         return "Travel{" +
                 "ID= " + ID +
-                ", name= '" + name + '\'' +
-                ", description= '" + description + '\'' +
-                ", price= '" + price + '\'' +
+                ", name= " + name +
+                ", country= " + country +
+                ", description= " + description +
+                ", price= " + price +
                 ", date= " + String.valueOf(date) +
                 ", images= " + imageListString +
                 ", videos= " + videosListString +

@@ -13,7 +13,7 @@ public class StringListConverter {
     static Gson gson = new Gson();
 
     @TypeConverter
-    public static List<String> stringToStringtList(String data) {
+    public static List<String> stringToStringList(String data) {
         if (data == null) {
             return Collections.emptyList();
         }

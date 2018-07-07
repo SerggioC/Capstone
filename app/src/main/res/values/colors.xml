@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorPrimaryLighter">#763f51b5</color>
     <color name="white">#ffffff</color>
+    <color name="white_transparent">#78ffffff</color>
     <color name="black">#000000</color>
     <color name="overlayLight">#0affffff</color>
     <color name="overlayFull">#64ffffff</color>

@@ -118,7 +118,11 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
     // Crash reporting
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.3'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
+
+    // LeakCanary memory leak detection library for Android and Java
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
 }
 

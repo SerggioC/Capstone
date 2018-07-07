@@ -39,7 +39,7 @@
                         android:layout_height="@dimen/user_icon_size"
                         android:layout_gravity="center"
                         android:contentDescription="@string/user_image"
-                        app:imageUrl="@{viewModel.user.userPhotoUri}"
+                        app:circularImageUrl="@{viewModel.user.userPhotoUri}"
                         tools:src="@drawable/ic_user_icon_48dp"/>
 
                     <ImageView

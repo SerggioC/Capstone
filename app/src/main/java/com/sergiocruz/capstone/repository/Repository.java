@@ -41,14 +41,12 @@ public class Repository {
     }
 
     public LiveData<User> getUser() {
-//        user = remoteRepository.getUser();
         return remoteRepository.getUser();
     }
 
 
     @NonNull
     public LiveData<List<Travel>> getTravelPacks() {
-//        travelPacks = remoteRepository.getTravelPacks();
         return remoteRepository.getTravelPacks();
     }
 

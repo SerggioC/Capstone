@@ -13,17 +13,19 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.sergiocruz.capstone.R;
-import com.sergiocruz.capstone.adapter.TravelsAdapter;
+import com.sergiocruz.capstone.adapter.BaseAdapter;
+import com.sergiocruz.capstone.adapter.MyTravelsAdapter;
+import com.sergiocruz.capstone.databinding.FragmentHomeBinding;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickListener, BaseAdapter.OnItemTouchListener {
 
     public static final String ROOT_FRAGMENT_NAME = HomeFragment.class.getSimpleName();
-    private com.sergiocruz.capstone.databinding.FragmentHomeBinding binding;
+    private FragmentHomeBinding binding;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -59,7 +61,7 @@ public class HomeFragment extends Fragment {
     private void populateRecyclerView(List<Travel> travels) {
         binding.travelsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.travelsRecyclerView.setHasFixedSize(true);
-        TravelsAdapter adapter = new TravelsAdapter(travels);
+        MyTravelsAdapter adapter = new MyTravelsAdapter(travels, this, this);
         binding.travelsRecyclerView.setAdapter(adapter);
     }
 
@@ -74,9 +76,19 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
+    public void onItemClick(Object object) {
+
+    }
+
+    @Override
+    public void onItemTouch(View view) {
+
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
-        //remove listeners;
+        //remove listeners?
     }
 
 }

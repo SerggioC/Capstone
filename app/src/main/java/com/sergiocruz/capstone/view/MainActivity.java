@@ -13,6 +13,7 @@ import com.sergiocruz.capstone.util.TimberImplementation;
 import com.sergiocruz.capstone.view.fragment.HomeFragment;
 import com.sergiocruz.capstone.view.fragment.LoginFragment;
 import com.sergiocruz.capstone.view.fragment.MainContainerFragment;
+import com.squareup.leakcanary.LeakCanary;
 
 import static com.sergiocruz.capstone.view.fragment.HomeFragment.ROOT_FRAGMENT_NAME;
 
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TimberImplementation.init();
+        installLeakCanary();
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState != null) {
@@ -52,6 +54,15 @@ public class MainActivity extends AppCompatActivity {
                     .addToBackStack(HomeFragment.class.getSimpleName())
                     .commit();
         }
+    }
+
+    private void installLeakCanary() {
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this.getApplication());
     }
 
     @Override

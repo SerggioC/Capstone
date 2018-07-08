@@ -6,6 +6,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 import android.support.annotation.NonNull;
 
+import com.sergiocruz.capstone.database.DateConverter;
 import com.sergiocruz.capstone.database.StringListConverter;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class Travel {
     private String country;
     private String description;
     private String price;
+    @TypeConverters(DateConverter.class)
     private Long date; // in System.currentTimeMillis(), or FBDB timestamp ServerValue.TIMESTAMP
     @TypeConverters(StringListConverter.class)
     private List<String> images;

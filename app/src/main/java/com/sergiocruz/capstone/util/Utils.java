@@ -8,20 +8,7 @@ import android.support.v7.app.AlertDialog;
 
 import com.sergiocruz.capstone.R;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-
 public class Utils {
-
-    public static String getDate(long dateMillis) {
-
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM, yyyy");
-        dateFormatter.setTimeZone(TimeZone.getDefault());
-        Date resultDate = new Date(dateMillis);
-        return dateFormatter.format(resultDate);
-
-    }
 
     public static boolean isConnected(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -42,11 +29,11 @@ public class Utils {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.app_name);
         builder.setMessage(R.string.no_internet);
-        builder.setPositiveButton(android.R.string.ok, Utils::onClick);
+        builder.setPositiveButton(android.R.string.ok, Utils::onClickOK);
         return builder;
     }
 
-    private static void onClick(DialogInterface dialog, int which) {
+    private static void onClickOK(DialogInterface dialog, int which) {
         dialog.dismiss();
     }
 }

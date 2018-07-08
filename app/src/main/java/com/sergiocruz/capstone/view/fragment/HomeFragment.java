@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.adapter.BaseAdapter;
-import com.sergiocruz.capstone.adapter.MyTravelsAdapter;
+import com.sergiocruz.capstone.adapter.TravelsAdapter;
 import com.sergiocruz.capstone.databinding.FragmentHomeBinding;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
@@ -28,7 +28,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
     public static final String ROOT_FRAGMENT_NAME = HomeFragment.class.getSimpleName();
     private FragmentHomeBinding binding;
-    private MyTravelsAdapter adapter;
+    private TravelsAdapter adapter;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -66,7 +66,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     private void setupRecyclerView() {
         binding.travelsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.travelsRecyclerView.setHasFixedSize(true);
-        adapter = new MyTravelsAdapter(this);
+        adapter = new TravelsAdapter(this);
         binding.travelsRecyclerView.setAdapter(adapter);
     }
 
@@ -76,7 +76,8 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
     private void onUserInfo(User user) {
         String message;
-        if (user.getIsAnonymous()) {
+
+        if (user == null || user.getIsAnonymous()) {
             message = getString(R.string.logged_in) + " " + getString(R.string.anonymous);
         } else {
             message = getString(R.string.logged_in) + " " + getString(R.string.as) + " " + user.getUserName();
@@ -92,7 +93,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
     @Override
     public void onItemClick(Travel travel) {
-        Toast.makeText(getContext(), "click click click" + travel.getCountry(), Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Clicked " + travel.getCountry(), Toast.LENGTH_LONG).show();
     }
 
     @Override

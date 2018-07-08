@@ -11,6 +11,8 @@ import com.sergiocruz.capstone.repository.Repository;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class MainViewModel extends AndroidViewModel {
     private static final Object LOCK = new Object();
     private Repository repository;
@@ -32,6 +34,7 @@ public class MainViewModel extends AndroidViewModel {
         if (travelList == null) {
             travelList = repository.getTravelPacks();
         }
+        Timber.i("getting travel packs");
         return travelList;
     }
 
@@ -39,7 +42,12 @@ public class MainViewModel extends AndroidViewModel {
         if (user == null) {
             user = repository.getUser();
         }
+        Timber.i("getting user");
         return user;
+    }
+
+    public void logoutUser() {
+        this.user = null;
     }
 
 }

@@ -27,7 +27,8 @@
             android:duplicateParentState="true"
             android:scaleType="centerCrop"
             app:imageUrl="@{object.images.get(0)}"
-            tools:srcCompat="@raw/austria"/>
+            app:errorDrawable="@{@drawable/travel_image}"
+            tools:srcCompat="@drawable/austria"/>
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/constrain_container"

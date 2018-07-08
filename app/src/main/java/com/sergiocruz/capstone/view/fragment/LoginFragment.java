@@ -42,6 +42,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.auth.TwitterAuthProvider;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -576,20 +577,20 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     goToMainContainerFragment();
                 } else {
                     // User does not exist in database and it's not anonymous, create new user
-                    String email = firebaseUser != null ? firebaseUser.getEmail() : null;
-                    if (email == null) {
-                        email = firebaseUser != null ? firebaseUser.getProviderData().get(1).getEmail() : null;
-                    }
-
-                    User user = new User(
-                            firebaseUser.getUid(),
-                            firebaseUser.getDisplayName(),
-                            String.valueOf(firebaseUser.getPhotoUrl()),
-                            email,
-                            firebaseUser.getPhoneNumber(),
-                            firebaseUser.getProviders() != null ? firebaseUser.getProviders().get(0) : null,
-                            false);
-
+//                    String email = firebaseUser != null ? firebaseUser.getEmail() : null;
+//                    if (email == null) {
+//                        email = firebaseUser != null ? firebaseUser.getProviderData().get(1).getEmail() : null;
+//                    }
+//
+//                    User user = new User(
+//                            firebaseUser.getUid(),
+//                            firebaseUser.getDisplayName(),
+//                            String.valueOf(firebaseUser.getPhotoUrl()),
+//                            email,
+//                            firebaseUser.getPhoneNumber(),
+//                            firebaseUser.getProviders() != null ? firebaseUser.getProviders().get(0) : null,
+//                            false);
+                    User user = convertUser(firebaseUser);
                     writeNewUserToDB(user);
                 }
                 Timber.i("Sergio> onDataChange\nsnapshot= " +
@@ -604,6 +605,39 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
         });
 
+    }
+    private User convertUser(FirebaseUser firebaseUser) {
+        if (firebaseUser != null) {
+
+            String email = firebaseUser.getEmail();
+            List<? extends UserInfo> providerData = firebaseUser.getProviderData();
+            if (email == null && providerData != null && providerData.size() > 1) {
+                email = providerData.get(1).getEmail();
+            }
+
+            String authProvider = "";
+            List<String> providers = firebaseUser.getProviders();
+            if (providers != null && providers.size() > 0) authProvider = providers.get(0);
+
+            return new User(
+                    firebaseUser.getUid(),
+                    firebaseUser.getDisplayName(),
+                    String.valueOf(firebaseUser.getPhotoUrl()),
+                    email,
+                    firebaseUser.getPhoneNumber(),
+                    authProvider,
+                    firebaseUser.isAnonymous());
+
+        } else {
+            return new User(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    true);
+        }
     }
 
     private void writeNewUserToDB(User newUser) {

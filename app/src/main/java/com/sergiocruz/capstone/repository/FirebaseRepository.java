@@ -6,13 +6,13 @@ import android.support.annotation.NonNull;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.database.TravelPackLiveData;
+import com.sergiocruz.capstone.database.UserLiveData;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 
@@ -23,7 +23,9 @@ public class FirebaseRepository {
     private static FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private TravelPackLiveData travelPacks;
+    private UserLiveData userLiveData;
     private User user;
+
 
     private FirebaseRepository() {
         firebaseDatabase.setPersistenceEnabled(true); // Enable Offline Capabilities of Firebase https://firebase.google.com/docs/database/android/offline-capabilities
@@ -55,6 +57,14 @@ public class FirebaseRepository {
 
 
     public LiveData<User> getUser() {
+        if (userLiveData == null) {
+            userLiveData = new UserLiveData(databaseReference);
+        }
+        return userLiveData;
+    }
+
+
+    public LiveData<User> getUser0() {
         final MutableLiveData<User> userMutableLiveData = new MutableLiveData<>();
 
         if (user != null) {
@@ -65,7 +75,7 @@ public class FirebaseRepository {
         // Authenticated user info
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        user = convertUser(firebaseUser);
+        //user = convertUser(firebaseUser);
         userMutableLiveData.setValue(user);
 
         // Database user info
@@ -93,39 +103,7 @@ public class FirebaseRepository {
         return userMutableLiveData;
     }
 
-    private User convertUser(FirebaseUser firebaseUser) {
-        if (firebaseUser != null) {
 
-            String email = firebaseUser.getEmail();
-            List<? extends UserInfo> providerData = firebaseUser.getProviderData();
-            if (email == null && providerData != null && providerData.size() > 1) {
-                email = providerData.get(1).getEmail();
-            }
-
-            String authProvider = "";
-            List<String> providers = firebaseUser.getProviders();
-            if (providers != null && providers.size() > 0) authProvider = providers.get(0);
-
-            return new User(
-                    firebaseUser.getUid(),
-                    firebaseUser.getDisplayName(),
-                    String.valueOf(firebaseUser.getPhotoUrl()),
-                    email,
-                    firebaseUser.getPhoneNumber(),
-                    authProvider,
-                    firebaseUser.isAnonymous());
-
-        } else {
-            return new User(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    true);
-        }
-    }
 
 //    public DatabaseReference getDBUserRef(String userID) {
 //        DatabaseReference reference = databaseReference.child("users/" + userID + "/");

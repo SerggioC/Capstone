@@ -40,6 +40,7 @@
                         android:layout_gravity="center"
                         android:contentDescription="@string/user_image"
                         app:circularImageUrl="@{viewModel.user.userPhotoUri}"
+                        app:errorDrawable="@{@drawable/ic_user_icon_48dp}"
                         tools:src="@drawable/ic_user_icon_48dp"/>
 
                     <ImageView

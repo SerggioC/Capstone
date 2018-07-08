@@ -44,7 +44,6 @@ public class Repository {
         return remoteRepository.getUser();
     }
 
-
     @NonNull
     public LiveData<List<Travel>> getTravelPacks() {
         return remoteRepository.getTravelPacks();

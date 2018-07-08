@@ -4,10 +4,14 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,29 +26,32 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.sergiocruz.capstone.R;
+import com.sergiocruz.capstone.databinding.FragmentDrawerBinding;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
 import static com.sergiocruz.capstone.view.fragment.HomeFragment.ROOT_FRAGMENT_NAME;
 
-public class MainContainerFragment extends Fragment {
+public class MainContainerFragment extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
 
-    com.sergiocruz.capstone.databinding.FragmentMainContainerBinding binding;
+    //FragmentMainContainerBinding binding;
+    FragmentDrawerBinding binding;
+    private MainViewModel viewModel;
 
     public MainContainerFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate view and obtain an instance of the binding class.
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main_container, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_drawer, container, false);
 
         // Specify the current fragment as the lifecycle owner.
         binding.setLifecycleOwner(this);
 
         // Obtain the ViewModel component.
-        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         // variable name "viewModel" in xml <data><variable> + set prefix.
         binding.setViewModel(viewModel);
@@ -52,10 +59,24 @@ public class MainContainerFragment extends Fragment {
         // setup the menu and toolbar
         setupToolbar();
 
+        setupDrawarNavigation();
+
         // setup Bottom navigation Menu
         setupBottomNavigation();
 
         return binding.getRoot();
+    }
+
+    private void setupDrawarNavigation() {
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                getActivity(), binding.drawerLayout,
+                binding.toolbarLayout.toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        binding.drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        binding.navView.setNavigationItemSelectedListener(this);
     }
 
 
@@ -160,6 +181,8 @@ public class MainContainerFragment extends Fragment {
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
 
+        viewModel.logoutUser();
+
         // Pop out all the fragments including container and replace with the login fragment
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         String name = fragmentManager.getBackStackEntryAt(0).getName();
@@ -197,4 +220,8 @@ public class MainContainerFragment extends Fragment {
         super.onDetach();
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
+    }
 }

@@ -10,10 +10,10 @@ import com.sergiocruz.capstone.model.Travel;
 
 import java.util.List;
 
-public class MyTravelsAdapter extends BaseAdapter {
+public class TravelsAdapter extends BaseAdapter {
     private List<Travel> travels;
 
-    public MyTravelsAdapter(OnItemClickListener itemClickListener) {
+    public TravelsAdapter(OnItemClickListener itemClickListener) {
         super(itemClickListener);
     }
 

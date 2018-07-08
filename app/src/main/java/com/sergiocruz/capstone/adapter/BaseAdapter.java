@@ -31,7 +31,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>
     @Override
     public void onBindViewHolder(@NonNull BaseAdapter<T>.BaseViewHolder holder, int position) {
         final T object = getObjectForPosition(position);
-        holder.itemView.setOnClickListener(v -> itemClickListener.onItemClick(object));
+        holder.itemView.setOnClickListener(v -> itemClickListener.onItemClick(object)); /* TODO move to BaseViewHolder */
         holder.bind(object);
     }
 

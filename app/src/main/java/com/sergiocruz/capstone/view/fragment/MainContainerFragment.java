@@ -3,7 +3,6 @@ package com.sergiocruz.capstone.view.fragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,54 +26,12 @@ import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
 import static com.sergiocruz.capstone.view.fragment.HomeFragment.ROOT_FRAGMENT_NAME;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MainContainerFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MainContainerFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MainContainerFragment extends Fragment {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+
     com.sergiocruz.capstone.databinding.FragmentMainContainerBinding binding;
-    private String mParam1;
-    private String mParam2;
-    private OnFragmentInteractionListener mListener;
 
     public MainContainerFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MainContainerFragment.
-     */
-    public static MainContainerFragment newInstance(String param1, String param2) {
-        MainContainerFragment fragment = new MainContainerFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
-
     }
 
     @Override
@@ -182,11 +139,6 @@ public class MainContainerFragment extends Fragment {
                 Toast.makeText(getContext(), "Should Open Account Drawer", Toast.LENGTH_LONG).show());
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -208,13 +160,25 @@ public class MainContainerFragment extends Fragment {
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
 
-        // Pop out all the fragments including home and add the login fragment
+        // Pop out all the fragments including container and replace with the login fragment
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        fragmentManager
-                .beginTransaction()
-                .add(R.id.root_fragment_container, new LoginFragment(), LoginFragment.class.getSimpleName())
-                .commit();
+        String name = fragmentManager.getBackStackEntryAt(0).getName();
+        //fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        fragmentManager.popBackStack(name, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+//        int stackEntryCount = fragmentManager.getBackStackEntryCount();
+//        for (int i = 0; i < stackEntryCount; i++) {
+//            fragmentManager.popBackStack();
+//        }
+
+        if (fragmentManager.findFragmentByTag(LoginFragment.class.getSimpleName()) == null) {
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.root_fragment_container, new LoginFragment(), LoginFragment.class.getSimpleName())
+                    .commit();
+        }
+
+
     }
 
     @Override
@@ -231,22 +195,6 @@ public class MainContainerFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
 }

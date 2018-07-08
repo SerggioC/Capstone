@@ -649,14 +649,12 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     public void onPause() {
         super.onPause();
         binding.videoView.stopPlayback();
-        binding.videoView.suspend();
-        binding.videoView.setVideoURI(null);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-
+        Timber.i("Detaching LoginFragment");
     }
 
     public void onLoginBackPressed() {
@@ -695,7 +693,6 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
         Uri uri = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + videoResourceID);
         binding.videoView.setVideoURI(uri);
-        binding.videoView.start();
 
         binding.videoView.setOnPreparedListener(mediaPlayer -> {
             //mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
@@ -713,6 +710,8 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
                     (int) (videoViewLargestSize * aspectRatio), (int) (videoViewSmallestSize * aspectRatio));
             binding.videoView.setLayoutParams(layoutParams);
+
+            binding.videoView.start();
 
             mediaPlayer.setLooping(true);
         });

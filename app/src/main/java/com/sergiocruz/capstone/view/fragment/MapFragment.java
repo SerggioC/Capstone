@@ -18,6 +18,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.FragmentMapBinding;
 
+import timber.log.Timber;
+
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -49,5 +51,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(lisbon));
     }
 
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Timber.i("Detaching " + this.getClass().getSimpleName());
+    }
 
 }

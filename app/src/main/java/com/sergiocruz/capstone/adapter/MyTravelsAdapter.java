@@ -1,5 +1,10 @@
 package com.sergiocruz.capstone.adapter;
 
+import android.support.annotation.NonNull;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.model.Travel;
 
@@ -8,13 +13,23 @@ import java.util.List;
 public class MyTravelsAdapter extends BaseAdapter {
     private List<Travel> travels;
 
-    public MyTravelsAdapter(List<Travel> travels, OnItemClickListener itemClickListener, OnItemTouchListener itemTouchListener) {
-        super(itemClickListener, itemTouchListener);
-        this.travels = travels;
+    public MyTravelsAdapter(OnItemClickListener itemClickListener) {
+        super(itemClickListener);
+    }
+
+    public void swapData(List<Travel> data) {
+        this.travels = data;
+        notifyDataSetChanged();
     }
 
     @Override
-    protected Object getObjectForPosition(int position) {
+    public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
+        setItemViewAnimation(holder.itemView);
+    }
+
+    @Override
+    protected Travel getObjectForPosition(int position) {
         return travels.get(position);
     }
 
@@ -26,5 +41,10 @@ public class MyTravelsAdapter extends BaseAdapter {
     @Override
     public int getItemCount() {
         return travels == null ? 0 : travels.size();
+    }
+
+    private void setItemViewAnimation(View viewToAnimate) {
+        Animation topAnimation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), R.anim.slide_from_top);
+        viewToAnimate.startAnimation(topAnimation);
     }
 }

@@ -22,10 +22,13 @@ import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
 import java.util.List;
 
-public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickListener, BaseAdapter.OnItemTouchListener {
+import timber.log.Timber;
+
+public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickListener<Travel> {
 
     public static final String ROOT_FRAGMENT_NAME = HomeFragment.class.getSimpleName();
     private FragmentHomeBinding binding;
+    private MyTravelsAdapter adapter;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -37,7 +40,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate view and obtain an instance of the binding class.
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
@@ -53,20 +56,32 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
         viewModel.getUser().observe(this, this::onUserInfo);
 
+        setupRecyclerView();
+
         viewModel.getTravelPacks().observe(this, this::populateRecyclerView);
 
         return binding.getRoot();
     }
 
-    private void populateRecyclerView(List<Travel> travels) {
+    private void setupRecyclerView() {
         binding.travelsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.travelsRecyclerView.setHasFixedSize(true);
-        MyTravelsAdapter adapter = new MyTravelsAdapter(travels, this, this);
+        adapter = new MyTravelsAdapter(this);
         binding.travelsRecyclerView.setAdapter(adapter);
     }
 
+    private void populateRecyclerView(List<Travel> travels) {
+        adapter.swapData(travels);
+    }
+
     private void onUserInfo(User user) {
-        Toast.makeText(getContext(), "Logged in as " + user.getUserName(), Toast.LENGTH_LONG).show();
+        String message;
+        if (user.getIsAnonymous()) {
+            message = getString(R.string.logged_in) + " " + getString(R.string.anonymous);
+        } else {
+            message = getString(R.string.logged_in) + " " + getString(R.string.as) + " " + user.getUserName();
+        }
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -76,19 +91,15 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     }
 
     @Override
-    public void onItemClick(Object object) {
-
-    }
-
-    @Override
-    public void onItemTouch(View view) {
-
+    public void onItemClick(Travel travel) {
+        Toast.makeText(getContext(), "click click click" + travel.getCountry(), Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         //remove listeners?
+        Timber.i("Detaching " + this.getClass().getSimpleName());
     }
 
 }

@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -83,18 +81,24 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         //super.onBackPressed();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-            return;
-        }
-
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        Fragment loginFragment = fragmentManager.findFragmentByTag(LoginFragment.class.getSimpleName());
+        LoginFragment loginFragment = (LoginFragment) fragmentManager.
+                findFragmentByTag(LoginFragment.class.getSimpleName());
+        MainContainerFragment mainContainerFragment = (MainContainerFragment) fragmentManager.
+                findFragmentByTag(MainContainerFragment.class.getSimpleName());
+
         if (loginFragment != null && loginFragment.isVisible()) {
-            ((LoginFragment) loginFragment).onLoginBackPressed();
-        } else {
+
+            loginFragment.onLoginBackPressed();
+
+        } else if (mainContainerFragment != null && mainContainerFragment.isVisible()) {
+
+            if (mainContainerFragment.isDrawerOpen()) {
+                mainContainerFragment.closeDrawer();
+                return;
+            }
+
             int stackEntryCount = fragmentManager.getBackStackEntryCount();
             if (stackEntryCount >= 2) {
 
@@ -102,15 +106,14 @@ public class MainActivity extends AppCompatActivity {
                 fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, 0);
 
                 // Update selected navigation icon on bottom navigation bar
-                Fragment container = fragmentManager.findFragmentByTag(MainContainerFragment.class.getSimpleName());
-                if (container != null && container.isVisible()) {
-                    ((MainContainerFragment) container).selectHomeNavigation();
-                }
+                mainContainerFragment.selectHomeNavigation();
 
             } else {
                 finish();
             }
         }
+
     }
+
 
 }

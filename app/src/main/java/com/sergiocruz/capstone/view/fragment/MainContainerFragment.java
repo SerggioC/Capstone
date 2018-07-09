@@ -3,6 +3,7 @@ package com.sergiocruz.capstone.view.fragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -10,16 +11,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
@@ -59,7 +61,8 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
         // setup the menu and toolbar
         setupToolbar();
 
-        setupDrawarNavigation();
+        // Navigation Drawer item click listener
+        binding.navView.setNavigationItemSelectedListener(this);
 
         // setup Bottom navigation Menu
         setupBottomNavigation();
@@ -67,7 +70,14 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
         return binding.getRoot();
     }
 
-    private void setupDrawarNavigation() {
+    private void setupToolbar() {
+        setHasOptionsMenu(true);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbarLayout.toolbar);
+        binding.toolbarLayout.userIcon.setOnClickListener(this::toggleDrawer);
+    }
+
+    @Deprecated
+    private void setupDrawerNavigation() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 getActivity(), binding.drawerLayout,
                 binding.toolbarLayout.toolbar,
@@ -75,10 +85,33 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
                 R.string.navigation_drawer_close);
         binding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-
         binding.navView.setNavigationItemSelectedListener(this);
+
+        // Replace toggle icon
+        toggle.setDrawerIndicatorEnabled(false);
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.mipmap.ic_launcher, getActivity().getTheme());
+        toggle.setHomeAsUpIndicator(R.mipmap.ic_launcher);
+        toggle.setToolbarNavigationClickListener(this::toggleDrawer);
+
+        binding.toolbarLayout.userIcon.setOnClickListener(this::toggleDrawer);
+
     }
 
+    private void toggleDrawer(View v) {
+        if (isDrawerOpen()) {
+            closeDrawer();
+        } else {
+            binding.drawerLayout.openDrawer(GravityCompat.START);
+        }
+    }
+
+    public void closeDrawer() {
+        binding.drawerLayout.closeDrawer(Gravity.START);
+    }
+
+    public boolean isDrawerOpen() {
+        return binding.drawerLayout.isDrawerVisible(Gravity.START);
+    }
 
     private void setupBottomNavigation() {
         binding.bottomNavigationAh.setOnTabSelectedListener(this::switchFragmentContent);
@@ -123,7 +156,13 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
                 break;
         }
 
+        manageContentBackStack(fragment, isHomeFragment);
 
+        return true;
+    }
+
+    // Allow only two fragments at a time
+    private void manageContentBackStack(Fragment fragment, Boolean isHomeFragment) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         int stackEntryCount = fragmentManager.getBackStackEntryCount();
         if (isHomeFragment) {
@@ -139,27 +178,16 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
             if (stackEntryCount >= 2) {
                 // pop out upto HomeFragment exclusivé
                 fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, 0);
-                transaction.add(R.id.frame_content_holder, fragment);
+                transaction.add(R.id.frame_content_holder, fragment, tagName);
                 if (!tagName.equals(ROOT_FRAGMENT_NAME))
                     transaction.addToBackStack(tagName);
             } else {
-                transaction.add(R.id.frame_content_holder, fragment);
+                transaction.add(R.id.frame_content_holder, fragment, tagName);
                 transaction.addToBackStack(tagName);
             }
             transaction.commit();
         }
-
-        return true;
     }
-
-
-    private void setupToolbar() {
-        setHasOptionsMenu(true);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbarLayout.toolbar);
-        binding.toolbarLayout.userIcon.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Should Open Account Drawer", Toast.LENGTH_LONG).show());
-    }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

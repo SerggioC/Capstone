@@ -71,7 +71,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     }
 
     private void populateRecyclerView(List<Travel> travels) {
-        adapter.swapData(travels);
+        adapter.swapTravelsData(travels);
     }
 
     private void onUserInfo(User user) {

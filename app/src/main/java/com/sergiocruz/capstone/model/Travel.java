@@ -33,13 +33,16 @@ public class Travel {
     private int isFavorite;
     private double latitude;
     private double longitude;
+    private int comments;
+    private int stars;
+    private float rating;
 
     @Ignore
     public Travel() {
         // No Arg constructor for Firebase
     }
 
-    public Travel(@NonNull String ID, String name, String country, String description, String price, Long date, List<String> images, List<String> videos, List<String> types, Boolean available, int isFavorite, double latitude, double longitude) {
+    public Travel(@NonNull String ID, String name, String country, String description, String price, Long date, List<String> images, List<String> videos, List<String> types, Boolean available, int isFavorite, double latitude, double longitude, int comments, int stars, float rating) {
         this.ID = ID;
         this.name = name;
         this.country = country;
@@ -53,6 +56,9 @@ public class Travel {
         this.isFavorite = isFavorite;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.comments = comments;
+        this.stars = stars;
+        this.rating = rating;
     }
 
     @NonNull
@@ -160,6 +166,30 @@ public class Travel {
         this.longitude = longitude;
     }
 
+    public int getComments() {
+        return comments;
+    }
+
+    public void setComments(int comments) {
+        this.comments = comments;
+    }
+
+    public int getStars() {
+        return stars;
+    }
+
+    public void setStars(int stars) {
+        this.stars = stars;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
     @Ignore
     @Override
     public String toString() {
@@ -197,6 +227,9 @@ public class Travel {
                 ", types= " + travelListString +
                 ", isFavorite= " + isFavorite +
                 ", available= " + available +
+                ", comments= " + comments +
+                ", stars= " + stars +
+                ", rating= " + rating +
                 '}';
     }
 }

@@ -43,5 +43,6 @@
     <string name="no_internet">No internet connection available</string>
     <string name="logged_in">Logged in</string>
     <string name="as">as</string>
+    <string name="comments_icon">Comments icon</string>
 
 </resources>

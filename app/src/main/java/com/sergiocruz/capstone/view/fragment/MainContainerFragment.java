@@ -3,7 +3,6 @@ package com.sergiocruz.capstone.view.fragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -11,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -89,7 +87,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
 
         // Replace toggle icon
         toggle.setDrawerIndicatorEnabled(false);
-        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.mipmap.ic_launcher, getActivity().getTheme());
+        //Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.mipmap.ic_launcher, getActivity().getTheme());
         toggle.setHomeAsUpIndicator(R.mipmap.ic_launcher);
         toggle.setToolbarNavigationClickListener(this::toggleDrawer);
 

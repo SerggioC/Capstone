@@ -17,7 +17,7 @@ public class TravelsAdapter extends BaseAdapter {
         super(itemClickListener);
     }
 
-    public void swapData(List<Travel> data) {
+    public void swapTravelsData(List<Travel> data) {
         this.travels = data;
         notifyDataSetChanged();
     }

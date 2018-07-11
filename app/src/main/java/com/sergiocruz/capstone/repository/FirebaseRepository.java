@@ -63,7 +63,7 @@ public class FirebaseRepository {
         return userLiveData;
     }
 
-
+    @Deprecated
     public LiveData<User> getUser0() {
         final MutableLiveData<User> userMutableLiveData = new MutableLiveData<>();
 
@@ -102,36 +102,6 @@ public class FirebaseRepository {
 
         return userMutableLiveData;
     }
-
-
-
-//    public DatabaseReference getDBUserRef(String userID) {
-//        DatabaseReference reference = databaseReference.child("users/" + userID + "/");
-//        return reference;
-//    }
-//
-//
-//    public void setupFirebaseDB(Context context, String userID) {
-//
-//        DatabaseReference reference = getDBUserRef(userID);
-//
-//        reference.addValueEventListener(new ValueEventListener() {
-//
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot.exists()) {
-//                    Toast.makeText(context, "Logged in as " + snapshot.child("userName").getValue(), Toast.LENGTH_LONG).show();
-//                } else {
-//                    Toast.makeText(context, "Error: Login failed", Toast.LENGTH_LONG).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                Toast.makeText(context, "Database Error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
-//            }
-//        });
-//    }
 
 
 }

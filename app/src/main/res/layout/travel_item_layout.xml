@@ -38,6 +38,7 @@
                 android:id="@+id/price_tag"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:contentDescription="@string/price_tag"
                 android:scaleType="fitXY"
                 app:layout_constraintBottom_toBottomOf="@+id/price"
                 app:layout_constraintEnd_toEndOf="@+id/price"
@@ -48,12 +49,12 @@
             <TextView
                 android:id="@+id/price"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginTop="8dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="8dp"
-                android:gravity="center_vertical"
+                android:paddingBottom="2dp"
+                android:paddingEnd="8dp"
+                android:paddingStart="16dp"
                 android:text="@{object.price}"
                 android:textColor="@color/white"
                 android:textSize="24sp"
@@ -62,91 +63,101 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="600€"/>
 
-            <View
+            <!--android:stateListAnimator="@animator/stateful_up_down_animator"-->
+            <android.support.constraint.ConstraintLayout
                 android:id="@+id/overlay"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginTop="130dp"
                 android:background="@drawable/travel_item_background"
-                app:layout_constraintBottom_toBottomOf="parent"
+
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/name"/>
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:text="@{object.name}"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/ratingBar"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:text="@tools:sample/cities"/>
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@{object.name}"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="@tools:sample/cities"/>
 
-            <TextView
-                android:id="@+id/country"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@{object.country}"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/name"
-                app:layout_constraintStart_toEndOf="@+id/name"
-                app:layout_constraintTop_toTopOf="@+id/name"
-                tools:text="@tools:sample/cities"/>
+                <TextView
+                    android:id="@+id/country"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="8dp"
+                    android:text="@{object.country}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/name"
+                    app:layout_constraintStart_toEndOf="@+id/name"
+                    tools:text="@tools:sample/cities"/>
 
-            <!--android:rating="@{object.rating}"-->
-            <android.support.v7.widget.AppCompatRatingBar
-                android:id="@+id/ratingBar"
-                style="?android:attr/ratingBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginBottom="8dp"
-                android:stepSize="0.1"
-                android:rating="@{object.rating}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/name"
-                tools:numStars="5"
-                tools:progress="70"/>
+                <android.support.v7.widget.AppCompatRatingBar
+                    android:id="@+id/ratingBar"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:progressTint="@color/colorAccent"
+                    android:rating="@{object.rating}"
+                    android:stepSize="0.1"
+                    app:layout_constraintStart_toStartOf="@+id/name"
+                    app:layout_constraintTop_toBottomOf="@id/name"
+                    tools:numStars="5"
+                    tools:progress="70"/>
 
-            <!--android:text="@{object.stars}"-->
-            <TextView
-                android:id="@+id/rating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:text="@{String.valueOf(object.stars)}"
-                app:layout_constraintBottom_toBottomOf="@+id/ratingBar"
-                app:layout_constraintStart_toEndOf="@+id/ratingBar"
-                app:layout_constraintTop_toTopOf="@+id/ratingBar"
-                tools:text="(100)"/>
+                <TextView
+                    android:id="@+id/rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="@{String.valueOf(object.stars)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/ratingBar"
+                    app:layout_constraintStart_toEndOf="@+id/ratingBar"
+                    app:layout_constraintTop_toTopOf="@+id/ratingBar"
+                    tools:text="(100)"/>
 
-            <ImageView
-                android:id="@+id/comment_icon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginEnd="8dp"
-                android:contentDescription="@string/comments_icon"
-                app:layout_constraintBottom_toBottomOf="@+id/rating"
-                app:layout_constraintEnd_toStartOf="@+id/comments"
-                app:layout_constraintTop_toTopOf="@+id/rating"
-                app:srcCompat="@drawable/ic_chat"/>
+                <ImageView
+                    android:id="@+id/comment_icon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@string/comments_icon"
+                    app:layout_constraintBottom_toBottomOf="@+id/rating"
+                    app:layout_constraintEnd_toStartOf="@+id/comments"
+                    app:layout_constraintTop_toTopOf="@+id/rating"
+                    app:srcCompat="@drawable/ic_chat"/>
 
-<!--                android:text="@{object.comments}"-->
-            <TextView
-                android:id="@+id/comments"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="@{String.valueOf(object.comments)}"
-                app:layout_constraintBottom_toBottomOf="@+id/comment_icon"
-                app:layout_constraintEnd_toEndOf="@+id/overlay"
-                app:layout_constraintTop_toTopOf="@+id/comment_icon"
-                tools:text="(40)"/>
+                <TextView
+                    android:id="@+id/comments"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="@{String.valueOf(object.comments)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/comment_icon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/comment_icon"
+                    tools:text="(40)"/>
 
+                <TextView
+                    android:id="@+id/description"
+                    android:layout_width="0dp"
+                    android:layout_height="57dp"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:paddingBottom="@dimen/item_margin"
+                    android:text="@{object.description}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/ratingBar"
+                    app:layout_constraintTop_toBottomOf="@+id/ratingBar"
+                    tools:text="@tools:sample/lorem/random"/>
 
-
+            </android.support.constraint.ConstraintLayout>
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.CardView>

@@ -1,5 +1,6 @@
 package com.sergiocruz.capstone.view.fragment;
 
+import android.animation.ObjectAnimator;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -7,7 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -24,7 +27,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickListener<Travel> {
+public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickListener<Travel>, BaseAdapter.OnItemTouchListener {
 
     public static final String ROOT_FRAGMENT_NAME = HomeFragment.class.getSimpleName();
     private FragmentHomeBinding binding;
@@ -66,7 +69,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     private void setupRecyclerView() {
         binding.travelsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.travelsRecyclerView.setHasFixedSize(true);
-        adapter = new TravelsAdapter(this);
+        adapter = new TravelsAdapter(this, this);
         binding.travelsRecyclerView.setAdapter(adapter);
     }
 
@@ -101,6 +104,64 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
         super.onDetach();
         //remove listeners?
         Timber.i("Detaching " + this.getClass().getSimpleName());
+    }
+
+    @Override
+    public boolean onItemTouch(View view, MotionEvent event) {
+
+        boolean actionDown = false;
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN: {
+                Timber.w("Action DOWN");
+                actionDown = true;
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                Timber.w("Action MOVE");
+                actionDown = true;
+                break;
+            }
+            case MotionEvent.ACTION_UP: {
+                Timber.w("Action UP");
+                break;
+            }
+            case MotionEvent.ACTION_CANCEL: {
+                Timber.w("Action CANCEL");
+                break;
+            }
+        }
+
+        Boolean touched = (Boolean) view.getTag(R.id.touched);
+        if (touched == null) touched = false;
+        if (actionDown && !touched) {
+            moveUpAnimation(view);
+        } else if (touched) {
+            moveDownAnimation(view);
+        }
+        return false;
+    }
+
+    public int dpToPx(float dpValue) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, getResources().getDisplayMetrics());
+    }
+
+    private void moveUpAnimation(View view) {
+        Timber.i("Going UP");
+        view.setTag(R.id.touched, true);
+        ObjectAnimator animation = ObjectAnimator.ofFloat(view.findViewById(R.id.overlay), "translationY", dpToPx(-54));
+        animation.setDuration(200);
+        animation.start();
+
+    }
+
+    private void moveDownAnimation(View view) {
+        Timber.i("Going Down");
+        view.setTag(R.id.touched, false);
+        ObjectAnimator animation = ObjectAnimator.ofFloat(view.findViewById(R.id.overlay), "translationY", dpToPx(0));
+        animation.setDuration(1000);
+        animation.setStartDelay(2500);
+        animation.start();
     }
 
 }

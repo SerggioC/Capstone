@@ -13,8 +13,8 @@ import java.util.List;
 public class TravelsAdapter extends BaseAdapter {
     private List<Travel> travels;
 
-    public TravelsAdapter(OnItemClickListener itemClickListener) {
-        super(itemClickListener);
+    public TravelsAdapter(OnItemClickListener itemClickListener, OnItemTouchListener itemTouchListener) {
+        super(itemClickListener, itemTouchListener);
     }
 
     public void swapTravelsData(List<Travel> data) {

@@ -44,5 +44,6 @@
     <string name="logged_in">Logged in</string>
     <string name="as">as</string>
     <string name="comments_icon">Comments icon</string>
+    <string name="price_tag">Price Tag</string>
 
 </resources>

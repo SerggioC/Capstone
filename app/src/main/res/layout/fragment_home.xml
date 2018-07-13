@@ -35,7 +35,7 @@
                 android:padding="8dp"
                 android:background="@drawable/home_textview_background"
                 android:gravity="center_vertical"
-                android:text="@string/title_home"
+                android:text="@string/welcome"
                 android:textSize="16sp"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"

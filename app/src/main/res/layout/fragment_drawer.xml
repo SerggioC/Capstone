@@ -39,7 +39,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:background="@color/colorPrimary"
                 android:elevation="@dimen/bottom_nav_elevation"/>
 
         </android.support.design.widget.CoordinatorLayout>
@@ -49,8 +48,15 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            app:headerLayout="@layout/drawer_header_layout"
-            app:menu="@menu/drawer_menu"/>
+            app:headerLayout="@layout/drawer_header_layout_placeholder"
+            app:menu="@menu/drawer_menu">
+
+            <include
+                android:id="@+id/header_layout"
+                layout="@layout/drawer_header_layout"
+                bind:viewModel="@{viewModel}"/>
+
+        </android.support.design.widget.NavigationView>
 
     </android.support.v4.widget.DrawerLayout>
 

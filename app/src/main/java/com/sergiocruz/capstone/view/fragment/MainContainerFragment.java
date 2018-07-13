@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
@@ -61,6 +62,8 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
 
         // Navigation Drawer item click listener
         binding.navView.setNavigationItemSelectedListener(this);
+        binding.headerLayout.setViewModel(viewModel);
+        binding.headerLayout.backArrow.setOnClickListener(v -> closeDrawer());
 
         // setup Bottom navigation Menu
         setupBottomNavigation();
@@ -95,6 +98,61 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
 
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.nav_login:
+                break;
+            case R.id.nav_favorites:
+                goToFavorites();
+                break;
+
+            case R.id.nav_account:
+                goAccount();
+                break;
+
+            case R.id.nav_logout:
+                logoutFromFirebase();
+                break;
+
+            case R.id.nav_share:
+                shareStuff();
+                break;
+
+            case R.id.nav_feedback:
+                sendFeedback();
+                break;
+
+            case R.id.nav_options:
+                goToSettings();
+                break;
+        }
+
+        closeDrawer();
+        return true;
+    }
+
+    private void goToSettings() {
+        Toast.makeText(getContext(), "Settings", Toast.LENGTH_LONG).show();
+    }
+
+    private void sendFeedback() {
+        Toast.makeText(getContext(), "Feedback", Toast.LENGTH_LONG).show();
+    }
+
+    private void shareStuff() {
+        Toast.makeText(getContext(), "Share Stuff", Toast.LENGTH_LONG).show();
+    }
+
+    private void goAccount() {
+        Toast.makeText(getContext(), "Account", Toast.LENGTH_LONG).show();
+    }
+
+    private void goToFavorites() {
+        Toast.makeText(getContext(), "Favorites", Toast.LENGTH_LONG).show();
+    }
+
     private void toggleDrawer(View v) {
         if (isDrawerOpen()) {
             closeDrawer();
@@ -122,9 +180,10 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
         binding.bottomNavigationAh.setBehaviorTranslationEnabled(true);
 
         // Change colors
-        binding.bottomNavigationAh.setAccentColor(ContextCompat.getColor(getContext(), R.color.email_light));
+        binding.bottomNavigationAh.setAccentColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
         binding.bottomNavigationAh.setInactiveColor(ContextCompat.getColor(getContext(), R.color.black));
-        binding.bottomNavigationAh.setDefaultBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        binding.bottomNavigationAh.setDefaultBackgroundResource(R.drawable.background_bottom_navigation);
+        //binding.bottomNavigationAh.setDefaultBackgroundColor((ContextCompat.getColor(getContext(), R.color.colorPrimary));
         binding.bottomNavigationAh.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
     }
 
@@ -134,7 +193,6 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
 
     private boolean switchFragmentContent(int position, boolean wasSelected) {
         if (wasSelected) return true;
-
         Fragment fragment = null;
         Boolean isHomeFragment = false;
 
@@ -171,6 +229,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
         } else if (fragment != null) {
 
             FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
             String tagName = fragment.getClass().getSimpleName();
 
             if (stackEntryCount >= 2) {
@@ -183,8 +242,12 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
                 transaction.add(R.id.frame_content_holder, fragment, tagName);
                 transaction.addToBackStack(tagName);
             }
+
+
+
             transaction.commit();
         }
+
     }
 
     @Override
@@ -244,10 +307,5 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
     @Override
     public void onDetach() {
         super.onDetach();
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
     }
 }

@@ -16,3 +16,6 @@ https://github.com/firebase/quickstart-android/tree/master/database
 
 Custom Bottom navigation
 https://github.com/aurelhubert/ahbottomnavigation/blob/master/README.md
+
+Enable log in huawei 
+*#*#2846579#*#*

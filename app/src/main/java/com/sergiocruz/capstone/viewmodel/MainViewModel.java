@@ -18,6 +18,7 @@ public class MainViewModel extends AndroidViewModel {
     private Repository repository;
     private LiveData<List<Travel>> travelList;
     private LiveData<User> user;
+    private String userID;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -48,6 +49,10 @@ public class MainViewModel extends AndroidViewModel {
 
     public void logoutUser() {
         this.user = null;
+        this.userID = null;
     }
 
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
 }

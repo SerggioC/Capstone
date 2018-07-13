@@ -45,5 +45,16 @@
     <string name="as">as</string>
     <string name="comments_icon">Comments icon</string>
     <string name="price_tag">Price Tag</string>
+    <string name="welcome">Welcome</string>
+    <string name="options">Options</string>
+    <string name="feedback">Feedback</string>
+    <string name="share">Share</string>
+    <string name="logout">Log out</string>
+    <string name="loggin">Log in</string>
+    <string name="favorites">Favorites</string>
+    <string name="my_account">My Account</string>
+    <string name="back_arrow">Back arrow, close drawer</string>
+    <string name="account">Account</string>
+    <string name="communicate">Communicate</string>
 
 </resources>

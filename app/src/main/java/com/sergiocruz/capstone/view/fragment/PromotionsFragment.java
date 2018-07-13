@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.adapter.BaseAdapter;
 import com.sergiocruz.capstone.adapter.TravelsAdapter;
-import com.sergiocruz.capstone.databinding.FragmentHomeBinding;
+import com.sergiocruz.capstone.databinding.FragmentPromotionBinding;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.util.Utils;
@@ -29,15 +29,15 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickListener<Travel>, BaseAdapter.OnItemTouchListener {
+public class PromotionsFragment extends Fragment implements BaseAdapter.OnItemClickListener<Travel>, BaseAdapter.OnItemTouchListener {
 
-    public static final String ROOT_FRAGMENT_NAME = HomeFragment.class.getSimpleName();
-    public static final String USER_ID_BUNDLE_KEY = "USER_ID_BUNDLE_KEY";
-    private FragmentHomeBinding binding;
+    public static final String ROOT_FRAGMENT_NAME = PromotionsFragment.class.getSimpleName();
+    private static final String SOME_BUNDLE_KEY = "SOME_BUNDLE_KEY";
+    private FragmentPromotionBinding binding;
     private TravelsAdapter adapter;
-    private String userID;
+    private String someID;
 
-    public HomeFragment() {
+    public PromotionsFragment() {
         // Required empty public constructor
     }
 
@@ -50,7 +50,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate view and obtain an instance of the binding class.
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_promotion, container, false);
 
         // Specify the current fragment as the lifecycle owner.
         binding.setLifecycleOwner(this);
@@ -58,11 +58,10 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
         // Obtain the ViewModel component.
         MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(USER_ID_BUNDLE_KEY)) {
-            userID = savedInstanceState.getString(USER_ID_BUNDLE_KEY);
+        if (savedInstanceState != null && savedInstanceState.containsKey(SOME_BUNDLE_KEY)) {
+            someID = savedInstanceState.getString(SOME_BUNDLE_KEY);
         }
 
-        viewModel.setUserID(userID);
 
         // variable name "viewModel" in xml <data><variable> + set prefix.
         binding.setViewModel(viewModel);
@@ -96,17 +95,17 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     }
 
     private void onUserInfo(User user) {
-        if (userID != null && user != null && userID.equals(user.getUserID())) {
+        if (someID != null && user != null && someID.equals(user.getUserID())) {
             return;
         }
 
         String message;
         if (user == null || user.getIsAnonymous()) {
             message = getString(R.string.logged_in) + " " + getString(R.string.anonymous);
-            userID = null;
+            someID = null;
         } else {
             message = getString(R.string.logged_in) + " " + getString(R.string.as) + " " + user.getUserName();
-            userID = user.getUserID();
+            someID = user.getUserID();
         }
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
@@ -125,7 +124,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(USER_ID_BUNDLE_KEY, userID);
+        outState.putString(USER_ID_BUNDLE_KEY, someID);
     }
 
     @Override

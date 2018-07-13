@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TimberImplementation.init();
         installLeakCanary();
         setContentView(R.layout.activity_main);
 
@@ -30,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
             // Return here to prevent adding additional
             // Fragments when changing orientation.
             return;
+        } else {
+            TimberImplementation.init();
         }
 
         // Check if user is signed in (non-null) and update UI accordingly.

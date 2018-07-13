@@ -16,8 +16,8 @@ import timber.log.Timber;
 
 public class UserLiveData extends LiveData<User> {
     private Query query;
-    private final MyValueEventListener listener = new MyValueEventListener();
-    private final MyAuthStateChangeListener authListener = new MyAuthStateChangeListener();
+    private MyValueEventListener listener;
+    private MyAuthStateChangeListener authListener;
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private DatabaseReference databaseReference;
 
@@ -26,44 +26,48 @@ public class UserLiveData extends LiveData<User> {
     }
 
     public UserLiveData(DatabaseReference databaseReference) {
-        Timber.w("creating new UserLiveData");
+        Timber.i("creating new UserLiveData");
 
         this.databaseReference = databaseReference;
+        authListener = new MyAuthStateChangeListener();
+        listener = new MyValueEventListener();
 
-//        String firebaseUserUid = firebaseAuth.getCurrentUser().getUid();
-//        String dbUserRef = "users/" + firebaseUserUid + "/";
-//
-//        this.query = databaseReference.child(dbUserRef);
+        String dbUserRef = getUserDBRefString(firebaseAuth);
+
+        this.query = databaseReference.child(dbUserRef);
     }
 
     // Detect User changes (logout/login)
     private class MyAuthStateChangeListener implements FirebaseAuth.AuthStateListener {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            Timber.e("auth state changed!");
+            Timber.i("Auth state changed!");
 
-            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-            String firebaseUserUid = currentUser == null ? null : currentUser.getUid();
-            String dbUserRef = "users/" + firebaseUserUid + "/";
+            String dbUserRef = getUserDBRefString(firebaseAuth);
 
+            // Re-Attach listener to new query
             query = databaseReference.child(dbUserRef);
-
             query.removeEventListener(listener);
             query.addValueEventListener(listener);
         }
     }
 
+    @NonNull
+    private String getUserDBRefString(@NonNull FirebaseAuth firebaseAuth) {
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        String firebaseUserUid = currentUser == null ? null : currentUser.getUid();
+        return "users/" + firebaseUserUid + "/";
+    }
 
     @Override
     protected void onActive() {
-        Timber.w("creating user Listener");
-        //query.addValueEventListener(listener);
+        Timber.i("Creating user Listener");
         firebaseAuth.addAuthStateListener(authListener);
     }
 
     @Override
     protected void onInactive() {
-        Timber.w("removing user Listener");
+        Timber.w("Removing user Listener");
         query.removeEventListener(listener);
         firebaseAuth.removeAuthStateListener(authListener);
     }

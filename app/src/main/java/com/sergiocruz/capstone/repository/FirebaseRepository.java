@@ -1,16 +1,10 @@
 package com.sergiocruz.capstone.repository;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.database.TravelPackLiveData;
 import com.sergiocruz.capstone.database.UserLiveData;
 import com.sergiocruz.capstone.model.Travel;
@@ -21,11 +15,9 @@ import java.util.List;
 public class FirebaseRepository {
     private static FirebaseRepository sInstance;
     private static FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
-    private TravelPackLiveData travelPacks;
-    private UserLiveData userLiveData;
-    private User user;
-
+    private static DatabaseReference databaseReference;
+    private static TravelPackLiveData travelPacks;
+    private static UserLiveData userLiveData;
 
     private FirebaseRepository() {
         firebaseDatabase.setPersistenceEnabled(true); // Enable Offline Capabilities of Firebase https://firebase.google.com/docs/database/android/offline-capabilities
@@ -63,45 +55,45 @@ public class FirebaseRepository {
         return userLiveData;
     }
 
-    @Deprecated
-    public LiveData<User> getUser0() {
-        final MutableLiveData<User> userMutableLiveData = new MutableLiveData<>();
-
-        if (user != null) {
-            userMutableLiveData.setValue(user);
-            return userMutableLiveData;
-        }
-
-        // Authenticated user info
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        //user = convertUser(firebaseUser);
-        userMutableLiveData.setValue(user);
-
-        // Database user info
-        DatabaseReference reference = databaseReference.child("users/" + firebaseUser.getUid() + "/");
-        reference.addValueEventListener(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    user = snapshot.getValue(User.class);
-                    userMutableLiveData.setValue(user);
-                } else {
-                    user = null;
-                    userMutableLiveData.setValue(null);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                user = null;
-                userMutableLiveData.setValue(null);
-            }
-        });
-
-        return userMutableLiveData;
-    }
+//    @Deprecated
+//    public LiveData<User> getUser0() {
+//        final MutableLiveData<User> userMutableLiveData = new MutableLiveData<>();
+//
+//        if (user != null) {
+//            userMutableLiveData.setValue(user);
+//            return userMutableLiveData;
+//        }
+//
+//        // Authenticated user info
+//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//
+//        //user = convertUser(firebaseUser);
+//        userMutableLiveData.setValue(user);
+//
+//        // Database user info
+//        DatabaseReference reference = databaseReference.child("users/" + firebaseUser.getUid() + "/");
+//        reference.addValueEventListener(new ValueEventListener() {
+//
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.exists()) {
+//                    user = snapshot.getValue(User.class);
+//                    userMutableLiveData.setValue(user);
+//                } else {
+//                    user = null;
+//                    userMutableLiveData.setValue(null);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                user = null;
+//                userMutableLiveData.setValue(null);
+//            }
+//        });
+//
+//        return userMutableLiveData;
+//    }
 
 
 }

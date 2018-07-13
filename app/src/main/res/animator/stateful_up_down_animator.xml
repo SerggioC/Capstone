@@ -9,6 +9,7 @@
                 <!--android:valueTo="1.5"-->
                 <!--android:valueType="floatType"/>-->
             <objectAnimator
+                android:interpolator="@android:interpolator/fast_out_slow_in"
                 android:duration="@android:integer/config_shortAnimTime"
                 android:propertyName="translationY"
                 android:valueTo="-54dp"
@@ -31,4 +32,5 @@
                 android:valueType="floatType"/>
         </set>
     </item>
+
 </selector>

@@ -1,10 +1,13 @@
 package com.sergiocruz.capstone.util;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
+import android.util.TypedValue;
+import android.view.View;
 
 import com.sergiocruz.capstone.R;
 
@@ -36,4 +39,26 @@ public class Utils {
     private static void onClickOK(DialogInterface dialog, int which) {
         dialog.dismiss();
     }
+
+
+    public static int dpToPx(float dpValue, Context context) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, context.getResources().getDisplayMetrics());
+    }
+
+    public static void moveUpAnimation(View view, Context context) {
+        view.setTag(R.id.touched, true);
+        ObjectAnimator animation = ObjectAnimator.ofFloat(view.findViewById(R.id.overlay), "translationY", dpToPx(-52, context));
+        animation.setDuration(200);
+        animation.start();
+
+    }
+
+    public static void moveDownAnimation(View view, Context context) {
+        view.setTag(R.id.touched, false);
+        ObjectAnimator animation = ObjectAnimator.ofFloat(view.findViewById(R.id.overlay), "translationY", dpToPx(0, context));
+        animation.setDuration(1000);
+        animation.setStartDelay(2500);
+        animation.start();
+    }
+
 }

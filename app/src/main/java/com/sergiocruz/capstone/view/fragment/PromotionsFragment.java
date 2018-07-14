@@ -80,14 +80,14 @@ public class PromotionsFragment extends Fragment implements BaseAdapter.OnItemCl
         Boolean isTablet = getResources().getBoolean(R.bool.isTablet);
         if (isTablet) {
             int spanCount = getResources().getInteger(R.integer.spanCount);
-            binding.travelsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
+            binding.promotionsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
         } else {
-            binding.travelsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            binding.promotionsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         }
 
-        binding.travelsRecyclerView.setHasFixedSize(true);
+        binding.promotionsRecyclerView.setHasFixedSize(true);
         adapter = new TravelsAdapter(this, this);
-        binding.travelsRecyclerView.setAdapter(adapter);
+        binding.promotionsRecyclerView.setAdapter(adapter);
     }
 
     private void populateRecyclerView(List<Travel> travels) {
@@ -124,7 +124,7 @@ public class PromotionsFragment extends Fragment implements BaseAdapter.OnItemCl
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(USER_ID_BUNDLE_KEY, someID);
+        outState.putString(SOME_BUNDLE_KEY, someID);
     }
 
     @Override

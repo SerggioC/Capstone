@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.adapter.BaseAdapter;
 import com.sergiocruz.capstone.adapter.TravelsAdapter;
-import com.sergiocruz.capstone.databinding.FragmentPromotionBinding;
+import com.sergiocruz.capstone.databinding.FragmentProfileBinding;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.util.Utils;
@@ -31,9 +31,8 @@ import timber.log.Timber;
 
 public class ProfileFragment extends Fragment implements BaseAdapter.OnItemClickListener<Travel>, BaseAdapter.OnItemTouchListener {
 
-    public static final String ROOT_FRAGMENT_NAME = ProfileFragment.class.getSimpleName();
     private static final String SOME_BUNDLE_KEY = "SOME_BUNDLE_KEY";
-    private FragmentPromotionBinding binding;
+    private FragmentProfileBinding binding;
     private TravelsAdapter adapter;
     private String someID;
 
@@ -66,8 +65,6 @@ public class ProfileFragment extends Fragment implements BaseAdapter.OnItemClick
         // variable name "viewModel" in xml <data><variable> + set prefix.
         binding.setViewModel(viewModel);
 
-        viewModel.getUser().observe(this, this::onUserInfo);
-
         setupRecyclerView();
 
         viewModel.getTravelPacks().observe(this, this::populateRecyclerView);
@@ -80,14 +77,14 @@ public class ProfileFragment extends Fragment implements BaseAdapter.OnItemClick
         Boolean isTablet = getResources().getBoolean(R.bool.isTablet);
         if (isTablet) {
             int spanCount = getResources().getInteger(R.integer.spanCount);
-            binding.travelsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
+            binding.profileRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
         } else {
-            binding.travelsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            binding.profileRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         }
 
-        binding.travelsRecyclerView.setHasFixedSize(true);
+        binding.profileRecyclerView.setHasFixedSize(true);
         adapter = new TravelsAdapter(this, this);
-        binding.travelsRecyclerView.setAdapter(adapter);
+        binding.profileRecyclerView.setAdapter(adapter);
     }
 
     private void populateRecyclerView(List<Travel> travels) {
@@ -124,7 +121,7 @@ public class ProfileFragment extends Fragment implements BaseAdapter.OnItemClick
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(USER_ID_BUNDLE_KEY, someID);
+        outState.putString(SOME_BUNDLE_KEY, someID);
     }
 
     @Override

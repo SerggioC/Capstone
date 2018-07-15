@@ -11,6 +11,8 @@ import android.view.View;
 
 import com.sergiocruz.capstone.R;
 
+import timber.log.Timber;
+
 public class Utils {
 
     public static boolean isConnected(Context context) {
@@ -50,7 +52,7 @@ public class Utils {
         ObjectAnimator animation = ObjectAnimator.ofFloat(view.findViewById(R.id.overlay), "translationY", dpToPx(-52, context));
         animation.setDuration(200);
         animation.start();
-
+        Timber.i("Move up animation");
     }
 
     public static void moveDownAnimation(View view, Context context) {
@@ -59,6 +61,7 @@ public class Utils {
         animation.setDuration(1000);
         animation.setStartDelay(2500);
         animation.start();
+        Timber.i("Move down animation");
     }
 
 }

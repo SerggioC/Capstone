@@ -77,6 +77,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
         binding.toolbarLayout.userIcon.setOnClickListener(this::toggleDrawer);
     }
 
+    @SuppressWarnings("unused")
     @Deprecated
     private void setupDrawerNavigation() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -242,8 +243,6 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
                 transaction.add(R.id.frame_content_holder, fragment, tagName);
                 transaction.addToBackStack(tagName);
             }
-
-
 
             transaction.commit();
         }

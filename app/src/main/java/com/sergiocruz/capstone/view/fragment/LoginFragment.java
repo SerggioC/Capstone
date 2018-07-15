@@ -25,7 +25,6 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.Profile;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -146,6 +145,24 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
         return binding.getRoot();
     }
 
+    private void enterFullScreen() {
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    @SuppressWarnings("unused")
+    private void enterNoLimitsScreen() {
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+    }
+
+    private void exitFullScreen() {
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+//        getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+//        getActivity().getWindow().getDecorView().setFitsSystemWindows(true);
+
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -171,6 +188,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     }
 
     private void validateEmail() {
+
         // Clear Errors
         binding.emailEditText.setError(null);
         String email = binding.emailEditText.getText().toString();
@@ -577,19 +595,6 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     goToMainContainerFragment();
                 } else {
                     // User does not exist in database and it's not anonymous, create new user
-//                    String email = firebaseUser != null ? firebaseUser.getEmail() : null;
-//                    if (email == null) {
-//                        email = firebaseUser != null ? firebaseUser.getProviderData().get(1).getEmail() : null;
-//                    }
-//
-//                    User user = new User(
-//                            firebaseUser.getUid(),
-//                            firebaseUser.getDisplayName(),
-//                            String.valueOf(firebaseUser.getPhotoUrl()),
-//                            email,
-//                            firebaseUser.getPhoneNumber(),
-//                            firebaseUser.getProviders() != null ? firebaseUser.getProviders().get(0) : null,
-//                            false);
                     User user = convertUser(firebaseUser);
                     writeNewUserToDB(user);
                 }
@@ -606,6 +611,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
         });
 
     }
+
     private User convertUser(FirebaseUser firebaseUser) {
         if (firebaseUser != null) {
 
@@ -666,19 +672,6 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                 .commit();
     }
 
-    private void enterFullScreen() {
-        getActivity().getWindow().setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //getActivity().getWindow().setNavigationBarColor(R.color.transparent);
-    }
-
-    private void exitFullScreen() {
-        this.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        this.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        this.getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -702,11 +695,6 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
         } else if (binding.emailInputLayout.getVisibility() == View.VISIBLE) {
             getActivity().finish();
         }
-    }
-
-    private void signOutUser() {
-        FirebaseAuth.getInstance().signOut();
-        LoginManager.getInstance().logOut();
     }
 
     private void prepareBackgroundVideo() {
@@ -830,35 +818,9 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
         binding.passwordInputLayout.startAnimation(slideInLeft);
     }
 
-    /**
-     * Shows the progress bar
-     */
+    /** Shows the progress bar */
     private void showProgress(final boolean show) {
-
         binding.loginProgress.setVisibility(show ? View.VISIBLE : View.GONE);
-
-//        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-//        // for very easy animations. If available, use these APIs to fade-in
-//        // the progress spinner.
-//
-//        int animationTime = getResources().getInteger(android.R.integer.config_mediumAnimTime);
-//
-//        binding.loginForms.setVisibility(show ? View.GONE : View.VISIBLE);
-//        binding.loginForms.animate().setDuration(animationTime).alpha(show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                binding.loginForms.setVisibility(show ? View.GONE : View.VISIBLE);
-//            }
-//
-//        });
-//
-//        binding.loginProgress.setVisibility(show ? View.VISIBLE : View.GONE);
-//        binding.loginProgress.animate().setDuration(animationTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//            }
-//        });
-
     }
 
 

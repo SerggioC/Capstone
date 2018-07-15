@@ -137,7 +137,6 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
     @Override
     public boolean onItemTouch(View view, MotionEvent event) {
-
         boolean actionDown = false;
 
         int eventAction = event.getAction();
@@ -151,8 +150,6 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
                 break;
             }
         }
-
-        Timber.i("MotionEvent Action= %s", event.getAction());
 
         Boolean touched = (Boolean) view.getTag(R.id.touched);
         if (touched == null) touched = false;

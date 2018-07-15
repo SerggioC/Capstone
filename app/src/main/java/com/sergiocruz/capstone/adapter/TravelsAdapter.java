@@ -1,5 +1,6 @@
 package com.sergiocruz.capstone.adapter;
 
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.animation.Animation;
@@ -34,7 +35,7 @@ public class TravelsAdapter extends BaseAdapter {
     }
 
     @Override
-    protected int getLayoutIdForPosition(int position) {
+    protected int getLayoutIdForPosition(@LayoutRes int position) {
         return R.layout.travel_item_layout;
     }
 

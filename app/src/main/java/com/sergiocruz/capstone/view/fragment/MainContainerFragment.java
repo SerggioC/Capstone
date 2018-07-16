@@ -230,6 +230,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
         } else if (fragment != null) {
 
             FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.setReorderingAllowed(true);
             transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
             String tagName = fragment.getClass().getSimpleName();
 

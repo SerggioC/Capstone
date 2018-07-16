@@ -117,11 +117,6 @@ public class PromotionsFragment extends Fragment implements BaseAdapter.OnItemCl
     }
 
     @Override
-    public void onItemClick(Travel travel) {
-        Toast.makeText(getContext(), "Clicked " + travel.getCountry(), Toast.LENGTH_LONG).show();
-    }
-
-    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(SOME_BUNDLE_KEY, someID);
@@ -164,5 +159,8 @@ public class PromotionsFragment extends Fragment implements BaseAdapter.OnItemCl
     }
 
 
-
+    @Override
+    public void onItemClick(Travel travel, View view, Integer position) {
+        Toast.makeText(getContext(), "Clicked " + travel.getCountry() + " position = " + position, Toast.LENGTH_LONG).show();
+    }
 }

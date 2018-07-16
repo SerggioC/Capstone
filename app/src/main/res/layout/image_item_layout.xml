@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="object"
+            type="java.lang.String"/>
+
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/item_margin"
+        android:elevation="2dp"
+        app:cardCornerRadius="@dimen/corner_radius">
+        <!-- 4:3 ratio -->
+        <ImageView
+            android:layout_width="133dp"
+            android:layout_height="100dp"
+            android:duplicateParentState="true"
+            android:contentDescription="@string/photo_of_travel"
+            android:scaleType="centerCrop"
+            app:errorDrawable="@{@drawable/travel_image}"
+            app:imageUrl="@{object}"
+            tools:src="@drawable/austria"/>
+    </android.support.v7.widget.CardView>
+</layout>

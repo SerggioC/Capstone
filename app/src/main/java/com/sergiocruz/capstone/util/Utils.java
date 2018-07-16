@@ -8,6 +8,8 @@ import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.sergiocruz.capstone.R;
 
@@ -49,7 +51,7 @@ public class Utils {
 
     public static void moveUpAnimation(View view, Context context) {
         view.setTag(R.id.touched, true);
-        ObjectAnimator animation = ObjectAnimator.ofFloat(view.findViewById(R.id.overlay), "translationY", dpToPx(-52, context));
+        ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", dpToPx(-52, context));
         animation.setDuration(200);
         animation.start();
         Timber.i("Move up animation");
@@ -57,11 +59,16 @@ public class Utils {
 
     public static void moveDownAnimation(View view, Context context) {
         view.setTag(R.id.touched, false);
-        ObjectAnimator animation = ObjectAnimator.ofFloat(view.findViewById(R.id.overlay), "translationY", dpToPx(0, context));
+        ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", dpToPx(0, context));
         animation.setDuration(1000);
         animation.setStartDelay(2500);
         animation.start();
         Timber.i("Move down animation");
+    }
+
+    public static void setItemViewAnimation(View viewToAnimate) {
+        Animation topAnimation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), R.anim.slide_from_top);
+        viewToAnimate.startAnimation(topAnimation);
     }
 
 }

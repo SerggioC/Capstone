@@ -2,12 +2,10 @@ package com.sergiocruz.capstone.adapter;
 
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.model.Travel;
+import com.sergiocruz.capstone.util.Utils;
 
 import java.util.List;
 
@@ -26,7 +24,9 @@ public class TravelsAdapter extends BaseAdapter {
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        setItemViewAnimation(holder.itemView);
+        Utils.setItemViewAnimation(holder.itemView);
+        String transitionName = getObjectForPosition(position).getID();
+        holder.itemView.findViewById(R.id.image).setTransitionName(transitionName);
     }
 
     @Override
@@ -44,8 +44,4 @@ public class TravelsAdapter extends BaseAdapter {
         return travels == null ? 0 : travels.size();
     }
 
-    private void setItemViewAnimation(View viewToAnimate) {
-        Animation topAnimation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), R.anim.slide_from_top);
-        viewToAnimate.startAnimation(topAnimation);
-    }
 }

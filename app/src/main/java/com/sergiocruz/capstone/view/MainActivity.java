@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             startFragment = new MainContainerFragment();
             getSupportFragmentManager()
                     .beginTransaction()
+                    .setReorderingAllowed(true)
                     .replace(R.id.root_fragment_container, startFragment, startFragment.getClass().getSimpleName())
                     .add(R.id.frame_content_holder, new HomeFragment(), HomeFragment.class.getSimpleName())
                     .addToBackStack(HomeFragment.class.getSimpleName())

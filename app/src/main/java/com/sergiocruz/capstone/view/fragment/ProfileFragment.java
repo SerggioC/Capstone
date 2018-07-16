@@ -114,7 +114,7 @@ public class ProfileFragment extends Fragment implements BaseAdapter.OnItemClick
     }
 
     @Override
-    public void onItemClick(Travel travel) {
+    public void onItemClick(Travel travel, View view,  Integer position) {
         Toast.makeText(getContext(), "Clicked " + travel.getCountry(), Toast.LENGTH_LONG).show();
     }
 

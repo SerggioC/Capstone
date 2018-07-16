@@ -15,10 +15,13 @@ import timber.log.Timber;
 
 public class MainViewModel extends AndroidViewModel {
     private static final Object LOCK = new Object();
+    private int clickedPosition;
     private Repository repository;
     private LiveData<List<Travel>> travelList;
     private LiveData<User> user;
     private String userID;
+    private Travel selectedTravel;
+
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -55,4 +58,22 @@ public class MainViewModel extends AndroidViewModel {
     public void setUserID(String userID) {
         this.userID = userID;
     }
+
+    public Travel getSelectedTravel() {
+        return selectedTravel;
+    }
+
+    public void setSelectedTravel(Travel selectedTravel) {
+        this.selectedTravel = selectedTravel;
+    }
+
+    public int getClickedPosition() {
+        return clickedPosition;
+    }
+
+    public void setClickedPosition(int clickedPosition) {
+        this.clickedPosition = clickedPosition;
+    }
+
+
 }

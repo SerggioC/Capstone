@@ -20,9 +20,9 @@
 
         <!--bottomNavigation.setTranslucentNavigationEnabled(true);-->
 
-
-
     </style>
+
+
 
     <style name="TextInputLayoutTheme" parent="AppTheme">
         <item name="colorControlNormal">@color/black</item>

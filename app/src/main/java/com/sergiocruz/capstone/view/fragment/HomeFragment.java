@@ -174,12 +174,13 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
             }
         }
 
-        Boolean touched = (Boolean) view.getTag(R.id.touched);
+        View viewToMove = view.findViewById(R.id.overlay);
+        Boolean touched = (Boolean) viewToMove.getTag(R.id.touched);
         if (touched == null) touched = false;
         if (actionDown && !touched) {
-            Utils.moveUpAnimation(view.findViewById(R.id.overlay), getContext());
+            Utils.moveUpAnimation(viewToMove);
         } else if (touched) {
-            Utils.moveDownAnimation(view.findViewById(R.id.overlay), getContext());
+            Utils.moveDownAnimation(viewToMove);
         }
         return false;
     }

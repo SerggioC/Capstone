@@ -1,5 +1,7 @@
 package com.sergiocruz.capstone.util;
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -49,17 +51,17 @@ public class Utils {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, context.getResources().getDisplayMetrics());
     }
 
-    public static void moveUpAnimation(View view, Context context) {
+    public static void moveUpAnimation(View view) {
         view.setTag(R.id.touched, true);
-        ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", dpToPx(-52, context));
+        ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", dpToPx(-52, view.getContext()));
         animation.setDuration(200);
         animation.start();
         Timber.i("Move up animation");
     }
 
-    public static void moveDownAnimation(View view, Context context) {
+    public static void moveDownAnimation(View view) {
         view.setTag(R.id.touched, false);
-        ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", dpToPx(0, context));
+        ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", dpToPx(0, view.getContext()));
         animation.setDuration(1000);
         animation.setStartDelay(2500);
         animation.start();
@@ -71,4 +73,17 @@ public class Utils {
         viewToAnimate.startAnimation(topAnimation);
     }
 
+    public static void zoomInAnimation(View view) {
+        view.setTag(R.id.touched, true);
+        AnimatorSet animatorSet = (AnimatorSet) AnimatorInflater.loadAnimator(view.getContext(), R.animator.zoom_in_animation);
+        animatorSet.setTarget(view);
+        animatorSet.start();
+    }
+
+    public static void zoomOutAnimation(View view) {
+        view.setTag(R.id.touched, false);
+        AnimatorSet animatorSet = (AnimatorSet) AnimatorInflater.loadAnimator(view.getContext(), R.animator.zoom_out_animation);
+        animatorSet.setTarget(view);
+        animatorSet.start();
+    }
 }

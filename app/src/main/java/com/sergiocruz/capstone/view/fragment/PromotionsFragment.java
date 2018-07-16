@@ -151,9 +151,9 @@ public class PromotionsFragment extends Fragment implements BaseAdapter.OnItemCl
         Boolean touched = (Boolean) view.getTag(R.id.touched);
         if (touched == null) touched = false;
         if (actionDown && !touched) {
-            Utils.moveUpAnimation(view, getContext());
+            Utils.moveUpAnimation(view);
         } else if (touched) {
-            Utils.moveDownAnimation(view, getContext());
+            Utils.moveDownAnimation(view);
         }
         return false;
     }

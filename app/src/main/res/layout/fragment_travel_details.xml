@@ -27,9 +27,9 @@
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                app:collapsedTitleGravity="center"
                 app:contentScrim="@drawable/gradient_background_primary"
                 app:expandedTitleMarginStart="52dp"
-                app:collapsedTitleGravity="center"
                 app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
 
                 <ImageView
@@ -50,9 +50,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:layout_marginBottom="32dp"
+                    android:layout_marginBottom="30dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
+                    android:contentDescription="@string/go_back"
                     app:srcCompat="@drawable/ic_arrow_back"/>
 
                 <android.support.v7.widget.Toolbar
@@ -67,60 +68,181 @@
 
         </android.support.design.widget.AppBarLayout>
 
-
         <android.support.v4.widget.NestedScrollView
             android:id="@+id/nested_scrollview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:behavior_overlapTop="@dimen/standard_margin"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/content"
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_description"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/half_margin"
+                android:layout_marginStart="@dimen/half_margin"
+                app:cardCornerRadius="@dimen/corner_radius">
 
-                <TextView
-                    android:id="@+id/description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:text="@{travel.description}"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="@string/lorem_ipsum_small"/>
-
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/imagesRecyclerView"
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/content"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="16dp"
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/description"
-                    app:spanCount="3"
-                    tools:listitem="@layout/image_item_layout"/>
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@{travel.name}"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="@tools:sample/cities"/>
+
+                    <TextView
+                        android:id="@+id/country"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:text="@{travel.country}"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/name"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/name"
+                        tools:text="@tools:sample/cities"/>
+
+                    <android.support.v7.widget.AppCompatRatingBar
+                        android:id="@+id/ratingBar"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:progressTint="@color/colorAccent"
+                        android:rating="@{object.rating}"
+                        android:stepSize="0.1"
+                        app:layout_constraintBottom_toBottomOf="@+id/price"
+                        app:layout_constraintStart_toStartOf="@+id/name"
+                        app:layout_constraintTop_toTopOf="@+id/price"
+                        tools:numStars="5"
+                        tools:progress="70"/>
+
+                    <TextView
+                        android:id="@+id/rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="@{String.valueOf(object.stars)}"
+                        app:layout_constraintBottom_toBottomOf="@+id/ratingBar"
+                        app:layout_constraintStart_toEndOf="@+id/ratingBar"
+                        app:layout_constraintTop_toTopOf="@+id/ratingBar"
+                        tools:text="100"/>
+
+                    <com.sergiocruz.capstone.view.PriceTagTextView
+                        android:id="@+id/price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@{travel.price}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/country"
+                        tools:text="188€"/>
+
+                    <TextView
+                        android:id="@+id/description"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/standard_margin"
+                        android:layout_marginTop="8dp"
+                        android:text="@{travel.description}"
+                        app:layout_constraintEnd_toEndOf="@+id/price"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/price"
+                        tools:text="@string/lorem_ipsum_mini"/>
+
+                    <ImageView
+                        android:id="@+id/comment_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:contentDescription="@string/comments_icon"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView4"
+                        app:layout_constraintStart_toEndOf="@+id/textView4"
+                        app:layout_constraintTop_toTopOf="@+id/textView4"
+                        app:srcCompat="@drawable/ic_chat"/>
+
+                    <TextView
+                        android:id="@+id/comments"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@{String.valueOf(travel.comments)}"
+                        app:layout_constraintBottom_toBottomOf="@+id/comment_icon"
+                        app:layout_constraintStart_toEndOf="@+id/comment_icon"
+                        app:layout_constraintTop_toTopOf="@+id/comment_icon"
+                        tools:text="40"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/commentsRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:nestedScrollingEnabled="false"
+                        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView4"
+                        tools:listitem="@android:layout/activity_list_item"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/imagesRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/standard_margin"
+                        android:layout_marginEnd="@dimen/half_margin"
+                        android:layout_marginStart="@dimen/half_margin"
+                        android:layout_marginTop="@dimen/standard_margin"
+                        android:nestedScrollingEnabled="false"
+                        app:layoutManager="android.support.v7.widget.GridLayoutManager"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/commentsRecyclerView"
+                        tools:listitem="@layout/image_item_layout"
+                        tools:spanCount="@integer/detailImagesSpanCount"/>
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="Comments"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/description"/>
 
 
-            </android.support.constraint.ConstraintLayout>
+                </android.support.constraint.ConstraintLayout>
+
+            </android.support.v7.widget.CardView>
         </android.support.v4.widget.NestedScrollView>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
+            android:layout_marginStart="@dimen/fab_margin"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginTop="32dp"
             android:stateListAnimator="@animator/fab_animator"
             app:elevation="@dimen/fab_elevation"
             app:fabSize="normal"
             app:layout_anchor="@id/appbar"
-            app:layout_anchorGravity="bottom|end"
+            app:layout_anchorGravity="center_vertical|end"
             app:pressedTranslationZ="@dimen/fab_elevation"
             app:srcCompat="@android:drawable/btn_star"/>
 

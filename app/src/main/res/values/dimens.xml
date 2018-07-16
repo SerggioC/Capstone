@@ -18,5 +18,7 @@
     <integer name="animation_duration">400</integer>
 
     <dimen name="fab_elevation">6dp</dimen>
-    <dimen name="fab_press_translation_z">6dp</dimen> <!-- default pressed 12dp-->
+    <dimen name="fab_press_translation_z">6dp</dimen>
+    <dimen name="standard_margin">8dp</dimen>
+    <dimen name="half_margin">4dp</dimen> <!-- default pressed 12dp-->
 </resources>

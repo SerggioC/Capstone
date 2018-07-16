@@ -24,7 +24,7 @@ public class TravelsAdapter extends BaseAdapter {
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        Utils.setItemViewAnimation(holder.itemView);
+        Utils.setItemViewAnimation(holder.itemView, position);
         String transitionName = getObjectForPosition(position).getID();
         holder.itemView.findViewById(R.id.image).setTransitionName(transitionName);
     }

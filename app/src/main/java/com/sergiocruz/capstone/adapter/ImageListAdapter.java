@@ -29,7 +29,7 @@ public class ImageListAdapter extends BaseAdapter {
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        Utils.setItemViewAnimation(holder.itemView);
+        Utils.setItemViewAnimation(holder.itemView, position);
     }
 
     @Override

@@ -68,8 +68,9 @@ public class Utils {
         Timber.i("Move down animation");
     }
 
-    public static void setItemViewAnimation(View viewToAnimate) {
+    public static void setItemViewAnimation(View viewToAnimate, int position) {
         Animation topAnimation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), R.anim.slide_from_top);
+        topAnimation.setStartOffset(20 * position);
         viewToAnimate.startAnimation(topAnimation);
     }
 

@@ -70,7 +70,7 @@ public class Utils {
 
     public static void setItemViewAnimation(View viewToAnimate, int position) {
         Animation topAnimation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), R.anim.slide_from_top);
-        topAnimation.setStartOffset(20 * position);
+        topAnimation.setStartOffset(30 * position);
         viewToAnimate.startAnimation(topAnimation);
     }
 

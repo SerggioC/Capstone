@@ -3,6 +3,7 @@ import android.arch.persistence.room.TypeConverter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class DateConverter {
@@ -10,7 +11,7 @@ public class DateConverter {
     @TypeConverter
     public static String getFormattedDateString(Long timestampMillis) {
         if (timestampMillis == null) return "";
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM, yyyy");
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
         dateFormatter.setTimeZone(TimeZone.getDefault());
         Date resultDate = new Date(timestampMillis);
         return dateFormatter.format(resultDate);

@@ -7,16 +7,24 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.adapter.BaseAdapter;
+import com.sergiocruz.capstone.adapter.FirebaseCommentsAdapter;
 import com.sergiocruz.capstone.adapter.ImageListAdapter;
 import com.sergiocruz.capstone.databinding.FragmentTravelDetailsBinding;
+import com.sergiocruz.capstone.model.Comment;
+import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.util.Utils;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
@@ -28,6 +36,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
     private FragmentTravelDetailsBinding binding;
     private String someID;
     private MainViewModel viewModel;
+    private Travel selectedTravel;
 
     public TravelDetailsFragment() {
         // Required empty public constructor
@@ -50,13 +59,36 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         }
 
         // variable name "travel" in xml <data><variable> + set prefix.
-        binding.setTravel(viewModel.getSelectedTravel());
+        selectedTravel = viewModel.getSelectedTravel();
+        binding.setTravel(selectedTravel);
 
         setupToolbar();
 
-        setupRecyclerView();
+        setupImagesRecyclerView();
+
+        setupCommentsRecyclerView();
 
         return binding.getRoot();
+    }
+
+    private void setupCommentsRecyclerView() {
+
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("travel-pack-comments")
+                .child(selectedTravel.getID())
+                .limitToLast(10);
+
+        FirebaseRecyclerOptions<Comment> firebaseRecyclerOptions =
+                new FirebaseRecyclerOptions.Builder<Comment>()
+                        .setQuery(query, Comment.class)
+                        .setLifecycleOwner(this)
+                        .build();
+
+        FirebaseRecyclerAdapter adapter = new FirebaseCommentsAdapter(firebaseRecyclerOptions);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        binding.commentsRecyclerView.setLayoutManager(layoutManager);
+        binding.commentsRecyclerView.setAdapter(adapter);
     }
 
     private void setupToolbar() {
@@ -68,12 +100,11 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
     }
 
-
-    private void setupRecyclerView() {
+    private void setupImagesRecyclerView() {
         int spanCount = getResources().getInteger(R.integer.detailImagesSpanCount);
         binding.imagesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
         binding.imagesRecyclerView.setHasFixedSize(true);
-        ImageListAdapter adapter = new ImageListAdapter(viewModel.getSelectedTravel().getImages(), this, this);
+        ImageListAdapter adapter = new ImageListAdapter(selectedTravel.getImages(), this, this);
         binding.imagesRecyclerView.setAdapter(adapter);
     }
 

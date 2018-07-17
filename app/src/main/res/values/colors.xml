@@ -4,11 +4,13 @@
     <color name="colorPrimaryDark">#880e4f</color>
     <color name="colorPrimaryDarker">#69043a</color>
     <color name="colorPrimaryDarkerTransparent">#7869043a</color>
+    <color name="colorCommentsBackground">#7ddadada</color>
     <color name="colorAccent">#ffd600</color>
     <color name="colorPrimaryLighter">#d81b60</color>
     <color name="white">#ffffff</color>
     <color name="white_transparent">#81ffffff</color>
     <color name="black">#000000</color>
+    <color name="grey600">#757575</color>
     <color name="grey800">#424242</color>
     <color name="grey900">#212121</color>
     <color name="overlayLight">#0affffff</color>

@@ -200,8 +200,8 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/comments_tv"
                         tools:layoutManager="android.support.v7.widget.GridLayoutManager"
-                        tools:spanCount="1"
-                        tools:listitem="@layout/comments_list_item"/>
+                        tools:listitem="@layout/item_comments_list"
+                        tools:spanCount="1"/>
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/imagesRecyclerView"
@@ -211,14 +211,15 @@
                         android:layout_marginEnd="@dimen/half_margin"
                         android:layout_marginStart="@dimen/half_margin"
                         android:layout_marginTop="@dimen/standard_margin"
+                        android:gravity="center"
                         android:nestedScrollingEnabled="false"
-                        app:layoutManager="android.support.v7.widget.GridLayoutManager"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/commentsRecyclerView"
-                        tools:listitem="@layout/image_item_layout"
-                        tools:spanCount="@integer/detailImagesSpanCount"/>
+                        tools:layoutManager="android.support.v7.widget.GridLayoutManager"
+                        tools:listitem="@layout/item_image_layout"
+                        tools:spanCount="2"/>
 
                     <TextView
                         android:id="@+id/comments_tv"

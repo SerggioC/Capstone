@@ -60,5 +60,8 @@
     <string name="communicate">Communicate</string>
     <string name="go_back">Go to previous screen</string>
     <string name="edit">edit</string>
+    <string name="write_comment">Write your comment</string>
+    <string name="send">Send</string>
+    <string name="your_rating">Your rating:</string>
 
 </resources>

@@ -75,6 +75,15 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
         setupImagesRecyclerView();
 
+        binding.writeComment.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                new BottomSheetCommentDialog().show(getActivity().getSupportFragmentManager(), BottomSheetCommentDialog.class.getSimpleName());
+            }
+        });
+
+
         return binding.getRoot();
     }
 
@@ -88,7 +97,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         String currentUserID = firebaseRepository.getUser().getValue().getUserID();
 
         commentsAdapter = new CommentsAdapter(currentUserID);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         binding.commentsRecyclerView.setLayoutManager(layoutManager);
         binding.commentsRecyclerView.setAdapter(commentsAdapter);
 
@@ -112,7 +121,6 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         int spanCount = getResources().getInteger(R.integer.detailImagesSpanCount);
         binding.imagesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
         binding.imagesRecyclerView.setHasFixedSize(true);
-        //binding.imagesRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         ImageListAdapter adapter = new ImageListAdapter(selectedTravel.getImages(), this, this);
         binding.imagesRecyclerView.setAdapter(adapter);
     }

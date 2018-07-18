@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sergiocruz.capstone.R;
-import com.sergiocruz.capstone.databinding.CommentsListItemBinding;
+import com.sergiocruz.capstone.databinding.ItemCommentsListBinding;
 import com.sergiocruz.capstone.model.Comment;
 
 import java.util.List;
@@ -30,7 +30,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     @Override
     public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        CommentsListItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.comments_list_item, parent, false);
+        ItemCommentsListBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.item_comments_list, parent, false);
         return new CommentViewHolder(binding);
     }
 
@@ -45,9 +45,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     }
 
     class CommentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final CommentsListItemBinding binding;
+        private final ItemCommentsListBinding binding;
 
-        CommentViewHolder(CommentsListItemBinding binding) {
+        CommentViewHolder(ItemCommentsListBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
             binding.comment.setOnClickListener(this);

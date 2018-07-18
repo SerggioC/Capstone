@@ -9,8 +9,12 @@ import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.sergiocruz.capstone.R;
-import com.sergiocruz.capstone.databinding.CommentsListItemBinding;
+import com.sergiocruz.capstone.databinding.ItemCommentsListBinding;
 import com.sergiocruz.capstone.model.Comment;
 
 public class FirebaseCommentsAdapter extends FirebaseRecyclerAdapter<Comment, FirebaseCommentsAdapter.CommentViewHolder> {
@@ -19,13 +23,33 @@ public class FirebaseCommentsAdapter extends FirebaseRecyclerAdapter<Comment, Fi
     public FirebaseCommentsAdapter(@NonNull FirebaseRecyclerOptions<Comment> options, String currentUser) {
         super(options);
         this.currrentUser = currentUser;
+
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("chats")
+                .limitToLast(50);
+
+        FirebaseRecyclerOptions<Comment> optionse =
+                new FirebaseRecyclerOptions.Builder<Comment>()
+                        .setQuery(query, Comment.class) // result direct to class or with custom parser
+                        .setQuery(query, new SnapshotParser<Comment>() {
+                            @NonNull
+                            @Override
+                            public Comment parseSnapshot(@NonNull DataSnapshot snapshot) {
+
+                                return null;
+                            }
+                        })
+                        .build();
+
+
     }
 
     @NonNull
     @Override
     public FirebaseCommentsAdapter.CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        CommentsListItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.comments_list_item, parent, false);
+        ItemCommentsListBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.item_comments_list, parent, false);
         return new CommentViewHolder(binding);
     }
 
@@ -36,9 +60,9 @@ public class FirebaseCommentsAdapter extends FirebaseRecyclerAdapter<Comment, Fi
     }
 
     class CommentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private final CommentsListItemBinding binding;
+        private final ItemCommentsListBinding binding;
 
-        CommentViewHolder(CommentsListItemBinding binding) {
+        CommentViewHolder(ItemCommentsListBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
             binding.comment.setOnClickListener(this);

@@ -23,7 +23,7 @@ public class ImageListAdapter extends BaseAdapter {
 
     @Override
     protected int getLayoutIdForPosition(int position) {
-        return R.layout.image_item_layout;
+        return R.layout.item_image_layout;
     }
 
     @SuppressWarnings("unchecked")

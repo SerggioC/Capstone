@@ -41,7 +41,7 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/promotionsRecyclerView"
-                tools:listitem="@layout/promotion_item_layout"
+                tools:listitem="@layout/item_promotion_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="8dp"

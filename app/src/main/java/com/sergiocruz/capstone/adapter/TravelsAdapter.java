@@ -38,7 +38,7 @@ public class TravelsAdapter extends BaseAdapter {
 
     @Override
     protected int getLayoutIdForPosition(@LayoutRes int position) {
-        return R.layout.travel_item_layout;
+        return R.layout.item_travel_layout;
     }
 
     @Override

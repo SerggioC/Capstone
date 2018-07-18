@@ -22,14 +22,6 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>
         this.itemTouchListener = itemTouchListener;
     }
 
-    public interface OnItemClickListener<T> {
-        void onItemClick(T object, View view, Integer position);
-    }
-
-    public interface OnItemTouchListener {
-        boolean onItemTouch(View v, MotionEvent event);
-    }
-
     private boolean onTouchItem(View v, MotionEvent event) {
         return itemTouchListener.onItemTouch(v, event);
     }
@@ -44,8 +36,10 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>
     @Override
     public void onBindViewHolder(@NonNull BaseAdapter<T>.BaseViewHolder holder, int position) {
         final T object = getObjectForPosition(position);
-        holder.itemView.setOnClickListener(v -> itemClickListener.onItemClick(object, holder.itemView, position)); /* TODO move to BaseViewHolder? */
-        holder.itemView.setOnTouchListener(this::onTouchItem);
+        if (itemClickListener != null)
+            holder.itemView.setOnClickListener(v -> itemClickListener.onItemClick(object, holder.itemView, position)); /* TODO move to BaseViewHolder? */
+        if (itemTouchListener != null)
+            holder.itemView.setOnTouchListener(this::onTouchItem);
         holder.bindVariable(object);
     }
 
@@ -57,6 +51,14 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>
     protected abstract T getObjectForPosition(int position);
 
     protected abstract int getLayoutIdForPosition(int position);
+
+    public interface OnItemClickListener<T> {
+        void onItemClick(T object, View view, Integer position);
+    }
+
+    public interface OnItemTouchListener {
+        boolean onItemTouch(View v, MotionEvent event);
+    }
 
     class BaseViewHolder extends RecyclerView.ViewHolder {
         private final ViewDataBinding binding;

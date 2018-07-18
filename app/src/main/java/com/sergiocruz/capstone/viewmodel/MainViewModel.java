@@ -75,5 +75,7 @@ public class MainViewModel extends AndroidViewModel {
         this.clickedPosition = clickedPosition;
     }
 
-
+    public Repository getRepository() {
+        return repository;
+    }
 }

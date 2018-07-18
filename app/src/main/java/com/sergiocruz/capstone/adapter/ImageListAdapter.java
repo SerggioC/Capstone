@@ -17,7 +17,7 @@ public class ImageListAdapter extends BaseAdapter {
     }
 
     @Override
-    protected Object getObjectForPosition(int position) {
+    protected String getObjectForPosition(int position) {
         return imagesList.get(position);
     }
 
@@ -26,6 +26,7 @@ public class ImageListAdapter extends BaseAdapter {
         return R.layout.image_item_layout;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);

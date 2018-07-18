@@ -5,8 +5,10 @@ import android.support.annotation.NonNull;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.sergiocruz.capstone.database.CommentsLiveData;
 import com.sergiocruz.capstone.database.TravelPackLiveData;
 import com.sergiocruz.capstone.database.UserLiveData;
+import com.sergiocruz.capstone.model.Comment;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 
@@ -18,6 +20,7 @@ public class FirebaseRepository {
     private static DatabaseReference databaseReference;
     private static TravelPackLiveData travelPacks;
     private static UserLiveData userLiveData;
+    private CommentsLiveData commentsLiveData;
 
     private FirebaseRepository() {
         firebaseDatabase.setPersistenceEnabled(true); // Enable Offline Capabilities of Firebase https://firebase.google.com/docs/database/android/offline-capabilities
@@ -53,6 +56,13 @@ public class FirebaseRepository {
             userLiveData = new UserLiveData(databaseReference);
         }
         return userLiveData;
+    }
+
+    public LiveData<List<Comment>> getCommentsForTravelID(String travelID) {
+        if (commentsLiveData == null) {
+            commentsLiveData = new CommentsLiveData(databaseReference, travelID);
+        }
+        return commentsLiveData;
     }
 
 //    @Deprecated

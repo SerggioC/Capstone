@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="spanCount">2</integer>
-    <integer name="detailImagesSpanCount">5</integer>
+    <integer name="detailImagesSpanCount">4</integer>
+    <integer name="maxLines">5</integer>
 </resources>

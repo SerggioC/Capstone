@@ -1,9 +1,7 @@
 package com.sergiocruz.capstone.view.fragment;
 
-import android.annotation.TargetApi;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -86,7 +84,6 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
         return binding.getRoot();
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     private void setupRecyclerView() {
         Boolean isTablet = getResources().getBoolean(R.bool.isTablet);
         if (isTablet) {
@@ -98,6 +95,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
         binding.travelsRecyclerView.setHasFixedSize(true);
         adapter = new TravelsAdapter(this, this);
+
         binding.travelsRecyclerView.setAdapter(adapter);
     }
 

@@ -9,6 +9,12 @@
         <variable
             name="comment"
             type="com.sergiocruz.capstone.model.Comment"/>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="currentUser"
+            type="java.lang.String"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -66,7 +72,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:textSize="14sp"
-            android:text="@{getFormattedDateString(comment.date)}"
+            app:date="@{comment.date}"
             app:layout_constraintBottom_toBottomOf="@+id/avatar"
             app:layout_constraintEnd_toEndOf="@+id/name"
             app:layout_constraintStart_toEndOf="@+id/avatar"
@@ -81,13 +87,27 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
-            android:textSize="12sp"
+            android:ellipsize="end"
+            android:maxLines="@integer/maxLines"
             android:text="@{comment.content}"
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/date"
-            tools:text="@string/lorem_ipsum_mini"/>
+            tools:text="@string/lorem_ipsum_small"/>
+
+        <TextView
+            android:id="@+id/edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/edit"
+
+            android:textColor="@color/colorBottomNavigationPrimaryDark"
+            android:visibility="@{currentUser.equals(comment.userID) ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/date"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </android.support.constraint.ConstraintLayout>
 </layout>

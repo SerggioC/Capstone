@@ -15,15 +15,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/item_margin"
-        android:elevation="2dp"
-        app:cardCornerRadius="@dimen/corner_radius">
+        app:cardCornerRadius="@dimen/corner_radius"
+        app:cardPreventCornerOverlap="true">
         <!-- 4:3 ratio -->
         <ImageView
             android:id="@+id/image_item"
-            android:layout_width="133dp"
+            android:layout_width="178dp"
             android:layout_height="100dp"
-            android:duplicateParentState="true"
+            android:layout_gravity="center"
             android:contentDescription="@string/photo_of_travel"
+            android:duplicateParentState="true"
             android:scaleType="centerCrop"
             app:errorDrawable="@{@drawable/travel_image}"
             app:imageUrl="@{object}"

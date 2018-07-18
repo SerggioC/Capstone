@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.sergiocruz.capstone.model.Comment;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 
@@ -47,6 +48,11 @@ public class Repository {
     @NonNull
     public LiveData<List<Travel>> getTravelPacks() {
         return remoteRepository.getTravelPacks();
+    }
+
+    @NonNull
+    public LiveData<List<Comment>> getCommentsForTravelID(String travelID) {
+        return remoteRepository.getCommentsForTravelID(travelID);
     }
 
 

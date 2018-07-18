@@ -12,6 +12,7 @@ import java.util.List;
 public class TravelsAdapter extends BaseAdapter {
     private List<Travel> travels;
 
+    @SuppressWarnings("unchecked")
     public TravelsAdapter(OnItemClickListener itemClickListener, OnItemTouchListener itemTouchListener) {
         super(itemClickListener, itemTouchListener);
     }
@@ -21,6 +22,7 @@ public class TravelsAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);

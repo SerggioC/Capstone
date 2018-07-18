@@ -7,35 +7,44 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.CommentsListItemBinding;
 import com.sergiocruz.capstone.model.Comment;
 
-public class FirebaseCommentsAdapter extends FirebaseRecyclerAdapter<Comment, FirebaseCommentsAdapter.CommentViewHolder> {
-    private String currrentUser;
+import java.util.List;
 
-    public FirebaseCommentsAdapter(@NonNull FirebaseRecyclerOptions<Comment> options, String currentUser) {
-        super(options);
-        this.currrentUser = currentUser;
+public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.CommentViewHolder> {
+    private String currentUserID;
+    private List<Comment> commentList;
+
+    public CommentsAdapter(String currentUserID) {
+        this.currentUserID = currentUserID;
+    }
+
+    public void swapData(List<Comment> commentList) {
+        this.commentList = commentList;
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public FirebaseCommentsAdapter.CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         CommentsListItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.comments_list_item, parent, false);
         return new CommentViewHolder(binding);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull CommentViewHolder holder, int position, @NonNull Comment comment) {
-//        Comment comment = snapshot.getValue(Comment.class);
-        holder.bind(comment);
+    public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
+        holder.bind(commentList.get(position));
     }
 
-    class CommentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    @Override
+    public int getItemCount() {
+        return commentList == null ? 0 : commentList.size();
+    }
+
+    class CommentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final CommentsListItemBinding binding;
 
         CommentViewHolder(CommentsListItemBinding binding) {
@@ -46,16 +55,16 @@ public class FirebaseCommentsAdapter extends FirebaseRecyclerAdapter<Comment, Fi
 
         void bind(Comment comment) {
             binding.setComment(comment);
-            binding.setCurrentUser(currrentUser);
+            binding.setCurrentUser(currentUserID);
         }
 
         @Override
         public void onClick(View v) {
             int maxLines = binding.comment.getMaxLines();
             int maxLinesRes = v.getContext().getResources().getInteger(R.integer.maxLines);
-            maxLines = maxLines < Integer.MAX_VALUE ? maxLinesRes : Integer.MAX_VALUE;
+            maxLines = maxLines < Integer.MAX_VALUE ? Integer.MAX_VALUE : maxLinesRes;
             binding.comment.setMaxLines(maxLines);
         }
     }
-
 }
+

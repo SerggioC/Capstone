@@ -14,19 +14,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.adapter.BaseAdapter;
-import com.sergiocruz.capstone.adapter.FirebaseCommentsAdapter;
+import com.sergiocruz.capstone.adapter.CommentsAdapter;
 import com.sergiocruz.capstone.adapter.ImageListAdapter;
 import com.sergiocruz.capstone.databinding.FragmentTravelDetailsBinding;
 import com.sergiocruz.capstone.model.Comment;
 import com.sergiocruz.capstone.model.Travel;
+import com.sergiocruz.capstone.repository.FirebaseRepository;
 import com.sergiocruz.capstone.util.Utils;
+import com.sergiocruz.capstone.viewmodel.CommentsViewModel;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
+
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -37,6 +37,8 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
     private String someID;
     private MainViewModel viewModel;
     private Travel selectedTravel;
+    private CommentsViewModel commentsViewModel;
+    private CommentsAdapter commentsAdapter;
 
     public TravelDetailsFragment() {
         // Required empty public constructor
@@ -64,32 +66,38 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
         setupToolbar();
 
-        setupImagesRecyclerView();
+        commentsViewModel = ViewModelProviders.of(this).get(CommentsViewModel.class);
+
+        commentsViewModel.setRepository(viewModel.getRepository());
+        commentsViewModel.getCommentsForTravelID(selectedTravel.getID()).observe(this, this::populateComentsReecyclerView);
 
         setupCommentsRecyclerView();
+
+        setupImagesRecyclerView();
 
         return binding.getRoot();
     }
 
+    private void populateComentsReecyclerView(List<Comment> commentList) {
+        commentsAdapter.swapData(commentList);
+    }
+
     private void setupCommentsRecyclerView() {
 
-        Query query = FirebaseDatabase.getInstance()
-                .getReference()
-                .child("travel-pack-comments")
-                .child(selectedTravel.getID())
-                .limitToLast(10);
+        FirebaseRepository firebaseRepository = FirebaseRepository.getInstance();
+        String currentUserID = firebaseRepository.getUser().getValue().getUserID();
 
-        FirebaseRecyclerOptions<Comment> firebaseRecyclerOptions =
-                new FirebaseRecyclerOptions.Builder<Comment>()
-                        .setQuery(query, Comment.class)
-                        .setLifecycleOwner(this)
-                        .build();
-
-        FirebaseRecyclerAdapter adapter = new FirebaseCommentsAdapter(firebaseRecyclerOptions);
+        commentsAdapter = new CommentsAdapter(currentUserID);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         binding.commentsRecyclerView.setLayoutManager(layoutManager);
-        binding.commentsRecyclerView.setAdapter(adapter);
+        binding.commentsRecyclerView.setAdapter(commentsAdapter);
+
+        commentsViewModel.getCommentsForTravelID(selectedTravel.getID());
     }
+
+
+
+
 
     private void setupToolbar() {
         // Show Options menu
@@ -104,13 +112,14 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         int spanCount = getResources().getInteger(R.integer.detailImagesSpanCount);
         binding.imagesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
         binding.imagesRecyclerView.setHasFixedSize(true);
+        //binding.imagesRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         ImageListAdapter adapter = new ImageListAdapter(selectedTravel.getImages(), this, this);
         binding.imagesRecyclerView.setAdapter(adapter);
     }
 
     @Override
     public void onItemClick(String url, View view,  Integer position) {
-        Toast.makeText(getContext(), "Clicked " + url + " position = " + position, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Clicked position = " + position, Toast.LENGTH_LONG).show();
     }
 
     @Override

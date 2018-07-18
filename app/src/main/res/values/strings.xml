@@ -59,5 +59,6 @@
     <string name="account">Account</string>
     <string name="communicate">Communicate</string>
     <string name="go_back">Go to previous screen</string>
+    <string name="edit">edit</string>
 
 </resources>

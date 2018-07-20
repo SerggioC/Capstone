@@ -29,4 +29,7 @@ public class CommentsViewModel extends AndroidViewModel {
             commentListLiveData = repository.getCommentsForTravelID(travelID);
         return commentListLiveData;
     }
+
+
+
 }

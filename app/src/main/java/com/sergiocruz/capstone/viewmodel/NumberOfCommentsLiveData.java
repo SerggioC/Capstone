@@ -15,18 +15,18 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class CommentsLiveData extends LiveData<List<Comment>> {
-    private static final String NODE_REFERENCE = "travel-pack-comments";
+public class NumberOfCommentsLiveData extends LiveData<List<Comment>> {
+    private static final String NODE_REFERENCE = "travel-packs";
     private final Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
 
-    public CommentsLiveData(Query query) {
+    public NumberOfCommentsLiveData(Query query) {
         this.query = query;
     }
 
-    public CommentsLiveData(DatabaseReference databaseReference, String travelID) {
+    public NumberOfCommentsLiveData(DatabaseReference databaseReference, String travelID) {
         databaseReference = databaseReference.child(NODE_REFERENCE).child(travelID);
-        this.query = databaseReference; // .limitToLast(10);
+        this.query = databaseReference.limitToLast(10);
     }
 
     @Override

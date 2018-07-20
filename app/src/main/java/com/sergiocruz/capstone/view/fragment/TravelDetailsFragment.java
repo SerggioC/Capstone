@@ -67,38 +67,23 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
         commentsViewModel = ViewModelProviders.of(this).get(CommentsViewModel.class);
         commentsViewModel.setRepository(viewModel.getRepository());
-        commentsViewModel.getCommentsForTravelID(selectedTravel.getID()).observe(this, this::populateComentsReecyclerView);
+        commentsViewModel.getCommentsForTravelID(selectedTravel.getID()).observe(this, this::populateCommentsRecyclerView);
 
         setupCommentsRecyclerView();
 
         setupImagesRecyclerView();
 
-        binding.writeComment.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (viewModel.getUser().getValue().getIsAnonymous()) {
-                    Utils.showSlimToast(getContext(), getString(R.string.sign_in_to_comment), Toast.LENGTH_LONG);
-                    return;
-                }
-                BottomSheetCommentDialog commentDialog = new BottomSheetCommentDialog();
-                String travelID = selectedTravel.getID();
-                commentDialog.setTravelID(travelID);
-                commentDialog.show(getActivity().getSupportFragmentManager(), BottomSheetCommentDialog.class.getSimpleName());
-            }
-        });
+        binding.writeComment.setOnClickListener(this::onClickToComment);
 
 
         return binding.getRoot();
     }
 
-    private void populateComentsReecyclerView(List<Comment> commentList) {
+    private void populateCommentsRecyclerView(List<Comment> commentList) {
         commentsAdapter.swapData(commentList);
     }
 
     private void setupCommentsRecyclerView() {
-//        FirebaseRepository firebaseRepository = FirebaseRepository.getInstance();
-//        String currentUserID = firebaseRepository.getUser().getValue().getUserID();
         String currentUserID = viewModel.getUser().getValue().getUserID();
 
         commentsAdapter = new CommentsAdapter(currentUserID);
@@ -107,8 +92,6 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         binding.commentsRecyclerView.setAdapter(commentsAdapter);
 
     }
-
-
 
     private void setupToolbar() {
         // Show Options menu
@@ -130,6 +113,17 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
     @Override
     public void onItemClick(String url, View view,  Integer position) {
         Toast.makeText(getContext(), "Clicked position = " + position, Toast.LENGTH_LONG).show();
+    }
+
+    private void onClickToComment(View v) {
+        if (viewModel.getUser().getValue().getIsAnonymous()) {
+            Utils.showSlimToast(getContext(), getString(R.string.sign_in_to_comment), Toast.LENGTH_LONG);
+            return;
+        }
+        BottomSheetCommentDialog commentDialog = new BottomSheetCommentDialog();
+        String travelID = selectedTravel.getID();
+        commentDialog.setTravelID(travelID);
+        commentDialog.show(getActivity().getSupportFragmentManager(), BottomSheetCommentDialog.class.getSimpleName());
     }
 
     @Override
@@ -171,7 +165,6 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         }
         return false;
     }
-
 
 
 }

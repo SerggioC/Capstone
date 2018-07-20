@@ -26,6 +26,8 @@ import com.sergiocruz.capstone.util.AppExecutors;
 import com.sergiocruz.capstone.util.Utils;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
+import java.text.DecimalFormat;
+
 public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
     public static final String RATING_KEY = "RATING_KEY";
     public static final String MESSAGE_KEY = "MESSAGE_KEY";
@@ -40,19 +42,22 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
 
     private void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
 
-        String message = Math.round(rating) + " " +
+        DecimalFormat decimalFormat = new DecimalFormat("0.#");
+        String message = decimalFormat.format(rating) + " " +
                 getResources().getQuantityString(R.plurals.stars, Math.round(rating)) + "\n";
 
-        if (rating <= 1) {
+        if (rating <= 1) { // 0; 0.5; 1
             message += "We are sad! \uD83D\uDE25";
-        } else if (rating > 1 && rating <= 2){
+        } else if (rating > 1 && rating <= 2) { // 1.5; 2
             message += "Just two stars? \uD83D\uDE15";
-        } else if (rating > 2 && rating <= 3) {
+        } else if (rating == 2.5) {
+            message += "OK \uD83D\uDE05";
+        } else if (rating == 3) {
             message += "Good! \uD83D\uDC4D";
-        } else if (rating == 4) {
+        } else if (rating > 3 && rating <= 4) { // 3.5; 4
             message += "Great!! \uD83D\uDE03";
-        } else if (rating > 4){
-            message += "\uD83C\uDF1F Awesome!! \uD83E\uDD29 \uD83D\uDE0D";
+        } else if (rating > 4) { // 4.5; 5
+            message += "\uD83C\uDF1F Awesome!! \uD83C\uDF1F \uD83D\uDE0D";
         }
 
         Utils.showSlimToast(getContext(), message, Toast.LENGTH_SHORT);
@@ -73,7 +78,6 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.item_bottomsheet_comment_layout, container, false);
-        binding.ratingBar.setOnRatingBarChangeListener(this::onRatingChanged);
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(RATING_KEY))
@@ -84,6 +88,8 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
 
         getBackedUpComment();
+
+        binding.ratingBar.setOnRatingBarChangeListener(this::onRatingChanged);
 
         binding.sendButton.setOnClickListener(v -> {
             if (!validateData()) return;
@@ -135,7 +141,7 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         String currentUserID = user.getUserID();
 
         return new Comment(
-                travelID + currentUserID, /* custom unique key for Room ignored for Firebase*/
+                travelID + currentUserID, /* custom unique key for Room, ignored for Firebase*/
                 currentUserID,
                 travelID,
                 commentText,

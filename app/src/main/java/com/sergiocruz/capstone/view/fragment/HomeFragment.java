@@ -117,7 +117,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
             message = getString(R.string.logged_in) + " " + getString(R.string.as) + " " + user.getUserName();
             userID = user.getUserID();
         }
-        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+        Utils.showSlimToast(getContext(), message, Toast.LENGTH_SHORT);
     }
 
     @Override

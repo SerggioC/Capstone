@@ -2,25 +2,33 @@ package com.sergiocruz.capstone.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.sergiocruz.capstone.database.CommentsLiveData;
-import com.sergiocruz.capstone.database.TravelPackLiveData;
-import com.sergiocruz.capstone.database.UserLiveData;
+import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.model.Comment;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
+import com.sergiocruz.capstone.viewmodel.CommentsLiveData;
+import com.sergiocruz.capstone.viewmodel.TravelPackLiveData;
+import com.sergiocruz.capstone.viewmodel.UserLiveData;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class FirebaseRepository {
+    public static final String USERS_REF = "users";
+    public static  final String TRAVEL_PACKS_REF = "travel-packs";
+    public static final String TRAVEL_PACK_COMMENTS_REF = "travel-pack-comments";
     private static FirebaseRepository sInstance;
     private static FirebaseDatabase firebaseDatabase;
     private static DatabaseReference databaseReference;
     private static TravelPackLiveData travelPacks;
     private static UserLiveData userLiveData;
-    private CommentsLiveData commentsLiveData;
 
     private FirebaseRepository() {
         firebaseDatabase.setPersistenceEnabled(true); // Enable Offline Capabilities of Firebase https://firebase.google.com/docs/database/android/offline-capabilities
@@ -59,10 +67,46 @@ public class FirebaseRepository {
     }
 
     public LiveData<List<Comment>> getCommentsForTravelID(String travelID) {
-        if (commentsLiveData == null) {
-            commentsLiveData = new CommentsLiveData(databaseReference, travelID);
-        }
-        return commentsLiveData;
+        return new CommentsLiveData(databaseReference, travelID);
+    }
+//
+//    travel-pack-comments
+//            pack_0
+//              Comment ID
+//                  user ID1
+
+    public void sendComment(Comment comment) {
+
+        final DatabaseReference referenceForTravelID = databaseReference
+                .child(TRAVEL_PACK_COMMENTS_REF)
+                .child(comment.getTravelID());
+
+        referenceForTravelID
+                .push()
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String commentID = dataSnapshot.getKey();
+                comment.setCommentID(commentID);
+                referenceForTravelID
+                        .child(commentID)
+                        .child(comment.getUserID())
+                        .setValue(comment,new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                        Timber.i("Completed");
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
 //    @Deprecated

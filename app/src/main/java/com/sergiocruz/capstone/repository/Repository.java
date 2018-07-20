@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.sergiocruz.capstone.database.DatabaseDAO;
 import com.sergiocruz.capstone.model.Comment;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
@@ -13,11 +14,11 @@ import java.util.List;
 public class Repository {
     private static Repository sInstance;
     private FirebaseRepository remoteRepository;
-    private LocalRepository localRepository;
+    private DatabaseDAO localRepositoryDAO;
 
-    private Repository(FirebaseRepository remoteRepository, LocalRepository localRepository) {
+    private Repository(FirebaseRepository remoteRepository, DatabaseDAO localRepositoryDAO) {
         this.remoteRepository = remoteRepository;
-        this.localRepository = localRepository;
+        this.localRepositoryDAO = localRepositoryDAO;
     }
 
     // Broken multithreaded version
@@ -26,7 +27,7 @@ public class Repository {
         if (sInstance == null) {
             synchronized (Repository.class) {
                 if (sInstance == null) {
-                    sInstance = new Repository(FirebaseRepository.getInstance(), LocalRepository.getInstance(applicationContext));
+                    sInstance = new Repository(FirebaseRepository.getInstance(), LocalRepository.getInstance(applicationContext).getDatabaseDAO());
                 }
             }
         }
@@ -37,8 +38,8 @@ public class Repository {
         return remoteRepository;
     }
 
-    public LocalRepository getLocalRepository() {
-        return localRepository;
+    public DatabaseDAO getLocalRepositoryDAO() {
+        return localRepositoryDAO;
     }
 
     public LiveData<User> getUser() {
@@ -55,5 +56,16 @@ public class Repository {
         return remoteRepository.getCommentsForTravelID(travelID);
     }
 
+    public Comment getBackedUpCommentByID(String commentID) {
+        return localRepositoryDAO.getCommentByID(commentID);
+    }
+
+    public void backUpComment(Comment comment) {
+        localRepositoryDAO.saveComment(comment);
+    }
+
+    public void deleteBackedUpComment(String commentID) {
+        localRepositoryDAO.deleteCommentByID(commentID);
+    }
 
 }

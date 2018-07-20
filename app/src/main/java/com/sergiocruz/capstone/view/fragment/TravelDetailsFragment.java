@@ -21,7 +21,6 @@ import com.sergiocruz.capstone.adapter.ImageListAdapter;
 import com.sergiocruz.capstone.databinding.FragmentTravelDetailsBinding;
 import com.sergiocruz.capstone.model.Comment;
 import com.sergiocruz.capstone.model.Travel;
-import com.sergiocruz.capstone.repository.FirebaseRepository;
 import com.sergiocruz.capstone.util.Utils;
 import com.sergiocruz.capstone.viewmodel.CommentsViewModel;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
@@ -67,7 +66,6 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         setupToolbar();
 
         commentsViewModel = ViewModelProviders.of(this).get(CommentsViewModel.class);
-
         commentsViewModel.setRepository(viewModel.getRepository());
         commentsViewModel.getCommentsForTravelID(selectedTravel.getID()).observe(this, this::populateComentsReecyclerView);
 
@@ -79,7 +77,14 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
             @Override
             public void onClick(View v) {
-                new BottomSheetCommentDialog().show(getActivity().getSupportFragmentManager(), BottomSheetCommentDialog.class.getSimpleName());
+                if (viewModel.getUser().getValue().getIsAnonymous()) {
+                    Utils.showSlimToast(getContext(), getString(R.string.sign_in_to_comment), Toast.LENGTH_LONG);
+                    return;
+                }
+                BottomSheetCommentDialog commentDialog = new BottomSheetCommentDialog();
+                String travelID = selectedTravel.getID();
+                commentDialog.setTravelID(travelID);
+                commentDialog.show(getActivity().getSupportFragmentManager(), BottomSheetCommentDialog.class.getSimpleName());
             }
         });
 
@@ -92,19 +97,16 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
     }
 
     private void setupCommentsRecyclerView() {
-
-        FirebaseRepository firebaseRepository = FirebaseRepository.getInstance();
-        String currentUserID = firebaseRepository.getUser().getValue().getUserID();
+//        FirebaseRepository firebaseRepository = FirebaseRepository.getInstance();
+//        String currentUserID = firebaseRepository.getUser().getValue().getUserID();
+        String currentUserID = viewModel.getUser().getValue().getUserID();
 
         commentsAdapter = new CommentsAdapter(currentUserID);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         binding.commentsRecyclerView.setLayoutManager(layoutManager);
         binding.commentsRecyclerView.setAdapter(commentsAdapter);
 
-        commentsViewModel.getCommentsForTravelID(selectedTravel.getID());
     }
-
-
 
 
 

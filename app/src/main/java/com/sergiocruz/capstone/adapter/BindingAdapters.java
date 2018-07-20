@@ -57,6 +57,7 @@ public class BindingAdapters {
 
     }
 
+    // Set formatted date to textView
     @BindingAdapter("date")
     public static void setDate(TextView textView, Long dateMillis) {
         textView.setText(getFormattedDateString(dateMillis));
@@ -67,5 +68,6 @@ public class BindingAdapters {
 //    public static void setVisibility(View view, Boolean value) {
 //        view.setVisibility(value ? View.VISIBLE : View.GONE);
 //    }
+
 
 }

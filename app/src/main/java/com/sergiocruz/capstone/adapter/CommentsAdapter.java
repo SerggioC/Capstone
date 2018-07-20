@@ -13,6 +13,8 @@ import com.sergiocruz.capstone.model.Comment;
 
 import java.util.List;
 
+;
+
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.CommentViewHolder> {
     private String currentUserID;
     private List<Comment> commentList;

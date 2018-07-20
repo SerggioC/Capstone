@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<plurals name="stars">
+    <item quantity="one">Star</item>
+    <item quantity="other">Stars</item>
+</plurals>
+</resources>

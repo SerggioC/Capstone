@@ -58,7 +58,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
             android:progressTint="@color/colorAccent"
-            android:rating="@{comment.stars}"
+            android:rating="@{safeUnbox(comment.stars)}"
             android:stepSize="0.1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -103,7 +103,6 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="@string/edit"
-
             android:textColor="@color/colorBottomNavigationPrimaryDark"
             android:visibility="@{currentUser.equals(comment.userID) ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@+id/date"

@@ -128,8 +128,6 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
     @Override
     public void onItemClick(Travel travel, View view, Integer position) {
-        Toast.makeText(getContext(), "Clicked " + travel.getCountry(), Toast.LENGTH_LONG).show();
-
         viewModel.setClickedPosition(position);
         viewModel.setSelectedTravel(travel);
 

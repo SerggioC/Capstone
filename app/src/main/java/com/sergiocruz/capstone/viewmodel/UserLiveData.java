@@ -1,4 +1,4 @@
-package com.sergiocruz.capstone.database;
+package com.sergiocruz.capstone.viewmodel;
 
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
@@ -13,6 +13,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.model.User;
 
 import timber.log.Timber;
+
+import static com.sergiocruz.capstone.repository.FirebaseRepository.USERS_REF;
 
 public class UserLiveData extends LiveData<User> {
     private Query query;
@@ -56,7 +58,7 @@ public class UserLiveData extends LiveData<User> {
     private String getUserDBRefString(@NonNull FirebaseAuth firebaseAuth) {
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         String firebaseUserUid = currentUser == null ? null : currentUser.getUid();
-        return "users/" + firebaseUserUid + "/";
+        return USERS_REF + "/" + firebaseUserUid + "/";
     }
 
     @Override

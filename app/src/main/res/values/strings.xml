@@ -60,8 +60,14 @@
     <string name="communicate">Communicate</string>
     <string name="go_back">Go to previous screen</string>
     <string name="edit">edit</string>
-    <string name="write_comment">Write your comment</string>
+    <string name="write_your_comment">Write your comment</string>
     <string name="send">Send</string>
     <string name="your_rating">Your rating:</string>
+    <string name="comments">Comments</string>
+    <string name="write_comment">Write Comment</string>
+    <string name="empty_message">Empty message</string>
+    <string name="sign_in_to_comment">Please sign In to comment</string>
+    <string name="stars">Stars!</string>
+    <string name="rating_required">Your rating is required</string>
 
 </resources>

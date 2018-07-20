@@ -9,9 +9,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
 import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sergiocruz.capstone.R;
 
@@ -87,4 +91,16 @@ public class Utils {
         animatorSet.setTarget(view);
         animatorSet.start();
     }
+
+    public static void showSlimToast(Context context, String toastText, int duration) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        TextView layout = (TextView) inflater.inflate(R.layout.slim_toast_layout, null);
+        layout.setText(toastText);
+        Toast toast = new Toast(context);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.setDuration(duration);
+        toast.setView(layout);
+        toast.show();
+    }
+
 }

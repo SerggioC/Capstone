@@ -6,10 +6,11 @@ import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 
+import com.sergiocruz.capstone.model.Comment;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 
-@Database(entities = {User.class, Travel.class}, version = 1, exportSchema = false)
+@Database(entities = {User.class, Travel.class, Comment.class}, version = 1, exportSchema = false)
 @TypeConverters({DateConverter.class, StringListConverter.class})
 public abstract class LocalDatabase extends RoomDatabase {
     private static final Object LOCK = new Object();

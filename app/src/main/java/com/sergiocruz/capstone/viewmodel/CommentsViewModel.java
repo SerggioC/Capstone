@@ -10,9 +10,13 @@ import com.sergiocruz.capstone.repository.Repository;
 
 import java.util.List;
 
-public class CommentsViewModel extends AndroidViewModel{
+public class CommentsViewModel extends AndroidViewModel {
     private Repository repository;
     private LiveData<List<Comment>> commentListLiveData;
+
+    public CommentsViewModel(@NonNull Application application) {
+        super(application);
+    }
 
     public void setRepository(Repository repository) {
         if (this.repository == null) {
@@ -20,11 +24,9 @@ public class CommentsViewModel extends AndroidViewModel{
         }
     }
 
-    public CommentsViewModel(@NonNull Application application) {
-        super(application);
-    }
-
     public LiveData<List<Comment>> getCommentsForTravelID(String travelID) {
-        return commentListLiveData == null ? repository.getCommentsForTravelID(travelID) : commentListLiveData;
+        if (commentListLiveData == null)
+            commentListLiveData = repository.getCommentsForTravelID(travelID);
+        return commentListLiveData;
     }
 }

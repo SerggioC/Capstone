@@ -1,4 +1,4 @@
-package com.sergiocruz.capstone.database;
+package com.sergiocruz.capstone.viewmodel;
 
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
@@ -8,24 +8,24 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.sergiocruz.capstone.model.Travel;
+import com.sergiocruz.capstone.model.Comment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import timber.log.Timber;
 
-public class TravelPackLiveData extends LiveData<List<Travel>> {
+public class CommentsLiveData extends LiveData<List<Comment>> {
+    private static final String NODE_REFERENCE = "travel-pack-comments";
     private final Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
 
-    public TravelPackLiveData(Query query) {
+    public CommentsLiveData(Query query) {
         this.query = query;
     }
 
-    public TravelPackLiveData(DatabaseReference databaseReference) {
-        String TRAVEL_PACKS_REF = "travel-packs";
-        databaseReference = databaseReference.child(TRAVEL_PACKS_REF);
+    public CommentsLiveData(DatabaseReference databaseReference, String travelID) {
+        databaseReference = databaseReference.child(NODE_REFERENCE).child(travelID);
         this.query = databaseReference;
     }
 
@@ -44,14 +44,18 @@ public class TravelPackLiveData extends LiveData<List<Travel>> {
     private class MyValueEventListener implements ValueEventListener {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            List<Travel> travelList = new ArrayList<>();
+            List<Comment> commentList = new ArrayList<>();
             if (dataSnapshot.hasChildren()) {
                 for (DataSnapshot snapshotChild : dataSnapshot.getChildren()) {
-                    Travel travel = snapshotChild.getValue(Travel.class);
-                    travelList.add(travel);
+                    DataSnapshot next = snapshotChild.getChildren().iterator().next();
+                    commentList.add(next.getValue(Comment.class));
+
+//                    Comment comment = value.getValue(Comment.class);
+//                    commentList.add(comment);
+
                 }
             }
-            setValue(travelList);
+            setValue(commentList);
         }
 
         @Override

@@ -1,18 +1,30 @@
 package com.sergiocruz.capstone.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
+@Entity
 public class Comment {
+
+    @NonNull
+    @PrimaryKey
     private String commentID;
     private String userID;
+    private String travelID;
     private String content;
     private Long date;
-    private int stars;
+    private Float stars;
     private String userName;
     private String userImage;
 
+    @Ignore
     public Comment() {
     }
 
-    public Comment(String commentID, String userID, String content, Long date, int stars, String userName, String userImage) {
+    @Ignore
+    public Comment(String commentID, String userID, String content, Long date, Float stars, String userName, String userImage) {
         this.commentID = commentID;
         this.userID = userID;
         this.content = content;
@@ -20,6 +32,25 @@ public class Comment {
         this.stars = stars;
         this.userName = userName;
         this.userImage = userImage;
+    }
+
+    public Comment(String commentID, String userID, String travelID, String content, Long date, Float stars, String userName, String userImage) {
+        this.commentID = commentID;
+        this.userID = userID;
+        this.travelID = travelID;
+        this.content = content;
+        this.date = date;
+        this.stars = stars;
+        this.userName = userName;
+        this.userImage = userImage;
+    }
+
+    public String getTravelID() {
+        return travelID;
+    }
+
+    public void setTravelID(String travelID) {
+        this.travelID = travelID;
     }
 
     public String getUserImage() {
@@ -70,11 +101,11 @@ public class Comment {
         this.date = date;
     }
 
-    public int getStars() {
+    public Float getStars() {
         return stars;
     }
 
-    public void setStars(int stars) {
+    public void setStars(Float stars) {
         this.stars = stars;
     }
 }

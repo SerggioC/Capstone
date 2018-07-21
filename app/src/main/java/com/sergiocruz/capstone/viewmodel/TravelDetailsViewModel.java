@@ -6,8 +6,8 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
 import com.sergiocruz.capstone.model.Comment;
+import com.sergiocruz.capstone.model.Star;
 import com.sergiocruz.capstone.model.Travel;
-import com.sergiocruz.capstone.model.TravelStars;
 import com.sergiocruz.capstone.repository.Repository;
 
 import java.util.List;
@@ -17,6 +17,7 @@ public class TravelDetailsViewModel extends AndroidViewModel {
     private LiveData<List<Comment>> commentListLiveData;
     private LiveData<Long> numComments;
     private Travel travel;
+    private LiveData<Star> travelStarsLiveData;
 
     public TravelDetailsViewModel(@NonNull Application application) {
         super(application);
@@ -42,11 +43,11 @@ public class TravelDetailsViewModel extends AndroidViewModel {
         return travel;
     }
 
-
-
-    public TravelStars getTravelStars() {
-
-        return new TravelStars(3f, 101L, "a", "b");
+    public LiveData<Star> getTravelStar() {
+        if (travelStarsLiveData == null) {
+            travelStarsLiveData = repository.getTravelStarsForTravelID(getTravel().getID());
+        }
+        return travelStarsLiveData;
     }
 
     public LiveData<Long> getNumComments() {

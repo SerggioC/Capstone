@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.sergiocruz.capstone.database.DatabaseDAO;
 import com.sergiocruz.capstone.model.Comment;
+import com.sergiocruz.capstone.model.Star;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 
@@ -73,4 +74,7 @@ public class Repository {
         localRepositoryDAO.deleteCommentByID(commentID);
     }
 
+    public LiveData<Star> getTravelStarsForTravelID(String travelID) {
+        return remoteRepository.getTravelStarsForTravelID(travelID);
+    }
 }

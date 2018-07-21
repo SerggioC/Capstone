@@ -40,34 +40,6 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         super();
     }
 
-    private void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-
-        DecimalFormat decimalFormat = new DecimalFormat("0.#");
-        String message = decimalFormat.format(rating) + " " +
-                getResources().getQuantityString(R.plurals.stars, Math.round(rating)) + "\n";
-
-        if (rating <= 1) { // 0; 0.5; 1
-            message += "We are sad! \uD83D\uDE25";
-        } else if (rating > 1 && rating <= 2) { // 1.5; 2
-            message += "Just two stars? \uD83D\uDE15";
-        } else if (rating == 2.5) {
-            message += "OK \uD83D\uDE05";
-        } else if (rating == 3) {
-            message += "Good! \uD83D\uDC4D";
-        } else if (rating > 3 && rating <= 4) { // 3.5; 4
-            message += "Great!! \uD83D\uDE03";
-        } else if (rating > 4) { // 4.5; 5
-            message += "\uD83C\uDF1F Awesome!! \uD83C\uDF1F \uD83D\uDE0D";
-        }
-
-        Utils.showSlimToast(getContext(), message, Toast.LENGTH_SHORT);
-        if (rating > 0) {
-            binding.ratingTextview.setText(getString(R.string.your_rating));
-        } else {
-            binding.ratingTextview.setText(getString(R.string.rating_required));
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -101,6 +73,34 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         });
 
         return binding.getRoot();
+    }
+
+    private void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+
+        DecimalFormat decimalFormat = new DecimalFormat("0.#");
+        String message = decimalFormat.format(rating) + " " +
+                getResources().getQuantityString(R.plurals.stars, Math.round(rating)) + "\n";
+
+        if (rating <= 1) { // 0; 0.5; 1
+            message += "We are sad! \uD83D\uDE25";
+        } else if (rating > 1 && rating <= 2) { // 1.5; 2
+            message += "Just two stars? \uD83D\uDE15";
+        } else if (rating == 2.5) {
+            message += "OK \uD83D\uDE05";
+        } else if (rating == 3) {
+            message += "Good! \uD83D\uDC4D";
+        } else if (rating > 3 && rating <= 4) { // 3.5; 4
+            message += "Great!! \uD83D\uDE03";
+        } else if (rating > 4) { // 4.5; 5
+            message += "\uD83C\uDF1F Awesome!! \uD83C\uDF1F \uD83D\uDE0D";
+        }
+
+        Utils.showSlimToast(getContext(), message, Toast.LENGTH_SHORT);
+        if (rating > 0) {
+            binding.ratingTextview.setText(getString(R.string.your_rating));
+        } else {
+            binding.ratingTextview.setText(getString(R.string.rating_required));
+        }
     }
 
     private void clearUIDataAndExit() {

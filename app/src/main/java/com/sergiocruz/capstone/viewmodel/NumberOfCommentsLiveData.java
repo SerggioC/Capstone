@@ -8,15 +8,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.sergiocruz.capstone.model.Comment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import timber.log.Timber;
 
-public class NumberOfCommentsLiveData extends LiveData<List<Comment>> {
-    private static final String NODE_REFERENCE = "travel-packs";
+public class NumberOfCommentsLiveData extends LiveData<Long> {
+    private static final String NODE_REFERENCE = "travel-pack-comments";
     private final Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
 
@@ -26,7 +22,7 @@ public class NumberOfCommentsLiveData extends LiveData<List<Comment>> {
 
     public NumberOfCommentsLiveData(DatabaseReference databaseReference, String travelID) {
         databaseReference = databaseReference.child(NODE_REFERENCE).child(travelID);
-        this.query = databaseReference.limitToLast(10);
+        this.query = databaseReference;
     }
 
     @Override
@@ -44,22 +40,15 @@ public class NumberOfCommentsLiveData extends LiveData<List<Comment>> {
     private class MyValueEventListener implements ValueEventListener {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            List<Comment> commentList = new ArrayList<>();
+            Long commentCount = 0L;
             if (dataSnapshot.hasChildren()) {
-                for (DataSnapshot snapshotChild : dataSnapshot.getChildren()) {
-                    DataSnapshot next = snapshotChild.getChildren().iterator().next();
-                    commentList.add(next.getValue(Comment.class));
-
-//                    Comment comment = value.getValue(Comment.class);
-//                    commentList.add(comment);
-
-                }
+                commentCount = dataSnapshot.getChildrenCount();
             }
-            setValue(commentList);
+            setValue(commentCount);
         }
 
         @Override
-        public void onCancelled(DatabaseError databaseError) {
+        public void onCancelled(@NonNull DatabaseError databaseError) {
             Timber.e("Can't listen to query " + query + databaseError.toException());
         }
     }

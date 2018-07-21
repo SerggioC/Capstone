@@ -22,8 +22,8 @@ import com.sergiocruz.capstone.databinding.FragmentTravelDetailsBinding;
 import com.sergiocruz.capstone.model.Comment;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.util.Utils;
-import com.sergiocruz.capstone.viewmodel.TravelDetailsViewModel;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
+import com.sergiocruz.capstone.viewmodel.TravelDetailsViewModel;
 
 import java.util.List;
 
@@ -66,9 +66,9 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         setupToolbar();
 
         detailsViewModel = ViewModelProviders.of(this).get(TravelDetailsViewModel.class);
-        detailsViewModel.setRepository(viewModel.getRepository());
-        detailsViewModel.setTravel(selectedTravel);
-        detailsViewModel.getCommentsForTravelID(selectedTravel.getID()).observe(this, this::populateCommentsRecyclerView);
+        detailsViewModel.setRepository(viewModel.getRepository());  // init vars
+        detailsViewModel.setTravel(selectedTravel);                 // init vars
+        detailsViewModel.getCommentsForTravelID().observe(this, this::populateCommentsRecyclerView);
 
         binding.setViewModel(detailsViewModel);
 

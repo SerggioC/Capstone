@@ -13,6 +13,7 @@ import com.sergiocruz.capstone.model.Comment;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.viewmodel.CommentsLiveData;
+import com.sergiocruz.capstone.viewmodel.NumberOfCommentsLiveData;
 import com.sergiocruz.capstone.viewmodel.TravelPacksLiveData;
 import com.sergiocruz.capstone.viewmodel.UserLiveData;
 
@@ -111,7 +112,7 @@ public class FirebaseRepository {
                 });
     }
 
-    private void updateTravelPack(DatabaseReference referenceForTravelID, Comment comment) {
+    private void updateTravelPack(DatabaseReference referenceForTravelID, Comment comment) { // TODO redo writing on admin node...
         // Update Number of comments, Number of stars and rating
         // in travel pack ID
         referenceForTravelID
@@ -151,6 +152,10 @@ public class FirebaseRepository {
 
                     }
                 });
+    }
+
+    public LiveData<Long> getNumCommentsForTravelID(String travelID) {
+        return new NumberOfCommentsLiveData(databaseReference, travelID);
     }
 
 //    @Deprecated

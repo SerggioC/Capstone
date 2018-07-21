@@ -47,12 +47,8 @@ public class CommentsLiveData extends LiveData<List<Comment>> {
             List<Comment> commentList = new ArrayList<>();
             if (dataSnapshot.hasChildren()) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    //DataSnapshot next = snapshot.getChildren().iterator().next(); // get to next child
-                    commentList.add(snapshot.getValue(Comment.class));
-
-//                    Comment comment = value.getValue(Comment.class);
-//                    commentList.add(comment);
-
+                    Comment comment = snapshot.getValue(Comment.class);
+                    commentList.add(comment);
                 }
             }
             setValue(commentList);

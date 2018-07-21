@@ -56,6 +56,11 @@ public class Repository {
         return remoteRepository.getCommentsForTravelID(travelID);
     }
 
+    @NonNull
+    public LiveData<Long> getNumCommentsForTravelID(String travelID) {
+        return remoteRepository.getNumCommentsForTravelID(travelID);
+    }
+
     public Comment getBackedUpCommentByID(String commentID) {
         return localRepositoryDAO.getCommentByID(commentID);
     }

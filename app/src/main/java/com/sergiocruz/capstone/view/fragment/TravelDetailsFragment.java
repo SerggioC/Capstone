@@ -22,7 +22,7 @@ import com.sergiocruz.capstone.databinding.FragmentTravelDetailsBinding;
 import com.sergiocruz.capstone.model.Comment;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.util.Utils;
-import com.sergiocruz.capstone.viewmodel.CommentsViewModel;
+import com.sergiocruz.capstone.viewmodel.TravelDetailsViewModel;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
     private String someID;
     private MainViewModel viewModel;
     private Travel selectedTravel;
-    private CommentsViewModel commentsViewModel;
+    private TravelDetailsViewModel detailsViewModel;
     private CommentsAdapter commentsAdapter;
 
     public TravelDetailsFragment() {
@@ -61,20 +61,23 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
         // variable name "travel" in xml <data><variable> + set prefix.
         selectedTravel = viewModel.getSelectedTravel();
-        binding.setTravel(selectedTravel);
+        //binding.setTravel(selectedTravel);
 
         setupToolbar();
 
-        commentsViewModel = ViewModelProviders.of(this).get(CommentsViewModel.class);
-        commentsViewModel.setRepository(viewModel.getRepository());
-        commentsViewModel.getCommentsForTravelID(selectedTravel.getID()).observe(this, this::populateCommentsRecyclerView);
+        detailsViewModel = ViewModelProviders.of(this).get(TravelDetailsViewModel.class);
+        detailsViewModel.setRepository(viewModel.getRepository());
+        detailsViewModel.setTravel(selectedTravel);
+        detailsViewModel.getCommentsForTravelID(selectedTravel.getID()).observe(this, this::populateCommentsRecyclerView);
+
+        binding.setViewModel(detailsViewModel);
+
 
         setupCommentsRecyclerView();
 
         setupImagesRecyclerView();
 
         binding.writeComment.setOnClickListener(this::onClickToComment);
-
 
         return binding.getRoot();
     }

@@ -2,6 +2,7 @@ package com.sergiocruz.capstone.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -12,12 +13,14 @@ import com.sergiocruz.capstone.model.Comment;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.viewmodel.CommentsLiveData;
-import com.sergiocruz.capstone.viewmodel.TravelPackLiveData;
+import com.sergiocruz.capstone.viewmodel.TravelPacksLiveData;
 import com.sergiocruz.capstone.viewmodel.UserLiveData;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import timber.log.Timber;
 
 public class FirebaseRepository {
     public static final String USERS_REF = "users";
@@ -31,7 +34,7 @@ public class FirebaseRepository {
     private static FirebaseRepository sInstance;
     private static FirebaseDatabase firebaseDatabase;
     private static DatabaseReference databaseReference;
-    private static TravelPackLiveData travelPacks;
+    private static TravelPacksLiveData travelPacks;
     private static UserLiveData userLiveData;
 
     private FirebaseRepository() {
@@ -57,7 +60,7 @@ public class FirebaseRepository {
     @NonNull
     public LiveData<List<Travel>> getTravelPacks() {
         if (travelPacks == null) {
-            travelPacks = new TravelPackLiveData(databaseReference);
+            travelPacks = new TravelPacksLiveData(databaseReference);
         }
         return travelPacks;
     }
@@ -78,38 +81,26 @@ public class FirebaseRepository {
     //    travel-pack-comments       |  travel-pack-stars
     //        pack_0                 |      pack ID
     //            Comment ID         |          comment ID
-    //                user ID1       |              user ID : value
-    //                    (Comment)
-
+    //                (Comment)      |              user ID : value
     public void sendComment(Comment comment) {
-        final DatabaseReference referenceForTravelID = databaseReference
-                .child(TRAVEL_PACK_COMMENTS_REF)
-                .child(comment.getTravelID());
+        final DatabaseReference referenceForTravelID =
+                databaseReference
+                        .child(TRAVEL_PACK_COMMENTS_REF)
+                        .child(comment.getTravelID());
 
         referenceForTravelID
-                .push() // create new unique comment key
+                .push() // generate new comment node
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) { // resulting new snapshot with nodeID (commentID)
                         String commentID = dataSnapshot.getKey();
-                        comment.setCommentID(commentID);
-
-                        referenceForTravelID
-                                .child(commentID)
-                                .child(comment.getUserID())
-                                // save the Comment
-                                .setValue(comment, (databaseError, databaseRef) -> {
-
-                                    // Update Number of comments in travel pack ID
-
-                                    // Update Number of stars
-                                    databaseReference
-                                            .child(TRAVEL_PACK_STARS_REF)
-                                            .child(comment.getTravelID())
-                                            .child(commentID)
-                                            .child(comment.getUserID())
-                                            .setValue(comment.getStars());
-
+                        comment.setCommentID(commentID);    // update comment ID value in Comment
+                        dataSnapshot
+                                .getRef()
+                                .setValue(comment)         // save the new comment object to db
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful())
+                                        updateTravelPack(referenceForTravelID, comment);
                                 });
                     }
 
@@ -118,16 +109,22 @@ public class FirebaseRepository {
                         // TODO callbacks
                     }
                 });
+    }
 
+    private void updateTravelPack(DatabaseReference referenceForTravelID, Comment comment) {
+        // Update Number of comments, Number of stars and rating
+        // in travel pack ID
         referenceForTravelID
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                         long numComments = dataSnapshot.getChildrenCount();
                         long starSum = 0;
 
+                        // sum the total stars for the travelID
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            Comment comment = snapshot.getChildren().iterator().next().getValue(Comment.class);
+                            Comment comment = snapshot.getValue(Comment.class);
                             starSum += comment.getStars();
                         }
 
@@ -141,8 +138,12 @@ public class FirebaseRepository {
                         databaseReference
                                 .child(TRAVEL_PACKS_REF)
                                 .child(comment.getTravelID())
-                                .updateChildren(map);
-
+                                .updateChildren(map, new DatabaseReference.CompletionListener() {
+                                    @Override
+                                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                        Timber.i("ye!");
+                                    }
+                                });
                     }
 
                     @Override
@@ -150,8 +151,6 @@ public class FirebaseRepository {
 
                     }
                 });
-
-
     }
 
 //    @Deprecated

@@ -9,6 +9,10 @@
         <variable
             name="travel"
             type="com.sergiocruz.capstone.model.Travel"/>
+
+        <variable
+            name="viewModel"
+            type="com.sergiocruz.capstone.viewmodel.TravelDetailsViewModel"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -94,7 +98,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:text="@{travel.name}"
+                        android:text="@{viewModel.travel.name}"
                         android:textSize="22sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
@@ -107,7 +111,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
-                        android:text="@{travel.country}"
+                        android:text="@{viewModel.travel.country}"
                         android:textSize="20sp"
                         app:layout_constraintBottom_toBottomOf="@+id/name"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -120,7 +124,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:progressTint="@color/colorAccent"
-                        android:rating="@{travel.rating}"
+                        android:rating="@{viewModel.travel.rating}"
                         app:layout_constraintBottom_toBottomOf="@+id/price"
                         app:layout_constraintStart_toStartOf="@+id/name"
                         app:layout_constraintTop_toTopOf="@+id/price"

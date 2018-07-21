@@ -17,15 +17,15 @@ import timber.log.Timber;
 
 import static com.sergiocruz.capstone.repository.FirebaseRepository.TRAVEL_PACKS_REF;
 
-public class TravelPackLiveData extends LiveData<List<Travel>> {
+public class TravelPacksLiveData extends LiveData<List<Travel>> {
     private final Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
 
-    public TravelPackLiveData(Query query) {
+    public TravelPacksLiveData(Query query) {
         this.query = query;
     }
 
-    public TravelPackLiveData(DatabaseReference databaseReference) {
+    public TravelPacksLiveData(DatabaseReference databaseReference) {
         databaseReference = databaseReference.child(TRAVEL_PACKS_REF);
         this.query = databaseReference;
     }

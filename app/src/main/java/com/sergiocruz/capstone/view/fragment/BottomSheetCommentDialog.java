@@ -166,7 +166,7 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
             Comment backedUpComment = repository
                     .getBackedUpCommentByID(travelID + viewModel.getUser().getValue().getUserID());
             if (backedUpComment != null) {
-                binding.setCommente(backedUpComment);
+                binding.setComment(backedUpComment);
             }
         });
     }

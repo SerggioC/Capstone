@@ -67,7 +67,6 @@
     <string name="write_comment">Write Comment</string>
     <string name="empty_message">Empty message</string>
     <string name="sign_in_to_comment">Please sign In to comment</string>
-    <string name="stars">Stars!</string>
     <string name="rating_required">Your rating is required</string>
 
 </resources>

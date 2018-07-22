@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.sergiocruz.capstone.model.TravelComments;
 import com.sergiocruz.capstone.util.AppExecutors;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import timber.log.Timber;
 
 import static com.sergiocruz.capstone.repository.FirebaseRepository.TRAVEL_PACK_COMMENTS_REF;
 
-public class NumCommentsListLiveData extends LiveData<List<Long>> {
+public class NumCommentsListLiveData extends LiveData<List<TravelComments>> {
     private final Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
 
@@ -46,16 +47,16 @@ public class NumCommentsListLiveData extends LiveData<List<Long>> {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             new AppExecutors().networkIO().execute(() -> {
-                List<Long> numCommentsList = new ArrayList<>();
+                List<TravelComments> numCommentsList = new ArrayList<>();
+
                 if (dataSnapshot.hasChildren()) {
                     for (DataSnapshot snapshotChild : dataSnapshot.getChildren()) {
-                        if (snapshotChild.hasChildren()) {
-                            numCommentsList.add(snapshotChild.getChildrenCount());
-                        } else {
-                            numCommentsList.add(0L);
-                        }
+                        String travelID = snapshotChild.getKey();
+                        Long count = snapshotChild.hasChildren() ? snapshotChild.getChildrenCount() : 0L;
+                        numCommentsList.add(new TravelComments(count, travelID));
                     }
                 }
+
                 postValue(numCommentsList);
             });
         }

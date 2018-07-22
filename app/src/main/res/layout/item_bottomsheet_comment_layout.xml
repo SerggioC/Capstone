@@ -7,7 +7,7 @@
     <data>
 
         <variable
-            name="commente"
+            name="comment"
             type="com.sergiocruz.capstone.model.Comment"/>
     </data>
 
@@ -47,7 +47,7 @@
                 android:imeOptions="actionSend"
                 android:inputType="text|textLongMessage|textImeMultiLine|textAutoCorrect|textMultiLine"
                 android:maxLines="10"
-                android:text="@{commente.content}"
+                android:text="@{comment.content}"
                 android:minLines="2"
                 android:scrollHorizontally="false"
                 android:scrollbars="vertical"/>
@@ -63,7 +63,7 @@
             android:isIndicator="false"
             android:progressTint="@color/colorAccent"
             android:stepSize="0.5"
-            android:rating="@{safeUnbox(commente.stars)}"
+            android:rating="@{safeUnbox(comment.stars)}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rating_textview"
             tools:numStars="5"

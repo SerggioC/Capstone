@@ -8,15 +8,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.sergiocruz.capstone.model.Star;
 import com.sergiocruz.capstone.model.TravelStar;
+import com.sergiocruz.capstone.model.Star;
 import com.sergiocruz.capstone.util.AppExecutors;
 
 import timber.log.Timber;
 
 import static com.sergiocruz.capstone.repository.FirebaseRepository.TRAVEL_PACK_STARS_REF;
 
-public class StarsLiveData extends LiveData<Star> {
+public class StarsLiveData extends LiveData<TravelStar> {
     private final Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
 
@@ -46,8 +46,8 @@ public class StarsLiveData extends LiveData<Star> {
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             AppExecutors executors = new AppExecutors();
             executors.networkIO().execute(() -> {
-                Star star = getStar(dataSnapshot);
-                postValue(star);
+                TravelStar travelStar = getStar(dataSnapshot, dataSnapshot.getKey());
+                postValue(travelStar);
             });
 
         }
@@ -59,19 +59,19 @@ public class StarsLiveData extends LiveData<Star> {
     }
 
     @NonNull
-    public static Star getStar(@NonNull DataSnapshot dataSnapshot) {
+    public static TravelStar getStar(@NonNull DataSnapshot dataSnapshot, String travelID) {
         Long totalComments = 0L; // total comments = total ratings given
         Float totalStars = 0f;
         if (dataSnapshot.hasChildren()) {
             totalComments = dataSnapshot.getChildrenCount();
             for (DataSnapshot snapshotChild : dataSnapshot.getChildren()) {
-                TravelStar travelStar = snapshotChild.getValue(TravelStar.class);
+                Star travelStar = snapshotChild.getValue(Star.class);
                 totalStars += travelStar != null ? travelStar.getValue() : 0;
             }
         }
 
         Float rating = totalStars / totalComments;
-        return new Star(rating, totalComments);
+        return new TravelStar(rating, totalStars, travelID);
     }
 
 

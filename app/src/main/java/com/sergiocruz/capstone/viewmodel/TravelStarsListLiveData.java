@@ -8,7 +8,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.sergiocruz.capstone.model.Star;
+import com.sergiocruz.capstone.model.TravelStar;
 import com.sergiocruz.capstone.util.AppExecutors;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import timber.log.Timber;
 
 import static com.sergiocruz.capstone.repository.FirebaseRepository.TRAVEL_PACK_STARS_REF;
 
-public class TravelStarsListLiveData extends LiveData<List<Star>> {
+public class TravelStarsListLiveData extends LiveData<List<TravelStar>> {
     private final Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
 
@@ -47,14 +47,14 @@ public class TravelStarsListLiveData extends LiveData<List<Star>> {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             new AppExecutors().networkIO().execute(() -> {
-                List<Star> starList = new ArrayList<>();
+                List<TravelStar> travelStarList = new ArrayList<>();
                 if (dataSnapshot.hasChildren()) {
                     for (DataSnapshot snapshotChild : dataSnapshot.getChildren()) {
-                        Star star = StarsLiveData.getStar(snapshotChild);
-                        starList.add(star);
+                        TravelStar travelStar = StarsLiveData.getStar(snapshotChild, snapshotChild.getKey());
+                        travelStarList.add(travelStar);
                     }
                 }
-                postValue(starList);
+                postValue(travelStarList);
             });
         }
 

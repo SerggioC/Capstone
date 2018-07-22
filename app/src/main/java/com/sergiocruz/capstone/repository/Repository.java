@@ -6,8 +6,9 @@ import android.support.annotation.NonNull;
 
 import com.sergiocruz.capstone.database.DatabaseDAO;
 import com.sergiocruz.capstone.model.Comment;
-import com.sergiocruz.capstone.model.Star;
 import com.sergiocruz.capstone.model.Travel;
+import com.sergiocruz.capstone.model.TravelComments;
+import com.sergiocruz.capstone.model.TravelStar;
 import com.sergiocruz.capstone.model.User;
 
 import java.util.List;
@@ -74,15 +75,15 @@ public class Repository {
         localRepositoryDAO.deleteCommentByID(commentID);
     }
 
-    public LiveData<Star> getStarsForTravelID(String travelID) {
+    public LiveData<TravelStar> getStarsForTravelID(String travelID) {
         return remoteRepository.getStarsForTravelID(travelID);
     }
 
-    public LiveData<List<Star>> getTravelStars() {
+    public LiveData<List<TravelStar>> getTravelStars() {
         return remoteRepository.getTravelStars();
     }
 
-    public LiveData<List<Long>> getNumCommentsList() {
+    public LiveData<List<TravelComments>> getNumCommentsList() {
         return remoteRepository.getNumCommentsList();
     }
 }

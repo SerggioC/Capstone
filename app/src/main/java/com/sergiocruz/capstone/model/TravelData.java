@@ -1,39 +1,37 @@
 package com.sergiocruz.capstone.model;
 
-import java.util.List;
-
 public class TravelData {
-    private List<Travel> travel;
-    private List<Star> star;
-    private List<Long> numComments;
+    private Travel travel;
+    private TravelStar star;
+    private TravelComments comments;
 
-    public TravelData(List<Travel> travel, List<Star> star, List<Long> numComments) {
+    public TravelData(Travel travel, TravelStar star, TravelComments comments) {
         this.travel = travel;
         this.star = star;
-        this.numComments = numComments;
+        this.comments = comments;
     }
 
-    public List<Travel> getTravel() {
+    public Travel getTravel() {
         return travel;
     }
 
-    public void setTravel(List<Travel> travel) {
+    public void setTravel(Travel travel) {
         this.travel = travel;
     }
 
-    public List<Star> getStar() {
+    public TravelStar getStar() {
         return star;
     }
 
-    public void setStar(List<Star> star) {
+    public void setStar(TravelStar star) {
         this.star = star;
     }
 
-    public List<Long> getNumComments() {
-        return numComments;
+    public TravelComments getComments() {
+        return comments;
     }
 
-    public void setNumComments(List<Long> numComments) {
-        this.numComments = numComments;
+    public void setComments(TravelComments comments) {
+        this.comments = comments;
     }
 }

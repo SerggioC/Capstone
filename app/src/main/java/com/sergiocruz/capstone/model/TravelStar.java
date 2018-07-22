@@ -1,39 +1,17 @@
 package com.sergiocruz.capstone.model;
 
 public class TravelStar {
-    private String userID;
-    private Float value;
-    private String commentID;
-    private String travelID;
+    Float rating;
+    Float number;
+    String travelID;
 
     public TravelStar() {
     }
 
-    public TravelStar(Float value, String travelID, String commentID, String userID) {
-        this.value = value;
+    public TravelStar(Float rating, Float number, String travelID) {
+        this.rating = rating;
+        this.number = number;
         this.travelID = travelID;
-        this.commentID = commentID;
-        this.userID = userID;
-    }
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public Float getValue() {
-        return value;
-    }
-
-    public void setValue(Float value) {
-        this.value = value;
-    }
-
-    public String getCommentID() {
-        return commentID;
-    }
-
-    public void setCommentID(String commentID) {
-        this.commentID = commentID;
     }
 
     public String getTravelID() {
@@ -42,5 +20,21 @@ public class TravelStar {
 
     public void setTravelID(String travelID) {
         this.travelID = travelID;
+    }
+
+    public Float getRating() {
+        return rating;
+    }
+
+    public void setRating(Float rating) {
+        this.rating = rating;
+    }
+
+    public Float getNumber() {
+        return number;
+    }
+
+    public void setNumber(Float number) {
+        this.number = number;
     }
 }

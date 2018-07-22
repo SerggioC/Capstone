@@ -7,15 +7,7 @@
 
         <variable
             name="object"
-            type="com.sergiocruz.capstone.model.Travel"/>
-
-        <variable
-            name="star"
-            type="com.sergiocruz.capstone.model.Star"/>
-
-        <variable
-            name="numComments"
-            type="java.lang.Float"/>
+            type="com.sergiocruz.capstone.model.TravelData"/>
 
     </data>
 
@@ -36,8 +28,8 @@
             android:duplicateParentState="true"
             android:scaleType="centerCrop"
             app:errorDrawable="@{@drawable/travel_image}"
-            app:imageUrl="@{object.images.get(0)}"
-            tools:srcCompat="@drawable/austria"/>
+            app:imageUrl="@{object.travel.images.get(0)}"
+            tools:src="@tools:sample/backgrounds/scenic"/>
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/constrain_container"
@@ -50,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginTop="8dp"
-                android:text="@{object.price}"
+                android:text="@{object.travel.price}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="188€"/>
@@ -71,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="@{object.name}"
+                    android:text="@{object.travel.name}"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
@@ -83,7 +75,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_marginStart="8dp"
-                    android:text="@{object.country}"
+                    android:text="@{object.travel.country}"
                     android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="@+id/name"
                     app:layout_constraintStart_toEndOf="@+id/name"
@@ -95,7 +87,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:progressTint="@color/colorAccent"
-                    android:rating="@{safeUnbox(star.number)}"
+                    android:rating="@{safeUnbox(object.star.rating)}"
                     android:stepSize="0.1"
                     app:layout_constraintStart_toStartOf="@+id/name"
                     app:layout_constraintTop_toBottomOf="@id/name"
@@ -107,7 +99,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@{String.valueOf(safeUnbox(star.number))}"
+                    android:text="@{String.valueOf(safeUnbox(object.star.number))}"
                     app:layout_constraintBottom_toBottomOf="@+id/ratingBar"
                     app:layout_constraintStart_toEndOf="@+id/ratingBar"
                     app:layout_constraintTop_toTopOf="@+id/ratingBar"
@@ -129,7 +121,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:text="@{String.valueOf(safeUnbox(numComments))}"
+                    android:text="@{String.valueOf(safeUnbox(object.comments.number))}"
                     app:layout_constraintBottom_toBottomOf="@+id/comment_icon"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/comment_icon"
@@ -143,7 +135,7 @@
                     android:ellipsize="end"
                     android:maxLines="3"
                     android:paddingBottom="@dimen/item_margin"
-                    android:text="@{object.description}"
+                    android:text="@{object.travel.description}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/ratingBar"
                     app:layout_constraintTop_toBottomOf="@+id/ratingBar"

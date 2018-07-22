@@ -11,6 +11,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.model.Comment;
 import com.sergiocruz.capstone.model.Star;
 import com.sergiocruz.capstone.model.Travel;
+import com.sergiocruz.capstone.model.TravelComments;
 import com.sergiocruz.capstone.model.TravelStar;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.viewmodel.CommentsLiveData;
@@ -115,8 +116,8 @@ public class FirebaseRepository {
     private void updateTravelPackStars(Comment comment) {
         // Update Number of comments, Number of stars and rating
         // for travel pack ID
-        TravelStar travelStar =
-                new TravelStar(
+        Star travelStar =
+                new Star(
                         comment.getStars(), // the value
                         comment.getTravelID(),
                         comment.getCommentID(),
@@ -138,15 +139,15 @@ public class FirebaseRepository {
         return new NumberOfCommentsLiveData(databaseReference, travelID);
     }
 
-    public LiveData<Star> getStarsForTravelID(String travelID) {
+    public LiveData<TravelStar> getStarsForTravelID(String travelID) {
         return new StarsLiveData(databaseReference, travelID);
     }
 
-    public LiveData<List<Star>> getTravelStars() {
+    public LiveData<List<TravelStar>> getTravelStars() {
         return new TravelStarsListLiveData(databaseReference);
     }
 
-    public LiveData<List<Long>> getNumCommentsList() {
+    public LiveData<List<TravelComments>> getNumCommentsList() {
         return new NumCommentsListLiveData(databaseReference);
     }
 }

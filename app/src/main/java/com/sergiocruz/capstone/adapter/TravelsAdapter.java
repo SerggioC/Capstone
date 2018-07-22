@@ -1,26 +1,23 @@
 package com.sergiocruz.capstone.adapter;
 
-import android.databinding.ViewDataBinding;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.view.ViewGroup;
 
-import com.sergiocruz.capstone.BR;
 import com.sergiocruz.capstone.R;
-import com.sergiocruz.capstone.model.Star;
-import com.sergiocruz.capstone.model.Travel;
+import com.sergiocruz.capstone.model.TravelData;
 
 import java.util.List;
 
 public class TravelsAdapter extends BaseAdapter {
-    private List<Travel> travels;
+    private List<TravelData> travels;
 
     @SuppressWarnings("unchecked")
     public TravelsAdapter(OnItemClickListener itemClickListener, OnItemTouchListener itemTouchListener) {
         super(itemClickListener, itemTouchListener);
     }
 
-    public void swapTravelsData(List<Travel> data) {
+    public void swapTravelsData(List<TravelData> data) {
         this.travels = data;
         notifyDataSetChanged();
     }
@@ -35,16 +32,12 @@ public class TravelsAdapter extends BaseAdapter {
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        String transitionName = getObjectForPosition(position).getID();
+        String transitionName = getObjectForPosition(position).getTravel().getID();
         holder.itemView.findViewById(R.id.image).setTransitionName(transitionName);
-
-
-        holder.getBinding().setVariable(BR.star, star);
-        holder.getBinding().setVariable(BR.numComments, numComments);
     }
 
     @Override
-    protected Travel getObjectForPosition(int position) {
+    protected TravelData getObjectForPosition(int position) {
         return travels.get(position);
     }
 
@@ -57,29 +50,5 @@ public class TravelsAdapter extends BaseAdapter {
     public int getItemCount() {
         return travels == null ? 0 : travels.size();
     }
-
-
-
-
-    class TravelViewHolder extends BaseAdapter.BaseViewHolder {
-        private final ViewDataBinding binding;
-
-        TravelViewHolder(ViewDataBinding binding) {
-            super(binding);
-            this.binding = binding;
-        }
-
-        void bindStars(Star star) {
-            binding.setVariable(BR.star, star);
-            binding.notifyPropertyChanged(BR.star);
-        }
-
-        void bindNumComments(Long numComments) {
-            binding.setVariable(BR.numComments, numComments);
-            binding.notifyPropertyChanged(BR.numComments);
-        }
-
-    }
-
 
 }

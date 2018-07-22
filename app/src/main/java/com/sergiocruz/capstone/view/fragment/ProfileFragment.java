@@ -88,7 +88,7 @@ public class ProfileFragment extends Fragment implements BaseAdapter.OnItemClick
     }
 
     private void populateRecyclerView(List<Travel> travels) {
-        adapter.swapTravelsData(travels);
+        //adapter.swapTravelsData(travels);
     }
 
     private void onUserInfo(User user) {

@@ -1,6 +1,5 @@
 package com.sergiocruz.capstone.view.fragment;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -23,7 +22,6 @@ import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.adapter.BaseAdapter;
 import com.sergiocruz.capstone.adapter.TravelsAdapter;
 import com.sergiocruz.capstone.databinding.FragmentHomeBinding;
-import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.TravelData;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.util.Utils;
@@ -34,7 +32,7 @@ import java.util.Map;
 
 import timber.log.Timber;
 
-public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickListener<Travel>, BaseAdapter.OnItemTouchListener {
+public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickListener<TravelData>, BaseAdapter.OnItemTouchListener {
 
     public static final String ROOT_FRAGMENT_NAME = HomeFragment.class.getSimpleName();
     public static final String USER_ID_BUNDLE_KEY = "USER_ID_BUNDLE_KEY";
@@ -83,7 +81,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
         setupRecyclerView();
 
-        viewModel.getTravelPacks().observe(this, this::populateRecyclerView);
+        //viewModel.getTravelPacks().observe(this, this::populateRecyclerView);
 
         return binding.getRoot();
     }
@@ -92,9 +90,11 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
         Boolean isTablet = getResources().getBoolean(R.bool.isTablet);
         if (isTablet) {
             int spanCount = getResources().getInteger(R.integer.spanCount);
-            binding.travelsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
+            binding.travelsRecyclerView.setLayoutManager(
+                    new GridLayoutManager(getContext(), spanCount));
         } else {
-            binding.travelsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            binding.travelsRecyclerView.setLayoutManager(
+                    new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         }
 
         binding.travelsRecyclerView.setHasFixedSize(true);
@@ -102,21 +102,17 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
         binding.travelsRecyclerView.setAdapter(adapter);
 
-        viewModel.getTravelData().observe(this, new Observer<TravelData>() {
-            @Override
-            public void onChanged(@Nullable TravelData travelData) {
-
-            }
-        });
-
-
-
+        viewModel.getTravelData().observe(this, this::populateRecyclerView);
 
     }
 
-    private void populateRecyclerView(List<Travel> travels) {
-        adapter.swapTravelsData(travels);
-        prepareExitSharedElementsTransitions();
+    private void populateRecyclerView(List<TravelData> travelDataList) {
+        if (travelDataList == null) {
+            return;
+        } else {
+            adapter.swapTravelsData(travelDataList);
+        }
+        //prepareExitSharedElementsTransitions();
     }
 
     private void onUserInfo(User user) {
@@ -142,9 +138,9 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     }
 
     @Override
-    public void onItemClick(Travel travel, View view, Integer position) {
+    public void onItemClick(TravelData travelData, View view, Integer position) {
         viewModel.setClickedPosition(position);
-        viewModel.setSelectedTravel(travel);
+        viewModel.setSelectedTravel(travelData.getTravel());
 
         getActivity().getSupportFragmentManager()
                 .beginTransaction()

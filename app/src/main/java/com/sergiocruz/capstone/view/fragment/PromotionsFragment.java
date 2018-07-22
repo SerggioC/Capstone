@@ -91,7 +91,7 @@ public class PromotionsFragment extends Fragment implements BaseAdapter.OnItemCl
     }
 
     private void populateRecyclerView(List<Travel> travels) {
-        adapter.swapTravelsData(travels);
+        //adapter.swapTravelsData(travels);
     }
 
     private void onUserInfo(User user) {

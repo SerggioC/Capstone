@@ -14,9 +14,11 @@ import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.TravelStar;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.viewmodel.CommentsLiveData;
+import com.sergiocruz.capstone.viewmodel.NumCommentsListLiveData;
 import com.sergiocruz.capstone.viewmodel.NumberOfCommentsLiveData;
+import com.sergiocruz.capstone.viewmodel.StarsLiveData;
 import com.sergiocruz.capstone.viewmodel.TravelPacksLiveData;
-import com.sergiocruz.capstone.viewmodel.TravelStarsLiveData;
+import com.sergiocruz.capstone.viewmodel.TravelStarsListLiveData;
 import com.sergiocruz.capstone.viewmodel.UserLiveData;
 
 import java.util.List;
@@ -65,7 +67,6 @@ public class FirebaseRepository {
         return travelPacks;
     }
 
-
     public LiveData<User> getUser() {
         if (userLiveData == null) {
             userLiveData = new UserLiveData(databaseReference);
@@ -81,7 +82,7 @@ public class FirebaseRepository {
     //    travel-pack-comments       |  travel-pack-stars
     //        pack_0                 |      pack ID
     //            Comment ID         |          comment ID
-    //                (Comment)      |              user ID : value
+    //                (Comment)      |              (TravelStar)
     public void sendComment(Comment comment) {
         final DatabaseReference referenceForTravelID =
                 databaseReference
@@ -128,7 +129,7 @@ public class FirebaseRepository {
                 .setValue(travelStar)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful())
-                        Timber.i("ok");
+                        Timber.i("update stars ok");
                 });
 
     }
@@ -137,9 +138,15 @@ public class FirebaseRepository {
         return new NumberOfCommentsLiveData(databaseReference, travelID);
     }
 
-    public LiveData<Star> getTravelStarsForTravelID(String travelID) {
-        return new TravelStarsLiveData(databaseReference, travelID);
+    public LiveData<Star> getStarsForTravelID(String travelID) {
+        return new StarsLiveData(databaseReference, travelID);
     }
 
+    public LiveData<List<Star>> getTravelStars() {
+        return new TravelStarsListLiveData(databaseReference);
+    }
 
+    public LiveData<List<Long>> getNumCommentsList() {
+        return new NumCommentsListLiveData(databaseReference);
+    }
 }

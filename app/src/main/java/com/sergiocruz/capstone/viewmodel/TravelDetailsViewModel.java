@@ -43,9 +43,9 @@ public class TravelDetailsViewModel extends AndroidViewModel {
         return travel;
     }
 
-    public LiveData<Star> getTravelStar() {
+    public LiveData<Star> getStars() {
         if (travelStarsLiveData == null) {
-            travelStarsLiveData = repository.getTravelStarsForTravelID(getTravel().getID());
+            travelStarsLiveData = repository.getStarsForTravelID(getTravel().getID());
         }
         return travelStarsLiveData;
     }

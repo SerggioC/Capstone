@@ -74,7 +74,15 @@ public class Repository {
         localRepositoryDAO.deleteCommentByID(commentID);
     }
 
-    public LiveData<Star> getTravelStarsForTravelID(String travelID) {
-        return remoteRepository.getTravelStarsForTravelID(travelID);
+    public LiveData<Star> getStarsForTravelID(String travelID) {
+        return remoteRepository.getStarsForTravelID(travelID);
+    }
+
+    public LiveData<List<Star>> getTravelStars() {
+        return remoteRepository.getTravelStars();
+    }
+
+    public LiveData<List<Long>> getNumCommentsList() {
+        return remoteRepository.getNumCommentsList();
     }
 }

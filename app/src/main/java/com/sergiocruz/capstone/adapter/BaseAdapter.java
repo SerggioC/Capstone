@@ -11,8 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sergiocruz.capstone.BR;
+import com.sergiocruz.capstone.util.Utils;
 
-public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>.BaseViewHolder> {
+public abstract class   BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>.BaseViewHolder> {
 
     private final OnItemClickListener<T> itemClickListener;
     private final OnItemTouchListener itemTouchListener;
@@ -40,6 +41,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>
             holder.itemView.setOnClickListener(v -> itemClickListener.onItemClick(object, holder.itemView, position)); /* TODO move to BaseViewHolder? */
         if (itemTouchListener != null)
             holder.itemView.setOnTouchListener(this::onTouchItem);
+        Utils.setItemViewAnimation(holder.itemView, position);
         holder.bindVariable(object);
     }
 
@@ -62,6 +64,10 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>
 
     class BaseViewHolder extends RecyclerView.ViewHolder {
         private final ViewDataBinding binding;
+
+        ViewDataBinding getBinding() {
+            return binding;
+        }
 
         BaseViewHolder(ViewDataBinding binding) {
             super(binding.getRoot());

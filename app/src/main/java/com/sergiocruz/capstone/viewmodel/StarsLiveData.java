@@ -10,20 +10,21 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.sergiocruz.capstone.model.Star;
 import com.sergiocruz.capstone.model.TravelStar;
+import com.sergiocruz.capstone.util.AppExecutors;
 
 import timber.log.Timber;
 
 import static com.sergiocruz.capstone.repository.FirebaseRepository.TRAVEL_PACK_STARS_REF;
 
-public class TravelStarsLiveData extends LiveData<Star> {
+public class StarsLiveData extends LiveData<Star> {
     private final Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
 
-    public TravelStarsLiveData(Query query) {
+    public StarsLiveData(Query query) {
         this.query = query;
     }
 
-    public TravelStarsLiveData(DatabaseReference databaseReference, String travelID) {
+    public StarsLiveData(DatabaseReference databaseReference, String travelID) {
         databaseReference = databaseReference.child(TRAVEL_PACK_STARS_REF).child(travelID);
         this.query = databaseReference;
     }
@@ -43,28 +44,34 @@ public class TravelStarsLiveData extends LiveData<Star> {
     private class MyValueEventListener implements ValueEventListener {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            Long totalComments = 0L;
-            Float totalStars = 0f;
+            AppExecutors executors = new AppExecutors();
+            executors.networkIO().execute(() -> {
+                Star star = getStar(dataSnapshot);
+                postValue(star);
+            });
 
-            if (dataSnapshot.hasChildren()) {
-                totalComments = dataSnapshot.getChildrenCount();
-                for (DataSnapshot snapshotChild : dataSnapshot.getChildren()) {
-                    TravelStar travelStar = snapshotChild.getValue(TravelStar.class);
-                    totalStars += travelStar.getValue();
-                }
-            }
-
-            Float rating = totalStars / totalComments;
-
-            Star star = new Star(rating, totalComments);
-
-            setValue(star);
         }
 
         @Override
-        public void onCancelled(DatabaseError databaseError) {
+        public void onCancelled(@NonNull DatabaseError databaseError) {
             Timber.e("Can't listen to query " + query + databaseError.toException());
         }
+    }
+
+    @NonNull
+    public static Star getStar(@NonNull DataSnapshot dataSnapshot) {
+        Long totalComments = 0L; // total comments = total ratings given
+        Float totalStars = 0f;
+        if (dataSnapshot.hasChildren()) {
+            totalComments = dataSnapshot.getChildrenCount();
+            for (DataSnapshot snapshotChild : dataSnapshot.getChildren()) {
+                TravelStar travelStar = snapshotChild.getValue(TravelStar.class);
+                totalStars += travelStar != null ? travelStar.getValue() : 0;
+            }
+        }
+
+        Float rating = totalStars / totalComments;
+        return new Star(rating, totalComments);
     }
 
 

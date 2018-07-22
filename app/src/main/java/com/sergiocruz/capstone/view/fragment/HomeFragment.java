@@ -1,5 +1,6 @@
 package com.sergiocruz.capstone.view.fragment;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import com.sergiocruz.capstone.adapter.BaseAdapter;
 import com.sergiocruz.capstone.adapter.TravelsAdapter;
 import com.sergiocruz.capstone.databinding.FragmentHomeBinding;
 import com.sergiocruz.capstone.model.Travel;
+import com.sergiocruz.capstone.model.TravelData;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.util.Utils;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
@@ -64,9 +66,11 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
         viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
 
         int clickedPosition = 0;
-        if (savedInstanceState != null && savedInstanceState.containsKey(USER_ID_BUNDLE_KEY)) {
-            userID = savedInstanceState.getString(USER_ID_BUNDLE_KEY);
-            clickedPosition = savedInstanceState.getInt(CLICKED_POSITION_KEY, 0);
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(USER_ID_BUNDLE_KEY))
+                userID = savedInstanceState.getString(USER_ID_BUNDLE_KEY);
+            if (savedInstanceState.containsKey(CLICKED_POSITION_KEY))
+                clickedPosition = savedInstanceState.getInt(CLICKED_POSITION_KEY, 0);
         }
 
         viewModel.setClickedPosition(clickedPosition);
@@ -97,6 +101,17 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
         adapter = new TravelsAdapter(this, this);
 
         binding.travelsRecyclerView.setAdapter(adapter);
+
+        viewModel.getTravelData().observe(this, new Observer<TravelData>() {
+            @Override
+            public void onChanged(@Nullable TravelData travelData) {
+
+            }
+        });
+
+
+
+
     }
 
     private void populateRecyclerView(List<Travel> travels) {
@@ -210,6 +225,5 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
         postponeEnterTransition();
     }
-
 
 }

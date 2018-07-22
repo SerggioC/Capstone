@@ -1,9 +1,6 @@
 package com.sergiocruz.capstone.adapter;
 
-import android.support.annotation.NonNull;
-
 import com.sergiocruz.capstone.R;
-import com.sergiocruz.capstone.util.Utils;
 
 import java.util.List;
 
@@ -24,13 +21,6 @@ public class ImageListAdapter extends BaseAdapter {
     @Override
     protected int getLayoutIdForPosition(int position) {
         return R.layout.item_image_layout;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
-        Utils.setItemViewAnimation(holder.itemView, position);
     }
 
     @Override

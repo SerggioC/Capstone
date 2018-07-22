@@ -10,7 +10,7 @@ import com.sergiocruz.capstone.model.TravelData;
 import java.util.List;
 
 public class TravelsAdapter extends BaseAdapter {
-    private List<TravelData> travels;
+    private List<TravelData> travelData;
 
     @SuppressWarnings("unchecked")
     public TravelsAdapter(OnItemClickListener itemClickListener, OnItemTouchListener itemTouchListener) {
@@ -18,7 +18,7 @@ public class TravelsAdapter extends BaseAdapter {
     }
 
     public void swapTravelsData(List<TravelData> data) {
-        this.travels = data;
+        this.travelData = data;
         notifyDataSetChanged();
     }
 
@@ -38,7 +38,7 @@ public class TravelsAdapter extends BaseAdapter {
 
     @Override
     protected TravelData getObjectForPosition(int position) {
-        return travels.get(position);
+        return travelData.get(position);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class TravelsAdapter extends BaseAdapter {
 
     @Override
     public int getItemCount() {
-        return travels == null ? 0 : travels.size();
+        return travelData == null ? 0 : travelData.size();
     }
 
 }

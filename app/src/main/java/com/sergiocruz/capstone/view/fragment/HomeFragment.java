@@ -81,8 +81,6 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
         setupRecyclerView();
 
-        //viewModel.getTravelPacks().observe(this, this::populateRecyclerView);
-
         return binding.getRoot();
     }
 

@@ -1,5 +1,7 @@
 package com.sergiocruz.capstone.model;
-
+/** Float rating;
+ Float number;
+ String travelID; */
 public class TravelStar {
     Float rating;
     Float number;

@@ -23,7 +23,7 @@ import timber.log.Timber;
 
 public class MainViewModel extends AndroidViewModel {
     private static final Object LOCK = new Object();
-    private final MediatorLiveData<List<TravelData>> mediatorLiveData = new MediatorLiveData<>();
+    private MediatorLiveData<List<TravelData>> mediatorLiveData;
     private int clickedPosition;
     private Repository repository;
     private LiveData<User> user;
@@ -106,7 +106,10 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<TravelData>> getTravelData() {
+        if (mediatorLiveData != null)
+            return mediatorLiveData;
 
+        mediatorLiveData = new MediatorLiveData<>();
         mediatorLiveData.addSource(getTravelPacks(), new Observer<List<Travel>>() {
             @Override
             public void onChanged(@Nullable List<Travel> travels) {
@@ -131,8 +134,8 @@ public class MainViewModel extends AndroidViewModel {
         return mediatorLiveData;
     }
 
-    private void combineData(List<Travel> travels, List<TravelStar> travelTravelStars, List<TravelComments> commentsList) {
-        if (travels == null || travelTravelStars == null || commentsList == null)
+    private void combineData(List<Travel> travels, List<TravelStar> travelStars, List<TravelComments> commentsList) {
+        if (travels == null || travelStars == null || commentsList == null)
             return;
         new AppExecutors().diskIO().execute(() -> {
             int size = travels.size();
@@ -142,20 +145,24 @@ public class MainViewModel extends AndroidViewModel {
                 String travelID = travel.getID();
 
                 TravelStar travelStar = new TravelStar(0f, 0f, "");
-                if (i < travelTravelStars.size()) {
-                    TravelStar theTravelStar = travelTravelStars.get(i);
+                starLoop:
+                for (int j = 0; j < travelStars.size(); j++) {
+                    TravelStar theTravelStar = travelStars.get(j);
                     String starTravelID = theTravelStar.getTravelID();
                     if (travelID.equals(starTravelID)) {
                         travelStar = theTravelStar;
+                        break starLoop;
                     }
                 }
 
-                TravelComments travelComments = new TravelComments(0l, "");
-                if (i < commentsList.size()) {
-                    TravelComments thetravelComment = commentsList.get(i);
-                    String commentTravelID = thetravelComment.getTravelID();
+                TravelComments travelComments = new TravelComments(0L, "");
+                commentLoop:
+                for (int k = 0; k < commentsList.size(); k++) {
+                    TravelComments theTravelComment = commentsList.get(k);
+                    String commentTravelID = theTravelComment.getTravelID();
                     if (travelID.equals(commentTravelID)) {
-                        travelComments = thetravelComment;
+                        travelComments = theTravelComment;
+                        break commentLoop;
                     }
                 }
 
@@ -164,7 +171,6 @@ public class MainViewModel extends AndroidViewModel {
             mediatorLiveData.postValue(travelDataList);
         });
     }
-
 
 }
 

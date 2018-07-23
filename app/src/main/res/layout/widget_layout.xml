@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/travel_item_background"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/widget_recipe_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/widget_title_background"
+        android:drawableEnd="@drawable/ic_open"
+        android:drawableRight="@drawable/ic_open"
+        android:padding="8dp"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:text="@tools:sample/full_names"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/widget_image_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="32dp"
+            android:alpha="0.5"
+            android:contentDescription="@string/photo_of_travel"
+            android:src="@mipmap/ic_launcher"/>
+
+        <ListView
+            android:id="@+id/widget_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            tools:listitem="@layout/item_promotion_layout"/>
+
+    </FrameLayout>
+
+</LinearLayout>

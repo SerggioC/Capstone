@@ -4,10 +4,9 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
+import com.sergiocruz.capstone.model.Status;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.TravelComments;
 import com.sergiocruz.capstone.model.TravelData;
@@ -21,9 +20,12 @@ import java.util.List;
 
 import timber.log.Timber;
 
+import static com.sergiocruz.capstone.model.Status.LOADING;
+import static com.sergiocruz.capstone.model.Status.PROCESSING;
+import static com.sergiocruz.capstone.model.Status.SUCCESS;
+
 public class MainViewModel extends AndroidViewModel {
     private static final Object LOCK = new Object();
-    private MediatorLiveData<List<TravelData>> mediatorLiveData;
     private int clickedPosition;
     private Repository repository;
     private LiveData<User> user;
@@ -32,6 +34,8 @@ public class MainViewModel extends AndroidViewModel {
     private LiveData<List<Travel>> travelList;
     private LiveData<List<TravelStar>> travelStarsList;
     private LiveData<List<TravelComments>> numCommentsList;
+    private MediatorLiveData<List<TravelData>> mediatorLiveData;
+    private Status currentStatus;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -72,8 +76,15 @@ public class MainViewModel extends AndroidViewModel {
         if (user == null) {
             user = repository.getUser();
         }
-        Timber.i("getting user");
         return user;
+    }
+
+    public Status getCurrentStatus() {
+        return this.currentStatus;
+    }
+
+    public void setCurrentStatus(Status currentStatus) {
+        this.currentStatus = currentStatus;
     }
 
     public void logoutUser() {
@@ -109,27 +120,17 @@ public class MainViewModel extends AndroidViewModel {
         if (mediatorLiveData != null)
             return mediatorLiveData;
 
+        setCurrentStatus(LOADING);
+
         mediatorLiveData = new MediatorLiveData<>();
-        mediatorLiveData.addSource(getTravelPacks(), new Observer<List<Travel>>() {
-            @Override
-            public void onChanged(@Nullable List<Travel> travels) {
-                combineData(travels, getTravelStars().getValue(), getNumCommentsList().getValue());
-            }
-        });
+        mediatorLiveData.addSource(getTravelPacks(), travels ->
+                combineData(travels, getTravelStars().getValue(), getNumCommentsList().getValue()));
 
-        mediatorLiveData.addSource(getTravelStars(), new Observer<List<TravelStar>>() {
-            @Override
-            public void onChanged(@Nullable List<TravelStar> travelStars) {
-                combineData(getTravelPacks().getValue(), travelStars, getNumCommentsList().getValue());
-            }
-        });
+        mediatorLiveData.addSource(getTravelStars(), travelStars ->
+                combineData(getTravelPacks().getValue(), travelStars, getNumCommentsList().getValue()));
 
-        mediatorLiveData.addSource(getNumCommentsList(), new Observer<List<TravelComments>>() {
-            @Override
-            public void onChanged(@Nullable List<TravelComments> commentsList) {
-                combineData(getTravelPacks().getValue(), getTravelStars().getValue(), commentsList);
-            }
-        });
+        mediatorLiveData.addSource(getNumCommentsList(), commentsList ->
+                combineData(getTravelPacks().getValue(), getTravelStars().getValue(), commentsList));
 
         return mediatorLiveData;
     }
@@ -137,6 +138,7 @@ public class MainViewModel extends AndroidViewModel {
     private void combineData(List<Travel> travels, List<TravelStar> travelStars, List<TravelComments> commentsList) {
         if (travels == null || travelStars == null || commentsList == null)
             return;
+        setCurrentStatus(PROCESSING);
         new AppExecutors().diskIO().execute(() -> {
             int size = travels.size();
             List<TravelData> travelDataList = new ArrayList<>(size);
@@ -169,6 +171,7 @@ public class MainViewModel extends AndroidViewModel {
                 travelDataList.add(new TravelData(travel, travelStar, travelComments));
             }
             mediatorLiveData.postValue(travelDataList);
+            setCurrentStatus(SUCCESS);
         });
     }
 

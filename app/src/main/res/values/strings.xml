@@ -68,5 +68,6 @@
     <string name="empty_message">Empty message</string>
     <string name="sign_in_to_comment">Please sign In to comment</string>
     <string name="rating_required">Your rating is required</string>
+    <string name="loading_animation">Loading animation</string>
 
 </resources>

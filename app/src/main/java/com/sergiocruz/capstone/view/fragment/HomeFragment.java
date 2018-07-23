@@ -81,6 +81,9 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
         setupRecyclerView();
 
+
+
+
         return binding.getRoot();
     }
 
@@ -159,7 +162,6 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     @Override
     public void onDetach() {
         super.onDetach();
-        //remove listeners?
         Timber.i("Detaching %s", this.getClass().getSimpleName());
     }
 

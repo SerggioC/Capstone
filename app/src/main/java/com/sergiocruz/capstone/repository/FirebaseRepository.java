@@ -118,7 +118,7 @@ public class FirebaseRepository {
         // for travel pack ID
         Star travelStar =
                 new Star(
-                        comment.getStars(), // the value
+                        comment.getStars(), // the number of stars given in the comment
                         comment.getTravelID(),
                         comment.getCommentID(),
                         comment.getUserID());
@@ -150,4 +150,5 @@ public class FirebaseRepository {
     public LiveData<List<TravelComments>> getNumCommentsList() {
         return new NumCommentsListLiveData(databaseReference);
     }
+
 }

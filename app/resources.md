@@ -19,3 +19,6 @@ https://github.com/aurelhubert/ahbottomnavigation/blob/master/README.md
 
 Enable log in huawei 
 *#*#2846579#*#*
+
+loading indicators
+https://loading.io

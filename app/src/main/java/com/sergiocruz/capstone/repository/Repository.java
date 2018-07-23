@@ -86,4 +86,5 @@ public class Repository {
     public LiveData<List<TravelComments>> getNumCommentsList() {
         return remoteRepository.getNumCommentsList();
     }
+
 }

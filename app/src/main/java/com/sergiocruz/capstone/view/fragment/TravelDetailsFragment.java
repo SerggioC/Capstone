@@ -29,6 +29,9 @@ import java.util.List;
 
 import timber.log.Timber;
 
+import static com.sergiocruz.capstone.model.Status.LOADING;
+import static com.sergiocruz.capstone.model.Status.SUCCESS;
+
 public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnItemClickListener<String>, BaseAdapter.OnItemTouchListener {
 
     private static final String SOME_BUNDLE_KEY = "SOME_BUNDLE_KEY";
@@ -68,10 +71,8 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         detailsViewModel = ViewModelProviders.of(this).get(TravelDetailsViewModel.class);
         detailsViewModel.setRepository(viewModel.getRepository());  // init vars
         detailsViewModel.setTravel(selectedTravel);                 // init vars
-        detailsViewModel.getCommentsForTravelID().observe(this, this::populateCommentsRecyclerView);
 
         binding.setViewModel(detailsViewModel);
-
 
         setupCommentsRecyclerView();
 
@@ -82,18 +83,22 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         return binding.getRoot();
     }
 
-    private void populateCommentsRecyclerView(List<Comment> commentList) {
-        commentsAdapter.swapData(commentList);
-    }
-
     private void setupCommentsRecyclerView() {
+        detailsViewModel.setCurrentStatus(LOADING);
+
+        detailsViewModel.getCommentsForTravelID().observe(this, this::populateCommentsRecyclerView);
+
         String currentUserID = viewModel.getUser().getValue().getUserID();
 
         commentsAdapter = new CommentsAdapter(currentUserID);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         binding.commentsRecyclerView.setLayoutManager(layoutManager);
         binding.commentsRecyclerView.setAdapter(commentsAdapter);
+    }
 
+    private void populateCommentsRecyclerView(List<Comment> commentList) {
+        commentsAdapter.swapData(commentList);
+        detailsViewModel.setCurrentStatus(SUCCESS);
     }
 
     private void setupToolbar() {

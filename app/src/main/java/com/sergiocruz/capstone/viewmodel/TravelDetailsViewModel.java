@@ -3,9 +3,11 @@ package com.sergiocruz.capstone.viewmodel;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import com.sergiocruz.capstone.model.Comment;
+import com.sergiocruz.capstone.model.Status;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.TravelStar;
 import com.sergiocruz.capstone.repository.Repository;
@@ -18,6 +20,7 @@ public class TravelDetailsViewModel extends AndroidViewModel {
     private LiveData<Long> numComments;
     private Travel travel;
     private LiveData<TravelStar> travelStarsLiveData;
+    private MutableLiveData<Status> currentStatus = new MutableLiveData<>();
 
     public TravelDetailsViewModel(@NonNull Application application) {
         super(application);
@@ -34,8 +37,9 @@ public class TravelDetailsViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Comment>> getCommentsForTravelID() {
-        if (commentListLiveData == null)
+        if (commentListLiveData == null) {
             commentListLiveData = repository.getCommentsForTravelID(getTravel().getID());
+        }
         return commentListLiveData;
     }
 
@@ -56,5 +60,14 @@ public class TravelDetailsViewModel extends AndroidViewModel {
         }
         return numComments;
     }
+
+    public LiveData<Status> getCurrentStatus() {
+        return this.currentStatus;
+    }
+
+    public void setCurrentStatus(Status currentStatus) {
+        this.currentStatus.setValue(currentStatus);
+    }
+
 
 }

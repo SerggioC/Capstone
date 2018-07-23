@@ -1,7 +1,9 @@
 package com.sergiocruz.capstone.adapter;
 
 import android.databinding.BindingAdapter;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,9 +13,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.sergiocruz.capstone.model.Status;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 import static com.sergiocruz.capstone.database.DateConverter.getFormattedDateString;
+import static com.sergiocruz.capstone.model.Status.LOADING;
+import static com.sergiocruz.capstone.model.Status.SUCCESS;
 
 public class BindingAdapters {
 
@@ -63,11 +68,32 @@ public class BindingAdapters {
         textView.setText(getFormattedDateString(dateMillis));
     }
 
-//
-//    @BindingAdapter("android:visibility")
-//    public static void setVisibility(View view, Boolean value) {
-//        view.setVisibility(value ? View.VISIBLE : View.GONE);
-//    }
 
+    @BindingAdapter("android:visibility")
+    public static void setVisibility(View view, Status status) {
+        Integer visibility = View.GONE;
+        if (status == LOADING) {
+            visibility = View.VISIBLE;
+        } else if (status == SUCCESS){
+            visibility = View.GONE;
+        }
+        view.setVisibility(visibility);
+    }
+
+    @BindingAdapter("visible")
+    public static void setVisible(ImageView view, Status status) {
+        Integer visibility = View.GONE;
+        Drawable drawable = view.getDrawable();
+        Animatable animatable = (Animatable) drawable;
+
+        if (status == LOADING || status == Status.PROCESSING) {
+            visibility = View.VISIBLE;
+            animatable.start();
+        } else if (status == SUCCESS){
+            animatable.stop();
+            visibility = View.GONE;
+        }
+        view.setVisibility(visibility);
+    }
 
 }

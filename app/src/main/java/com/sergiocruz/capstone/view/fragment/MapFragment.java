@@ -1,5 +1,6 @@
 package com.sergiocruz.capstone.view.fragment;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,15 +15,19 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.FragmentMapBinding;
+import com.sergiocruz.capstone.model.Travel;
+import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
 import timber.log.Timber;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private MainViewModel viewModel;
 
     @Nullable
     @Override
@@ -37,6 +42,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+        // Obtain the ViewModel component.
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
+
 
         return binding.getRoot();
     }
@@ -44,6 +52,39 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        viewModel
+                .getTravelPacks()
+                .observe(this, travels -> {
+                    for (Travel travel : travels) {
+                        // Add a marker for each location
+                        LatLng location = new LatLng(
+                                travel.getLatitude(),
+                                travel.getLongitude());
+                        Marker marker = mMap.addMarker(
+                                new MarkerOptions()
+                                        .position(location)
+                                        .title(travel.getName())
+                                        .visible(true));
+
+                        marker.setTag(travel);
+
+                    }
+
+                    googleMap.setOnMarkerClickListener(marker -> {
+                        viewModel.setSelectedTravel((Travel) marker.getTag());
+
+                        getActivity().getSupportFragmentManager()
+                                .beginTransaction()
+                                .setReorderingAllowed(true)
+                                .add(R.id.root_fragment_container, new TravelDetailsFragment(), TravelDetailsFragment.class.getSimpleName())
+                                .addToBackStack(TravelDetailsFragment.class.getSimpleName())
+                                .commit();
+
+                        return false;
+                    });
+                }
+        );
 
         // Add a marker in Lisbon, Portugal, and move the camera.
         LatLng lisbon = new LatLng(38.736946, -9.142685);

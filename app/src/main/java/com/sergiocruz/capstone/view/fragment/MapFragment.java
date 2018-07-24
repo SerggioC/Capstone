@@ -42,9 +42,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
         // Obtain the ViewModel component.
         viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
-
 
         return binding.getRoot();
     }
@@ -56,35 +56,35 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         viewModel
                 .getTravelPacks()
                 .observe(this, travels -> {
-                    for (Travel travel : travels) {
-                        // Add a marker for each location
-                        LatLng location = new LatLng(
-                                travel.getLatitude(),
-                                travel.getLongitude());
-                        Marker marker = mMap.addMarker(
-                                new MarkerOptions()
-                                        .position(location)
-                                        .title(travel.getName())
-                                        .visible(true));
+                            if (travels == null) return;
 
-                        marker.setTag(travel);
+                            // Add a marker for each location
+                            for (Travel travel : travels) {
+                                LatLng location = new LatLng(
+                                        travel.getLatitude(),
+                                        travel.getLongitude());
 
-                    }
+                                Marker marker = mMap.addMarker(
+                                        new MarkerOptions()
+                                                .position(location)
+                                                .title(travel.getName())
+                                                .visible(true));
 
-                    googleMap.setOnMarkerClickListener(marker -> {
-                        viewModel.setSelectedTravel((Travel) marker.getTag());
+                                marker.setTag(travel);
+                            }
 
-                        getActivity().getSupportFragmentManager()
-                                .beginTransaction()
-                                .setReorderingAllowed(true)
-                                .add(R.id.root_fragment_container, new TravelDetailsFragment(), TravelDetailsFragment.class.getSimpleName())
-                                .addToBackStack(TravelDetailsFragment.class.getSimpleName())
-                                .commit();
+                            googleMap.setOnInfoWindowClickListener(marker -> {
+                                viewModel.setSelectedTravel((Travel) marker.getTag());
 
-                        return false;
-                    });
-                }
-        );
+                                getActivity().getSupportFragmentManager()
+                                        .beginTransaction()
+                                        .setReorderingAllowed(true)
+                                        .add(R.id.root_fragment_container, new TravelDetailsFragment(), TravelDetailsFragment.class.getSimpleName())
+                                        .addToBackStack(TravelDetailsFragment.class.getSimpleName())
+                                        .commit();
+                            });
+                        }
+                );
 
         // Add a marker in Lisbon, Portugal, and move the camera.
         LatLng lisbon = new LatLng(38.736946, -9.142685);

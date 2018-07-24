@@ -2,7 +2,7 @@ package com.sergiocruz.capstone.widgets;
 
 import android.appwidget.AppWidgetProvider;
 
-public class RecipeWidgetProvider extends AppWidgetProvider {
+public class TravelWidgetProvider extends AppWidgetProvider {
 //    public static final String WIDGET_RECIPE_EXTRA = "widget_recipe_extra";
 //    public static final String WIDGET_RECIPE_BUNDLE = "widget_recipe_bundle";
 //
@@ -12,9 +12,9 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
 //    @Override
 //    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 //        Timber.i("onUpdate widget");
-//        new AsyncTask<Void, Void, List<Recipe>>() {
+//        new AsyncTask<Void, Void, List<Travel>>() {
 //            @Override
-//            protected List<Recipe> doInBackground(Void[] objects) {
+//            protected List<Travel> doInBackground(Void[] objects) {
 //                RecipesDao recipesDao = RecipeDatabase.getDatabase(context).recipesDao();
 //                List<Integer> recipeColumnIds = WidgetConfiguration.loadAllFromPreferences(context, appWidgetIds);
 //                int size = recipeColumnIds.size();
@@ -27,7 +27,7 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
 //            }
 //
 //            @Override
-//            protected void onPostExecute(List<Recipe> recipeList) {
+//            protected void onPostExecute(List<Travel> recipeList) {
 //                if (recipeList == null) return;
 //
 //                for (int i = 0; i < recipeList.size(); i++) {
@@ -40,8 +40,8 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
 //
 //    }
 //
-//    static void updateRecipeAppWidget(Context context, AppWidgetManager appWidgetManager, Recipe recipe, int appWidgetId) {
-//        RemoteViews remoteViews = getRecipeRemoteViews(context, recipe, appWidgetId);
+//    static void updateRecipeAppWidget(Context context, AppWidgetManager appWidgetManager, Travel travel, int appWidgetId) {
+//        RemoteViews remoteViews = getRecipeRemoteViews(context, travel, appWidgetId);
 //        appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
 //        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_listview);
 //    }

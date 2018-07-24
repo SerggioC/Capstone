@@ -32,8 +32,6 @@
     <string name="title_promos">Promotions</string>
     <string name="title_profile">Profile</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="email">Email</string>
     <string name="not_in_database">Not found in Database</string>
     <string name="register_email">Register with this email?</string>
@@ -69,5 +67,6 @@
     <string name="sign_in_to_comment">Please sign In to comment</string>
     <string name="rating_required">Your rating is required</string>
     <string name="loading_animation">Loading animation</string>
+    <string name="no_data">No data to display</string>
 
 </resources>

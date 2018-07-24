@@ -13,6 +13,7 @@ import com.sergiocruz.capstone.util.TimberImplementation;
 import com.sergiocruz.capstone.view.fragment.HomeFragment;
 import com.sergiocruz.capstone.view.fragment.LoginFragment;
 import com.sergiocruz.capstone.view.fragment.MainContainerFragment;
+import com.sergiocruz.capstone.view.fragment.TravelDetailsFragment;
 import com.squareup.leakcanary.LeakCanary;
 
 import static com.sergiocruz.capstone.view.fragment.HomeFragment.ROOT_FRAGMENT_NAME;
@@ -91,13 +92,19 @@ public class MainActivity extends AppCompatActivity {
                 findFragmentByTag(MainContainerFragment.class.getSimpleName());
 
         if (loginFragment != null && loginFragment.isVisible()) {
-
             loginFragment.onLoginBackPressed();
 
         } else if (mainContainerFragment != null && mainContainerFragment.isVisible()) {
-
             if (mainContainerFragment.isDrawerOpen()) {
                 mainContainerFragment.closeDrawer();
+                return;
+            }
+
+            TravelDetailsFragment travelDetailsFragment = (TravelDetailsFragment) fragmentManager.
+                    findFragmentByTag(TravelDetailsFragment.class.getSimpleName());
+
+            if (travelDetailsFragment != null && travelDetailsFragment.isVisible()) {
+                fragmentManager.popBackStack();
                 return;
             }
 

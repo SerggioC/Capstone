@@ -7,5 +7,5 @@
     android:minWidth="270dp"
     android:previewImage="@drawable/travel_image"
     android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="0"
+    android:updatePeriodMillis="18000000"
     android:widgetCategory="home_screen"/>

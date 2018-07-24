@@ -22,3 +22,6 @@ Enable log in huawei
 
 loading indicators
 https://loading.io
+
+stack widgets
+https://android.googlesource.com/platform/development/+/master/samples/StackWidget

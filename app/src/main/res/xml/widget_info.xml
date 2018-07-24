@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--    android:configure="com.sergiocruz.capstone.widgets.WidgetConfiguration"-->
+<!-- size dp = 70 × cells − 30 -->
 <appwidget-provider
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="com.sergiocruz.capstone.widgets.WidgetConfiguration"
     android:initialLayout="@layout/widget_layout"
-    android:minHeight="220dp"
-    android:minWidth="270dp"
-    android:previewImage="@drawable/travel_image"
+    android:minHeight="110dp"
+    android:minWidth="180dp"
+    android:previewImage="@mipmap/ic_launcher"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="18000000"
     android:widgetCategory="home_screen"/>

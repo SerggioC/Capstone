@@ -3,14 +3,25 @@ package com.sergiocruz.capstone.widgets;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.sergiocruz.capstone.R;
+import com.sergiocruz.capstone.model.Travel;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+
+import timber.log.Timber;
+
+import static com.sergiocruz.capstone.widgets.StackWidgetProvider.WIDGET_TRAVEL_BUNDLE;
+import static com.sergiocruz.capstone.widgets.StackWidgetProvider.WIDGET_TRAVEL_EXTRA;
 
 public class StackWidgetService extends RemoteViewsService {
     @Override
@@ -21,51 +32,91 @@ public class StackWidgetService extends RemoteViewsService {
 
 class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private static final int mCount = 10;
-    private List<String> mWidgetItems = new ArrayList<>();
     private Context mContext;
     private int mAppWidgetId;
+    private ArrayList<Travel> travelList;
+    private Intent intent;
+
 
     public StackRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
-        mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                AppWidgetManager.INVALID_APPWIDGET_ID);
+        mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        this.intent = intent;
+
+        getDataFromBundle(intent);
+
     }
+
+    private void getDataFromBundle(Intent intent) {
+        Bundle bundle = intent.getBundleExtra(WIDGET_TRAVEL_BUNDLE);
+        if (bundle != null) {
+            travelList = bundle.getParcelableArrayList(WIDGET_TRAVEL_EXTRA);
+        }
+    }
+
 
     public void onCreate() {
         // In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
         // for example downloading or creating content etc, should be deferred to onDataSetChanged()
         // or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
-        for (int i = 0; i < mCount; i++) {
-//            mWidgetItems.add(new Travel(null, "name " + i, null, null, null, null, null, null, null, null, null, null, null, null, null, null));
-            mWidgetItems.add("item " + i);
-        }
+//        for (int i = 0; i < mCount; i++) {
+////            mWidgetItems.add(new Travel(null, "name " + i, null, null, null, null, null, null, null, null, null, null, null, null, null, null));
+//            mWidgetItems.add("item " + i);
+//        }
+
+        Timber.i("oncreate");
+        getDataFromBundle(intent);
+
         // We sleep for 3 seconds here to show how the empty view appears in the interim.
         // The empty view is set in the StackWidgetProvider and should be a sibling of the
         // collection view.
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void onDestroy() {
         // In onDestroy() you should tear down anything that was setup for your data source,
         // eg. cursors, connections, etc.
-        mWidgetItems.clear();
     }
 
     public int getCount() {
-        return mCount;
+        Timber.i("getcount");
+        if (travelList == null) return 0;
+        return travelList.size();
+    }
+
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            // Log exception
+            return null;
+        }
     }
 
     public RemoteViews getViewAt(int position) {
+        Timber.i("getting view at " + position);
+
+        Travel travel = travelList.get(position);
 
         // position will always range from 0 to getCount() - 1.
         // We construct a remote views item based on our widget item xml file, and set the
-        // text based on the position.
-        RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), R.layout.widget_layout);
-        remoteViews.setTextViewText(R.id.widget_item, mWidgetItems.get(position));
+        // text and image based on the position.
+        RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
+
+        remoteViews.setTextViewText(R.id.widget_text, travel.getName() + " " + travel.getCountry());
+        //remoteViews.setImageViewUri(R.id.widget_image, Uri.parse(travel.getImages().get(0)));
+
+        remoteViews.setImageViewBitmap(R.id.widget_image, getBitmapFromURL(travel.getImages().get(0)));
 
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
@@ -74,17 +125,12 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
 
-        remoteViews.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
+        remoteViews.setOnClickFillInIntent(R.id.widget_item_root, fillInIntent);
         // You can do heaving lifting in here, synchronously. For example, if you need to
         // process an image, fetch something from the network, etc., it is ok to do it here,
         // synchronously. A loading view will show up in lieu of the actual contents in the
         // interim.
-        try {
-            System.out.println("Loading view " + position);
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         // Return the remote views object.
         return remoteViews;
     }
@@ -100,6 +146,8 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     }
 
     public long getItemId(int position) {
+        Timber.i("position " + position);
+
         return position;
     }
 
@@ -108,6 +156,8 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     }
 
     public void onDataSetChanged() {
+        Timber.i("onDataSetChanged");
+
         // This is triggered when you call AppWidgetManager notifyAppWidgetViewDataChanged
         // on the collection view corresponding to this factory. You can do heaving lifting in
         // here, synchronously. For example, if you need to process an image, fetch something

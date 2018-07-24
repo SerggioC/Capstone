@@ -1,5 +1,6 @@
 package com.sergiocruz.capstone.view.fragment;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -59,7 +60,7 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         }
         viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
 
-        getBackedUpComment();
+        bindBackedUpComment();
 
         binding.ratingBar.setOnRatingBarChangeListener(this::onRatingChanged);
 
@@ -161,7 +162,7 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         });
     }
 
-    private void getBackedUpComment() {
+    private void bindBackedUpComment() {
         new AppExecutors().diskIO().execute(() -> {
             Comment backedUpComment = repository
                     .getBackedUpCommentByID(travelID + viewModel.getUser().getValue().getUserID());
@@ -171,24 +172,22 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         });
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void backupWrittenMessage() {
         String commentText = binding.commentEditText.getText().toString();
         Float rating = binding.ratingBar.getRating();
 
-        if (rating == 0 && TextUtils.isEmpty(commentText)) {
+        if (rating == 0 && TextUtils.isEmpty(commentText))
             return;
-        }
-
-        Comment comment = getCommentObject();
 
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
+                Comment comment = getCommentObject();
                 Repository.getInstance(getContext()).backUpComment(comment);
                 return null;
             }
         }.execute();
-
     }
 
     @Override

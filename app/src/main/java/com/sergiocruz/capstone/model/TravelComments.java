@@ -1,7 +1,7 @@
 package com.sergiocruz.capstone.model;
 
 public class TravelComments {
-    Long number;
+    Long number; //number of comments
     String travelID;
 
     public TravelComments() {

@@ -4,15 +4,18 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.sergiocruz.capstone.database.DateConverter;
 import com.sergiocruz.capstone.database.StringListConverter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Travel {
+public class Travel implements Parcelable{
 
     @NonNull
     @PrimaryKey(autoGenerate = false)
@@ -232,4 +235,101 @@ public class Travel {
                 ", rating= " + rating +
                 '}';
     }
+
+
+    protected Travel(Parcel in) {
+        name = in.readString();
+        country = in.readString();
+        description = in.readString();
+        price = in.readString();
+        date = in.readByte() == 0x00 ? null : in.readLong();
+        if (in.readByte() == 0x01) {
+            images = new ArrayList<String>();
+            in.readList(images, String.class.getClassLoader());
+        } else {
+            images = null;
+        }
+        if (in.readByte() == 0x01) {
+            videos = new ArrayList<String>();
+            in.readList(videos, String.class.getClassLoader());
+        } else {
+            videos = null;
+        }
+        if (in.readByte() == 0x01) {
+            types = new ArrayList<String>();
+            in.readList(types, String.class.getClassLoader());
+        } else {
+            types = null;
+        }
+        byte availableVal = in.readByte();
+        available = availableVal == 0x02 ? null : availableVal != 0x00;
+        isFavorite = in.readInt();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
+        comments = in.readInt();
+        stars = in.readInt();
+        rating = in.readFloat();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(country);
+        dest.writeString(description);
+        dest.writeString(price);
+        if (date == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeLong(date);
+        }
+        if (images == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(images);
+        }
+        if (videos == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(videos);
+        }
+        if (types == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(types);
+        }
+        if (available == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (available ? 0x01 : 0x00));
+        }
+        dest.writeInt(isFavorite);
+        dest.writeDouble(latitude);
+        dest.writeDouble(longitude);
+        dest.writeInt(comments);
+        dest.writeInt(stars);
+        dest.writeFloat(rating);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Travel> CREATOR = new Parcelable.Creator<Travel>() {
+        @Override
+        public Travel createFromParcel(Parcel in) {
+            return new Travel(in);
+        }
+
+        @Override
+        public Travel[] newArray(int size) {
+            return new Travel[size];
+        }
+    };
+
 }

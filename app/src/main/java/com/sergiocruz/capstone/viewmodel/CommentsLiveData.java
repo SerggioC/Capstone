@@ -27,7 +27,7 @@ public class CommentsLiveData extends LiveData<List<Comment>> {
 
     public CommentsLiveData(DatabaseReference databaseReference, String travelID) {
         databaseReference = databaseReference.child(TRAVEL_PACK_COMMENTS_REF).child(travelID);
-        this.query = databaseReference; // .limitToLast(10);
+        this.query = databaseReference.orderByChild("date"); // .limitToLast(10);
     }
 
     @Override

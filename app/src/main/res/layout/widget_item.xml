@@ -18,11 +18,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:padding="@dimen/standard_margin"
-        android:text="@string/title_promos"
-        android:textColor="@color/white"
+        android:paddingStart="@dimen/standard_margin"
+        android:paddingEnd="@dimen/standard_margin"
+        android:paddingBottom="@dimen/full_margin"
+        android:textColor="@color/amber50"
+        android:elevation="4dp"
         android:textSize="24sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        tools:text="@string/title_promos"/>
 
 
 </FrameLayout>

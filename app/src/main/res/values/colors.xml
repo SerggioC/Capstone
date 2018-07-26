@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#ad1457</color>
+    <color name="colorPrimaryLight">#d81b60</color>
     <color name="colorPrimaryDark">#880e4f</color>
     <color name="colorPrimaryDarker">#69043a</color>
     <color name="colorPrimaryDarkerTransparent">#7869043a</color>
-    <color name="colorCommentsBackground">#7ddadada</color>
     <color name="colorAccent">#ffd600</color>
-    <color name="colorPrimaryLighter">#d81b60</color>
+    <color name="colorCommentsBackground">#7ddadada</color>
     <color name="white">#ffffff</color>
     <color name="white_transparent">#81ffffff</color>
     <color name="black">#000000</color>

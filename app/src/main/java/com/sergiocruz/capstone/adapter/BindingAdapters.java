@@ -15,6 +15,9 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.sergiocruz.capstone.model.Status;
 
+import java.util.List;
+import java.util.Random;
+
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 import static com.sergiocruz.capstone.database.DateConverter.getFormattedDateString;
 import static com.sergiocruz.capstone.model.Status.LOADING;
@@ -41,15 +44,20 @@ public class BindingAdapters {
     }
 
     //@BindingAdapter("imageUrl")
-    @BindingAdapter(value = {"imageUrl", "errorDrawable", "cornerRadius"}, requireAll = false)
-    public static void setImageUrl(ImageView imageView, String url, Drawable errorDrawable, Float cornerRadius) {
-        // dp gets converted to density * value automatically here
+    @BindingAdapter(value = {"imageUrl", "errorDrawable", "cornerRadius", "imageList"}, requireAll = false)
+    public static void setImageUrl(ImageView imageView, String url, Drawable errorDrawable, Float cornerRadius, List<String> imageList) {
+
+        if (imageList != null) {
+            int random = new Random().nextInt(imageList.size());
+            url = imageList.get(random);
+        }
 
         RequestOptions options = new RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .error(errorDrawable)
                 .priority(Priority.HIGH);
 
+        // dp gets converted to density * value automatically here
         if (cornerRadius != null) {
             options = options.transforms(new CenterCrop(), new RoundedCorners(Math.round(cornerRadius)));
         }
@@ -80,6 +88,7 @@ public class BindingAdapters {
         view.setVisibility(visibility);
     }
 
+    //slower
     @BindingAdapter("visible")
     public static void setVisible(ImageView view, Status status) {
         Integer visibility = View.GONE;

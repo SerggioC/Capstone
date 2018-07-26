@@ -32,7 +32,7 @@ import timber.log.Timber;
 import static com.sergiocruz.capstone.model.Status.LOADING;
 import static com.sergiocruz.capstone.model.Status.SUCCESS;
 
-public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnItemClickListener<String>, BaseAdapter.OnItemTouchListener {
+public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnItemClickListener<String>, BaseAdapter.OnItemTouchListener, CommentsAdapter.OnEditClickListener {
 
     private static final String SOME_BUNDLE_KEY = "SOME_BUNDLE_KEY";
     private FragmentTravelDetailsBinding binding;
@@ -78,7 +78,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
         setupImagesRecyclerView();
 
-        binding.writeComment.setOnClickListener(this::onClickToComment);
+        binding.writeComment.setOnClickListener(v -> onClickToComment(v, false, null));
 
         return binding.getRoot();
     }
@@ -90,7 +90,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
         String currentUserID = viewModel.getUser().getValue().getUserID();
 
-        commentsAdapter = new CommentsAdapter(currentUserID);
+        commentsAdapter = new CommentsAdapter(currentUserID, this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         binding.commentsRecyclerView.setLayoutManager(layoutManager);
         binding.commentsRecyclerView.setAdapter(commentsAdapter);
@@ -123,7 +123,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         Toast.makeText(getContext(), "Clicked position = " + position, Toast.LENGTH_LONG).show();
     }
 
-    private void onClickToComment(View v) {
+    private void onClickToComment(View v, Boolean editMode, Comment comment) {
         if (viewModel.getUser().getValue().getIsAnonymous()) {
             Utils.showSlimToast(getContext(), getString(R.string.sign_in_to_comment), Toast.LENGTH_LONG);
             return;
@@ -131,7 +131,14 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         BottomSheetCommentDialog commentDialog = new BottomSheetCommentDialog();
         String travelID = selectedTravel.getID();
         commentDialog.setTravelID(travelID);
+        commentDialog.setEditMode(editMode);
+        commentDialog.setCommentToEdit(comment);
         commentDialog.show(getActivity().getSupportFragmentManager(), BottomSheetCommentDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void onEditClick(Comment comment) {
+        onClickToComment(null, true, comment);
     }
 
     @Override
@@ -173,6 +180,5 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         }
         return false;
     }
-
 
 }

@@ -3,7 +3,6 @@ package com.sergiocruz.capstone.widgets;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
@@ -33,7 +32,6 @@ public class StackWidgetProvider extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         Timber.i("onReceive");
 
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         if (intent.getAction().equals(TOAST_ACTION)) {
             int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
             int viewIndex = intent.getIntExtra(EXTRA_ITEM, 0);
@@ -53,9 +51,6 @@ public class StackWidgetProvider extends AppWidgetProvider {
 
     private void getRemoteViews(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         FirebaseRepository repository = FirebaseRepository.getInstance();
-
-        MutableLiveData mld = new MutableLiveData();
-
 
         repository.getTravelPacks().observeForever(new Observer<List<Travel>>() {
             @Override
@@ -103,6 +98,8 @@ public class StackWidgetProvider extends AppWidgetProvider {
 
                     appWidgetManager.updateAppWidget(appWidgetIds[i], remoteViews);
                 }
+
+                repository.getTravelPacks().removeObserver(this);
             }
 
         });

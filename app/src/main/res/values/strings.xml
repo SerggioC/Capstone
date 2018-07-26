@@ -68,5 +68,6 @@
     <string name="rating_required">Your rating is required</string>
     <string name="loading_animation">Loading animation</string>
     <string name="no_data">No data to display</string>
+    <string name="available">Available Travels</string>
 
 </resources>

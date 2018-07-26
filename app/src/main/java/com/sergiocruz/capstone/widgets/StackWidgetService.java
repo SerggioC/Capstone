@@ -3,20 +3,16 @@ package com.sergiocruz.capstone.widgets;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.model.Travel;
+import com.sergiocruz.capstone.util.Utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Random;
 
 import timber.log.Timber;
 
@@ -31,21 +27,20 @@ public class StackWidgetService extends RemoteViewsService {
 }
 
 class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
-    private static final int mCount = 10;
     private Context mContext;
-    private int mAppWidgetId;
     private ArrayList<Travel> travelList;
     private Intent intent;
 
 
-    public StackRemoteViewsFactory(Context context, Intent intent) {
+    StackRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
-        mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        int mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         this.intent = intent;
 
         getDataFromBundle(intent);
 
     }
+
 
     private void getDataFromBundle(Intent intent) {
         Bundle bundle = intent.getBundleExtra(WIDGET_TRAVEL_BUNDLE);
@@ -53,7 +48,6 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
             travelList = bundle.getParcelableArrayList(WIDGET_TRAVEL_EXTRA);
         }
     }
-
 
     public void onCreate() {
         // In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
@@ -83,24 +77,9 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     }
 
     public int getCount() {
-        Timber.i("getcount");
+        Timber.i("getCount");
         if (travelList == null) return 0;
         return travelList.size();
-    }
-
-    public static Bitmap getBitmapFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            // Log exception
-            return null;
-        }
     }
 
     public RemoteViews getViewAt(int position) {
@@ -116,7 +95,9 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         remoteViews.setTextViewText(R.id.widget_text, travel.getName() + " " + travel.getCountry());
         //remoteViews.setImageViewUri(R.id.widget_image, Uri.parse(travel.getImages().get(0)));
 
-        remoteViews.setImageViewBitmap(R.id.widget_image, getBitmapFromURL(travel.getImages().get(0)));
+        // get a random image from the list
+        int random = new Random().nextInt(travel.getImages().size());
+        remoteViews.setImageViewBitmap(R.id.widget_image, Utils.getBitmapFromURL(travel.getImages().get(random)));
 
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.

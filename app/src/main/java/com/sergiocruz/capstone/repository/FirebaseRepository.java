@@ -113,6 +113,21 @@ public class FirebaseRepository {
                 });
     }
 
+    public void editComment(Comment comment) {
+        databaseReference
+                .child(TRAVEL_PACK_COMMENTS_REF)
+                .child(comment.getTravelID())
+                .child(comment.getCommentID())
+                .setValue(comment)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Timber.i("edit comment done");
+                        updateTravelPackStars(comment);
+                    }
+                });
+    }
+
+
     private void updateTravelPackStars(Comment comment) {
         // Update Number of comments, Number of stars and rating
         // for travel pack ID

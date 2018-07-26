@@ -21,4 +21,5 @@
     <dimen name="fab_press_translation_z">6dp</dimen>
     <dimen name="standard_margin">8dp</dimen>
     <dimen name="half_margin">4dp</dimen> <!-- default pressed 12dp-->
+    <dimen name="full_margin">16dp</dimen>
 </resources>

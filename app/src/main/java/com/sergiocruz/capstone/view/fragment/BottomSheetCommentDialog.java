@@ -30,12 +30,17 @@ import com.sergiocruz.capstone.viewmodel.MainViewModel;
 import java.text.DecimalFormat;
 
 public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
-    public static final String RATING_KEY = "RATING_KEY";
-    public static final String MESSAGE_KEY = "MESSAGE_KEY";
+    private static final String RATING_KEY = "RATING_KEY";
+    private static final String MESSAGE_KEY = "MESSAGE_KEY";
+    private static final String TRAVEL_ID_KEY = "TRAVEL_ID_KEY";
+    private static final String IS_EDIT_MODE_KEY = "IS_EDIT_MODE_KEY";
+    private static final String COMMENT_ID_KEY = "COMMENT_ID_KEY";
     private String travelID;
     private ItemBottomsheetCommentLayoutBinding binding;
     private MainViewModel viewModel;
     private Repository repository;
+    private Boolean isEditMode;
+    private Comment commentToEdit;
 
     public BottomSheetCommentDialog() {
         super();
@@ -45,6 +50,18 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         repository = Repository.getInstance(getContext());
+    }
+
+    public void setTravelID(String travelID) {
+        this.travelID = travelID;
+    }
+
+    public void setEditMode(Boolean isEditMode) {
+        this.isEditMode = isEditMode;
+    }
+
+    public void setCommentToEdit(Comment comment) {
+        this.commentToEdit = comment;
     }
 
     @Nullable
@@ -57,8 +74,18 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
                 binding.ratingBar.setRating(savedInstanceState.getLong(RATING_KEY));
             if (savedInstanceState.containsKey(MESSAGE_KEY))
                 binding.commentEditText.setText(savedInstanceState.getString(MESSAGE_KEY));
+            if (savedInstanceState.containsKey(TRAVEL_ID_KEY))
+                this.travelID = savedInstanceState.getString(TRAVEL_ID_KEY);
+            if (savedInstanceState.containsKey(IS_EDIT_MODE_KEY))
+                this.isEditMode = savedInstanceState.getBoolean(IS_EDIT_MODE_KEY);
+            if (savedInstanceState.containsKey(COMMENT_ID_KEY))
+                this.commentToEdit = savedInstanceState.getParcelable(COMMENT_ID_KEY);
         }
         viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
+
+        if (isEditMode) {
+            binding.setComment(commentToEdit);
+        }
 
         bindBackedUpComment();
 
@@ -68,10 +95,16 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
             if (!validateData()) return;
             binding.sendButton.setEnabled(false);
             Comment comment = getCommentObject();
-            FirebaseRepository.getInstance().sendComment(comment);
+            if (isEditMode) {
+                FirebaseRepository.getInstance().editComment(comment);
+            } else {
+                FirebaseRepository.getInstance().sendComment(comment);
+            }
+
             deleteBackedUpComment(comment);
             clearUIDataAndExit();
         });
+
 
         return binding.getRoot();
     }
@@ -140,9 +173,10 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         Float rating = binding.ratingBar.getRating();
         User user = viewModel.getUser().getValue();
         String currentUserID = user.getUserID();
+        String id = isEditMode ? commentToEdit.getCommentID() : travelID + currentUserID; /* custom unique key for Room, ignored for Firebase*/
 
         return new Comment(
-                travelID + currentUserID, /* custom unique key for Room, ignored for Firebase*/
+                id,
                 currentUserID,
                 travelID,
                 commentText,
@@ -184,7 +218,7 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
             @Override
             protected Void doInBackground(Void... voids) {
                 Comment comment = getCommentObject();
-                Repository.getInstance(getContext()).backUpComment(comment);
+                repository.backUpComment(comment);
                 return null;
             }
         }.execute();
@@ -201,6 +235,10 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
 
         if (!TextUtils.isEmpty(commentText))
             outState.putString(MESSAGE_KEY, commentText);
+
+        outState.putString(TRAVEL_ID_KEY, travelID);
+        outState.putBoolean(IS_EDIT_MODE_KEY, isEditMode);
+        outState.putParcelable(COMMENT_ID_KEY, commentToEdit);
     }
 
     @Override
@@ -209,7 +247,5 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         backupWrittenMessage();
     }
 
-    public void setTravelID(String travelID) {
-        this.travelID = travelID;
-    }
+
 }

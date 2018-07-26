@@ -16,11 +16,17 @@ import java.util.List;
 ;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.CommentViewHolder> {
+    private final OnEditClickListener editClickListener;
+    public interface OnEditClickListener {
+        void onEditClick(Comment comment);
+    }
+
     private String currentUserID;
     private List<Comment> commentList;
 
-    public CommentsAdapter(String currentUserID) {
+    public CommentsAdapter(String currentUserID, OnEditClickListener editClickListener) {
         this.currentUserID = currentUserID;
+        this.editClickListener = editClickListener;
     }
 
     public void swapData(List<Comment> commentList) {
@@ -38,7 +44,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
-        holder.bind(commentList.get(position));
+        holder.bind(position);
     }
 
     @Override
@@ -55,9 +61,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             binding.comment.setOnClickListener(this);
         }
 
-        void bind(Comment comment) {
-            binding.setComment(comment);
+        void bind(int position) {
+            binding.setComment(commentList.get(position));
             binding.setCurrentUser(currentUserID);
+            binding.edit.setOnClickListener(v -> editClickListener.onEditClick(commentList.get(position)));
         }
 
         @Override

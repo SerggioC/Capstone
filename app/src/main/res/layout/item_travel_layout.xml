@@ -29,6 +29,7 @@
             android:scaleType="centerCrop"
             app:errorDrawable="@{@drawable/travel_image}"
             app:imageUrl="@{object.travel.images.get(0)}"
+            app:imageList="@{object.travel.images}"
             tools:src="@tools:sample/backgrounds/scenic"/>
 
         <android.support.constraint.ConstraintLayout

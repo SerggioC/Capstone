@@ -4,6 +4,7 @@
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/widget_sorround"
     android:orientation="vertical">
 
     <TextView
@@ -12,12 +13,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/widget_title_background"
-        android:drawableEnd="@drawable/ic_open"
         android:padding="@dimen/standard_margin"
-        android:text="@string/title_promos"
+        android:text="@string/app_name"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold"/>
 
     <StackView
@@ -33,5 +33,5 @@
         android:layout_height="wrap_content"
         android:background="@drawable/gradient_background"
         android:text="@string/no_data"/>
-</LinearLayout>
 
+</LinearLayout>

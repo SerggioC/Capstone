@@ -3,10 +3,12 @@ package com.sergiocruz.capstone.model;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 @Entity
-public class Comment {
+public class Comment implements Parcelable {
 
     @NonNull
     @PrimaryKey
@@ -108,4 +110,56 @@ public class Comment {
     public void setStars(Float stars) {
         this.stars = stars;
     }
+
+    protected Comment(Parcel in) {
+        commentID = in.readString();
+        userID = in.readString();
+        travelID = in.readString();
+        content = in.readString();
+        date = in.readByte() == 0x00 ? null : in.readLong();
+        stars = in.readByte() == 0x00 ? null : in.readFloat();
+        userName = in.readString();
+        userImage = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(commentID);
+        dest.writeString(userID);
+        dest.writeString(travelID);
+        dest.writeString(content);
+        if (date == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeLong(date);
+        }
+        if (stars == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeFloat(stars);
+        }
+        dest.writeString(userName);
+        dest.writeString(userImage);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Comment> CREATOR = new Parcelable.Creator<Comment>() {
+        @Override
+        public Comment createFromParcel(Parcel in) {
+            return new Comment(in);
+        }
+
+        @Override
+        public Comment[] newArray(int size) {
+            return new Comment[size];
+        }
+    };
+
 }

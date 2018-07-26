@@ -41,6 +41,7 @@
                     android:transitionName="@{viewModel.travel.ID}"
                     app:errorDrawable="@{@drawable/travel_image}"
                     app:imageUrl="@{viewModel.travel.images.get(0)}"
+                    app:imageList="@{viewModel.travel.images}"
                     app:layout_collapseMode="parallax"
                     app:layout_collapseParallaxMultiplier="0.6"
                     tools:srcCompat="@drawable/austria"/>

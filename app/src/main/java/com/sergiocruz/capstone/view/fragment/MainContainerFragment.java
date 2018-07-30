@@ -28,19 +28,16 @@ import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
-import com.facebook.login.LoginManager;
-import com.google.firebase.auth.FirebaseAuth;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.FragmentDrawerBinding;
 import com.sergiocruz.capstone.util.Utils;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
+import static com.sergiocruz.capstone.util.SessionUtils.logoutFromFirebase;
 import static com.sergiocruz.capstone.view.fragment.HomeFragment.ROOT_FRAGMENT_NAME;
 
 public class MainContainerFragment extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
-
-    //FragmentMainContainerBinding binding;
     FragmentDrawerBinding binding;
     private MainViewModel viewModel;
 
@@ -125,7 +122,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
                 break;
 
             case R.id.nav_logout:
-                logoutFromFirebase();
+                logoutFromFirebase(getActivity());
                 break;
 
             case R.id.nav_share:
@@ -145,9 +142,9 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
         return true;
     }
 
-    private void logIn() {
+    public void logIn() {
         Utils.showSlimToast(getContext(), getString(R.string.login_with_accounts), Toast.LENGTH_LONG);
-        logoutFromFirebase();
+        logoutFromFirebase(getActivity());
     }
 
     private void showSettings() {
@@ -159,7 +156,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
-        popupView.setFocusable(true); // lets taps outside the popup also dismiss it
+        popupView.setFocusable(true); // let taps outside the popup also dismiss it
         popupWindow.setOutsideTouchable(true);
 
         popupWindow.setAnimationStyle(R.style.PopupWindowAnimationStyle);
@@ -219,7 +216,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
     }
 
     private void goToAccount() {
-        Toast.makeText(getContext(), "Account", Toast.LENGTH_LONG).show();
+        manageContentBackStack(new ProfileFragment(), false);
     }
 
     private void goToFavorites() {
@@ -275,13 +272,12 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
                 break;
             case 1:
                 fragment = new MapFragment();
-
                 break;
             case 2:
-
+                // promotions
                 break;
             case 3:
-
+                fragment = new ProfileFragment();
                 break;
         }
 
@@ -322,31 +318,6 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
 
     }
 
-    private void logoutFromFirebase() {
-        FirebaseAuth.getInstance().signOut();
-        LoginManager.getInstance().logOut();
-
-        viewModel.logoutUser();
-
-        // Pop out all the fragments including container and replace with the login fragment
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        String name = fragmentManager.getBackStackEntryAt(0).getName();
-        fragmentManager.popBackStack(name, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-        // Alternative pop all fragments from stack
-//        int stackEntryCount = fragmentManager.getBackStackEntryCount();
-//        for (int i = 0; i < stackEntryCount; i++) {
-//            fragmentManager.popBackStack();
-//        }
-
-        if (fragmentManager.findFragmentByTag(LoginFragment.class.getSimpleName()) == null) {
-            fragmentManager
-                    .beginTransaction()
-                    .replace(R.id.root_fragment_container, new LoginFragment(), LoginFragment.class.getSimpleName())
-                    .commit();
-        }
-
-    }
 
 
     @Override

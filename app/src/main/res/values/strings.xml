@@ -84,10 +84,14 @@
     <string name="app_url">https://github.com/SerggioC/Capstone</string>
     <string name="notifications_off">Off</string>
     <string name="notifications_on">On</string>
-    <string name="allow_notifications">Allow Notifications</string>
+    <string name="allow_notifications">Notifications</string>
     <string name="main_notification_channel_name">main</string>
 
     <string name="notification_pref_key">notification_preference_key</string>
     <string name="applications_settings">Applications Settings</string>
+    <string name="user_profile">User Profile</string>
+    <string name="user_name">User Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="authentication">Authentication</string>
 
 </resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreferenceCompat
+        android:defaultValue="@bool/default_notifications"
+        android:icon="@drawable/ic_notifications"
+        android:key="@string/notification_pref_key"
+        android:summaryOff="@string/notifications_off"
+        android:summaryOn="@string/notifications_on"
+        android:switchTextOff="@string/notifications_off"
+        android:switchTextOn="@string/notifications_on"
+        android:title="@string/allow_notifications"/>
+</PreferenceScreen>

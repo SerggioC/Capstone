@@ -25,3 +25,6 @@ https://loading.io
 
 stack widgets
 https://android.googlesource.com/platform/development/+/master/samples/StackWidget
+
+images
+https://pt.vecteezy.com/arte-vetorial/147499-depoimentos-e-set-coment-rios-cone

@@ -97,7 +97,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         // get a random image from the list
         int random = new Random().nextInt(travel.getImages().size());
-        remoteViews.setImageViewBitmap(R.id.widget_image, Utils.getBitmapFromURL(travel.getImages().get(random)));
+        remoteViews.setImageViewBitmap(R.id.widget_image, Utils.getBitmapFromURL(mContext, travel.getImages().get(random)));
 
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.

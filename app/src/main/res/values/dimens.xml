@@ -22,4 +22,7 @@
     <dimen name="standard_margin">8dp</dimen>
     <dimen name="half_margin">4dp</dimen> <!-- default pressed 12dp-->
     <dimen name="full_margin">16dp</dimen>
+
+    <dimen name="popup_window_elevation">24dp</dimen>
+
 </resources>

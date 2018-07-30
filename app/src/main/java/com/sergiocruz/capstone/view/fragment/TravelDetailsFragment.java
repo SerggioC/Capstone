@@ -32,7 +32,7 @@ import timber.log.Timber;
 import static com.sergiocruz.capstone.model.Status.LOADING;
 import static com.sergiocruz.capstone.model.Status.SUCCESS;
 
-public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnItemClickListener<String>, BaseAdapter.OnItemTouchListener, CommentsAdapter.OnEditClickListener {
+public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnItemClickListener<String>, BaseAdapter.OnItemTouchListener, CommentsAdapter.OnEditClickListener, BottomSheetCommentDialog.NewCommentInterface {
 
     private static final String SOME_BUNDLE_KEY = "SOME_BUNDLE_KEY";
     private FragmentTravelDetailsBinding binding;
@@ -41,6 +41,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
     private Travel selectedTravel;
     private TravelDetailsViewModel detailsViewModel;
     private CommentsAdapter commentsAdapter;
+    private Boolean hasNewComment = false;
 
     public TravelDetailsFragment() {
         // Required empty public constructor
@@ -99,6 +100,10 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
     private void populateCommentsRecyclerView(List<Comment> commentList) {
         commentsAdapter.swapData(commentList);
         detailsViewModel.setCurrentStatus(SUCCESS);
+        if (hasNewComment) {
+            binding.nestedScrollview.fullScroll(View.FOCUS_DOWN);
+            hasNewComment = false;
+        }
     }
 
     private void setupToolbar() {
@@ -133,7 +138,13 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         commentDialog.setTravelID(travelID);
         commentDialog.setEditMode(editMode);
         commentDialog.setCommentToEdit(comment);
+        commentDialog.setNewCommentInterface(this);
         commentDialog.show(getActivity().getSupportFragmentManager(), BottomSheetCommentDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void onNewComment() {
+        hasNewComment = true;
     }
 
     @Override

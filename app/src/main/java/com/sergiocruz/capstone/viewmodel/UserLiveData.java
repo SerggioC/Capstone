@@ -77,7 +77,6 @@ public class UserLiveData extends LiveData<User> {
     private class MyValueEventListener implements ValueEventListener {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
             if (dataSnapshot.exists()) {
                 User user = dataSnapshot.getValue(User.class);
                 setValue(user);

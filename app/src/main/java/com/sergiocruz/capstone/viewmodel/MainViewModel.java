@@ -4,8 +4,10 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
+import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.model.Status;
 import com.sergiocruz.capstone.model.Travel;
 import com.sergiocruz.capstone.model.TravelComments;
@@ -29,13 +31,15 @@ public class MainViewModel extends AndroidViewModel {
     private int clickedPosition;
     private Repository repository;
     private LiveData<User> user;
+    private MutableLiveData<String> userName = new MutableLiveData<>();
     private String userID;
     private Travel selectedTravel;
     private LiveData<List<Travel>> travelList;
     private LiveData<List<TravelStar>> travelStarsList;
     private LiveData<List<TravelComments>> numCommentsList;
     private MediatorLiveData<List<TravelData>> mediatorLiveData;
-    private Status currentStatus;
+    private MutableLiveData<Status> currentStatus = new MutableLiveData<>();
+    private String anonymUserString;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -43,6 +47,7 @@ public class MainViewModel extends AndroidViewModel {
             synchronized (LOCK) {
                 if (repository == null) {
                     repository = Repository.getInstance(application.getApplicationContext());
+                    anonymUserString = application.getApplicationContext().getString(R.string.anonymous_user);
                 }
             }
         }
@@ -79,12 +84,21 @@ public class MainViewModel extends AndroidViewModel {
         return user;
     }
 
-    public Status getCurrentStatus() {
-        return this.currentStatus;
+    private void updateUser(User user) {
+        if (user == null || user.getUserName() == null) {
+            userName.setValue(anonymUserString);
+        } else {
+            userName.setValue(user.getUserName());
+        }
     }
 
-    public void setCurrentStatus(Status currentStatus) {
-        this.currentStatus = currentStatus;
+    public MutableLiveData<String> getUserName() {
+        getUser().observeForever(this::updateUser);
+        return userName;
+    }
+
+    public MutableLiveData<Status> getCurrentStatus() {
+        return currentStatus;
     }
 
     public void logoutUser() {
@@ -120,7 +134,7 @@ public class MainViewModel extends AndroidViewModel {
         if (mediatorLiveData != null)
             return mediatorLiveData;
 
-        setCurrentStatus(LOADING);
+        currentStatus.setValue(LOADING);;
 
         mediatorLiveData = new MediatorLiveData<>();
         mediatorLiveData.addSource(getTravelPacks(), travels ->
@@ -138,7 +152,9 @@ public class MainViewModel extends AndroidViewModel {
     private void combineData(List<Travel> travels, List<TravelStar> travelStars, List<TravelComments> commentsList) {
         if (travels == null || travelStars == null || commentsList == null)
             return;
-        setCurrentStatus(PROCESSING);
+
+        currentStatus.setValue(PROCESSING);
+
         new AppExecutors().diskIO().execute(() -> {
             int size = travels.size();
             List<TravelData> travelDataList = new ArrayList<>(size);
@@ -171,7 +187,7 @@ public class MainViewModel extends AndroidViewModel {
                 travelDataList.add(new TravelData(travel, travelStar, travelComments));
             }
             mediatorLiveData.postValue(travelDataList);
-            setCurrentStatus(SUCCESS);
+            currentStatus.postValue(SUCCESS);
         });
     }
 

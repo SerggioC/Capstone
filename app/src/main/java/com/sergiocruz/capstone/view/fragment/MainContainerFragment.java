@@ -1,7 +1,8 @@
 package com.sergiocruz.capstone.view.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,13 +14,16 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -28,8 +32,10 @@ import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.databinding.FragmentDrawerBinding;
+import com.sergiocruz.capstone.util.Utils;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static com.sergiocruz.capstone.view.fragment.HomeFragment.ROOT_FRAGMENT_NAME;
 
 public class MainContainerFragment extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
@@ -68,11 +74,15 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
         // setup Bottom navigation Menu
         setupBottomNavigation();
 
+        // change menu option for anonymous user
+        viewModel.getUser().observe(this, user ->
+                binding.navView.getMenu().findItem(R.id.nav_login).setVisible(user.getIsAnonymous()));
+
         return binding.getRoot();
     }
 
     private void setupToolbar() {
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(false); // menu options on the drawer
         ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbarLayout.toolbar);
         binding.toolbarLayout.userIcon.setOnClickListener(this::toggleDrawer);
     }
@@ -104,13 +114,14 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
 
         switch (item.getItemId()) {
             case R.id.nav_login:
+                logIn();
                 break;
             case R.id.nav_favorites:
                 goToFavorites();
                 break;
 
             case R.id.nav_account:
-                goAccount();
+                goToAccount();
                 break;
 
             case R.id.nav_logout:
@@ -118,7 +129,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
                 break;
 
             case R.id.nav_share:
-                shareStuff();
+                shareApp();
                 break;
 
             case R.id.nav_feedback:
@@ -126,7 +137,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
                 break;
 
             case R.id.nav_options:
-                goToSettings();
+                showSettings();
                 break;
         }
 
@@ -134,19 +145,80 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
         return true;
     }
 
-    private void goToSettings() {
-        Toast.makeText(getContext(), "Settings", Toast.LENGTH_LONG).show();
+    private void logIn() {
+        Utils.showSlimToast(getContext(), getString(R.string.login_with_accounts), Toast.LENGTH_LONG);
+        logoutFromFirebase();
+    }
+
+    private void showSettings() {
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.settings_popup_window, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
+        popupView.setFocusable(true); // lets taps outside the popup also dismiss it
+        popupWindow.setOutsideTouchable(true);
+
+        popupWindow.setAnimationStyle(R.style.PopupWindowAnimationStyle);
+
+        // https://material.io/design/environment/elevation.html#default-elevations
+        popupWindow.setElevation(getContext().getResources().getDimension(R.dimen.popup_window_elevation));
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window token
+        popupWindow.showAtLocation(binding.frameContentHolder, Gravity.CENTER, 0, 0);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        Boolean defaultNotify = getContext().getResources().getBoolean(R.bool.default_notifications);
+        Boolean prefNotify = sharedPreferences.getBoolean(getString(R.string.notification_pref_key), defaultNotify);
+
+        Switch switchButton = popupView.findViewById(R.id.notifications_switch);
+        switchButton.setChecked(prefNotify);
+
+        TextView statusTextView = popupView.findViewById(R.id.status);
+        statusTextView.setText(switchButton.isChecked() ? R.string.notifications_on : R.string.notifications_off);
+
+        switchButton.setOnClickListener(v -> {
+            statusTextView.setText(switchButton.isChecked() ? R.string.notifications_on : R.string.notifications_off);
+//            saveSettings(sharedPreferences, switchButton.isChecked());
+        });
+
+        popupView.findViewById(R.id.cancel_button).setOnClickListener(v -> popupWindow.dismiss());
+        popupView.findViewById(R.id.ok_button).setOnClickListener(v -> {
+            saveSettings(sharedPreferences, switchButton.isChecked());
+            popupWindow.dismiss();
+        });
+
+    }
+
+    private void saveSettings(SharedPreferences sharedPreferences, Boolean shouldNotify) {
+        sharedPreferences
+                .edit()
+                .putBoolean(getString(R.string.notification_pref_key), shouldNotify)
+                .apply();
     }
 
     private void sendFeedback() {
-        Toast.makeText(getContext(), "Feedback", Toast.LENGTH_LONG).show();
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.root_fragment_container, new FeedbackFragment(), FeedbackFragment.class.getSimpleName())
+                .addToBackStack(FeedbackFragment.class.getSimpleName())
+                .commit();
     }
 
-    private void shareStuff() {
-        Toast.makeText(getContext(), "Share Stuff", Toast.LENGTH_LONG).show();
+    private void shareApp() {
+        String message = getString(R.string.share_app_text) + " " + getString(R.string.app_url);
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, message);
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getString(R.string.app_name)));
     }
 
-    private void goAccount() {
+    private void goToAccount() {
         Toast.makeText(getContext(), "Account", Toast.LENGTH_LONG).show();
     }
 
@@ -250,22 +322,6 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
 
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_options, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_logout:
-                logoutFromFirebase();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     private void logoutFromFirebase() {
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
@@ -275,9 +331,9 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
         // Pop out all the fragments including container and replace with the login fragment
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         String name = fragmentManager.getBackStackEntryAt(0).getName();
-        //fragmentManager.popBackStack(ROOT_FRAGMENT_NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         fragmentManager.popBackStack(name, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
+        // Alternative pop all fragments from stack
 //        int stackEntryCount = fragmentManager.getBackStackEntryCount();
 //        for (int i = 0; i < stackEntryCount; i++) {
 //            fragmentManager.popBackStack();
@@ -290,19 +346,8 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
                     .commit();
         }
 
-
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-    }
 
     @Override
     public void onDetach() {

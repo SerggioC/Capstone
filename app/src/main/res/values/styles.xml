@@ -2,11 +2,9 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
         <item name="android:fontFamily">@font/muli_regular</item>
 
         <item name="android:statusBarColor">@color/colorPrimaryDarker</item>
@@ -22,9 +20,20 @@
         <item name="android:windowTranslucentNavigation">false</item>
         <!--bottomNavigation.setTranslucentNavigationEnabled(true);-->
 
+        <item name="android:alertDialogTheme">@style/DialogStyle</item>
 
+        <item name="preferenceTheme">@style/AppPreferencesTheme</item>
     </style>
 
+    <style name="AppPreferencesTheme" parent="PreferenceFragment.Material">
+        <item name="android:windowBackground">@drawable/gradient_background</item>
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="DialogStyle" parent="android:Theme.Material.Light.Dialog.Alert">
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorAccent">@color/colorPrimary</item>
+    </style>
 
 
     <style name="TextInputLayoutTheme" parent="AppTheme">
@@ -36,4 +45,10 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="PopupWindowAnimationStyle">
+        <item name="android:windowEnterAnimation">@anim/zoom_in</item>
+        <item name="android:windowExitAnimation">@anim/zoom_out</item>
+    </style>
+
 </resources>

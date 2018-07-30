@@ -1,6 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [
+    <!ENTITY appname "Travel Companion">
+    ]>
 <resources>
     <string name="app_name">Travel Companion</string>
-
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -50,7 +53,7 @@
     <string name="feedback">Feedback</string>
     <string name="share">Share</string>
     <string name="logout">Log out</string>
-    <string name="loggin">Log in</string>
+    <string name="login">Log in</string>
     <string name="favorites">Favorites</string>
     <string name="my_account">My Account</string>
     <string name="back_arrow">Back arrow, close drawer</string>
@@ -69,5 +72,22 @@
     <string name="loading_animation">Loading animation</string>
     <string name="no_data">No data to display</string>
     <string name="available">Available Travels</string>
+    <string name="anonymous_user">Anonymous User</string>
+    <string name="send_feedback">Send Feedback</string>
+    <string name="app_email" translatable="false">mailto:sergiocrz@gmail.com</string>
+    <string name="has_email">Do you have an email APP installed?</string>
+    <string name="send_your_comments_and_feedback">Send your comments and feedback</string>
+    <string name="feedback_image">Feedback Image</string>
+    <string name="login_with_accounts">Log in with your social media accounts or email</string>
+
+    <string name="share_app_text">Hey!\nCheck out this awesome travel app! It\'s called &appname;</string>
+    <string name="app_url">https://github.com/SerggioC/Capstone</string>
+    <string name="notifications_off">Off</string>
+    <string name="notifications_on">On</string>
+    <string name="allow_notifications">Allow Notifications</string>
+    <string name="main_notification_channel_name">main</string>
+
+    <string name="notification_pref_key">notification_preference_key</string>
+    <string name="applications_settings">Applications Settings</string>
 
 </resources>

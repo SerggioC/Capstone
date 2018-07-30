@@ -4,29 +4,39 @@ import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.preference.PreferenceManager;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.sergiocruz.capstone.R;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 import timber.log.Timber;
+
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class Utils {
 
@@ -38,9 +48,7 @@ public class Utils {
             NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             NetworkInfo mobile = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
-            if ((mobile != null && mobile.isConnectedOrConnecting()) || (wifi != null && wifi.isConnectedOrConnecting()))
-                return true;
-            else return false;
+            return (mobile != null && mobile.isConnectedOrConnecting()) || (wifi != null && wifi.isConnectedOrConnecting());
         } else
             return false;
     }
@@ -49,15 +57,13 @@ public class Utils {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.app_name);
         builder.setMessage(R.string.no_internet);
-        builder.setPositiveButton(android.R.string.ok, Utils::onClickOK);
+        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
         return builder;
     }
 
-    private static void onClickOK(DialogInterface dialog, int which) {
-        dialog.dismiss();
-    }
-
-
+    /**
+     * Get Bitmap from InputStream
+     */
     public static Bitmap getBitmapFromURL(String src) {
         try {
             URL url = new URL(src);
@@ -65,10 +71,28 @@ public class Utils {
             connection.setDoInput(true);
             connection.connect();
             InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
+            return BitmapFactory.decodeStream(input);
         } catch (IOException e) {
-            Timber.e("GetBitmap error", e);
+            Timber.e("GetBitmap error %s", e);
+            return null;
+        }
+    }
+
+    /**
+     * Get Bitmap with Glide; will cache for faster loading
+     */
+    public static Bitmap getBitmapFromURL(Context context, String url) {
+        try {
+            return Glide.with(context)
+                    .asBitmap()
+                    .load(url)
+                    .submit()
+                    .get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        } catch (ExecutionException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -112,6 +136,34 @@ public class Utils {
         AnimatorSet animatorSet = (AnimatorSet) AnimatorInflater.loadAnimator(view.getContext(), R.animator.zoom_out_animation);
         animatorSet.setTarget(view);
         animatorSet.start();
+    }
+
+    public static void animateViewsOnPreDraw(View parent, View[] viewsToAnimate) {
+        ViewTreeObserver.OnPreDrawListener listener = new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                Interpolator interpolator = new DecelerateInterpolator();
+                for (int i = 0; i < viewsToAnimate.length; i++) {
+                    View view = viewsToAnimate[i];
+                    view.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+                    view.setAlpha(0);
+                    view.setScaleX(0.8f);
+                    view.setScaleY(0.8f);
+                    view.setTranslationY(100);
+                    view.animate()
+                            .setInterpolator(interpolator)
+                            .alpha(1)
+                            .scaleX(1)
+                            .scaleY(1)
+                            .translationY(0)
+                            .setStartDelay(50 * (i + 1))
+                            .start();
+                }
+                parent.getViewTreeObserver().removeOnPreDrawListener(this);
+                return true;
+            }
+        };
+        parent.getViewTreeObserver().addOnPreDrawListener(listener);
     }
 
     public static void showSlimToast(Context context, String toastText, int duration) {

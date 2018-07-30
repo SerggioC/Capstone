@@ -1,13 +1,16 @@
 package com.sergiocruz.capstone.view;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.util.TimberImplementation;
 import com.sergiocruz.capstone.view.fragment.HomeFragment;
@@ -15,6 +18,8 @@ import com.sergiocruz.capstone.view.fragment.LoginFragment;
 import com.sergiocruz.capstone.view.fragment.MainContainerFragment;
 import com.sergiocruz.capstone.view.fragment.TravelDetailsFragment;
 import com.squareup.leakcanary.LeakCanary;
+
+import timber.log.Timber;
 
 import static com.sergiocruz.capstone.view.fragment.HomeFragment.ROOT_FRAGMENT_NAME;
 
@@ -32,6 +37,17 @@ public class MainActivity extends AppCompatActivity {
             // Return here to prevent adding additional
             // Fragments when changing orientation.
             return;
+        }
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Boolean shouldNotify = preferences.getBoolean(
+                getString(R.string.notification_pref_key),
+                getResources().getBoolean(R.bool.default_notifications));
+        if (shouldNotify) {
+            FirebaseInstanceId.getInstance().getInstanceId()
+                    .addOnSuccessListener(MainActivity.this, instanceIdResult -> {
+                        String newToken = instanceIdResult.getToken();
+                        Timber.w("newToken %s", newToken);
+                    });
         }
 
         // Check if user is signed in (non-null) and update UI accordingly.
@@ -109,6 +125,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             int stackEntryCount = fragmentManager.getBackStackEntryCount();
+
+            if (stackEntryCount == 3) {
+                fragmentManager.popBackStack();
+                return;
+            }
+
             if (stackEntryCount >= 2) {
 
                 // pop out upto HomeFragment exclusivé

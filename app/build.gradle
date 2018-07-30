@@ -2,13 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 android {
-
     signingConfigs {
         config {
-            storeFile file('C:/Users/sergi/AndroidStudioProjects/keystore.jks')
+            storeFile file('../releaseToUdacity.jks')
+            keyAlias 'releaseToUdacity'
+            keyPassword ''
+            storePassword ''
         }
     }
-
     compileSdkVersion 27
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
@@ -18,26 +19,27 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.config
+        multiDexEnabled false
     }
-
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            debuggable true
+            minifyEnabled false
+            shrinkResources false
+            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
-
     dataBinding {
         enabled = true
     }
-
     // use Java 8 Lambdas
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
     // Use keys in gradle.properties. Add to .gitignore
     // TwitterApiKey = "the key here 9821ey3ed09213eiuh"
     // get key in Java: BuildConfig.TWITTER_API_KEY
@@ -47,6 +49,8 @@ android {
         it.buildConfigField 'String', 'TWITTER_API_SECRET', TwitterApiSecret
     }
 
+    productFlavors {
+    }
 }
 
 ext {
@@ -58,7 +62,6 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:support-v4:$supportlibversion"
     implementation "com.android.support:design:$supportlibversion"
-    implementation 'com.android.support:support-v4:27.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -66,6 +69,9 @@ dependencies {
     implementation "com.android.support:design:$supportlibversion"
     implementation "com.android.support:recyclerview-v7:$supportlibversion"
     implementation "com.android.support:cardview-v7:$supportlibversion"
+
+    // Preferences preference Fragment
+    implementation "com.android.support:preference-v7:$supportlibversion"
 
     // ConstraintLayout
     implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
@@ -81,6 +87,9 @@ dependencies {
 
     // Firebase UI
     implementation 'com.firebaseui:firebase-ui-database:4.1.0'
+
+    // Firebase messaging
+    implementation 'com.google.firebase:firebase-messaging:17.1.0'
 
     // Facebook login
     implementation 'com.facebook.android:facebook-android-sdk:4.33.0'
@@ -98,15 +107,17 @@ dependencies {
 
     // MVVM
     implementation 'android.arch.lifecycle:extensions:1.1.1'
+
     // Java8 support for Lifecycles instead of
     implementation 'android.arch.lifecycle:common-java8:1.1.1'
+
     //annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
 
-    // Paging
-    implementation 'android.arch.paging:runtime:1.0.1'
+    //    // Paging
+    //    implementation 'android.arch.paging:runtime:1.0.1'
 
-    // Firebase JobDispatcher
-    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
+    //    // Firebase JobDispatcher
+    //    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     // Bottom navigation
     implementation 'com.aurelhubert:ahbottomnavigation:2.1.0'
@@ -123,6 +134,9 @@ dependencies {
     // LeakCanary memory leak detection library for Android and Java
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+
+    // ???
+//    implementation 'com.android.support:multidex:1.0.3'
 
 }
 

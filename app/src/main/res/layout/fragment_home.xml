@@ -35,7 +35,7 @@
                 android:background="@drawable/home_textview_background"
                 android:gravity="center_vertical"
                 android:padding="8dp"
-                android:text="@{@string/welcome + ' ' + viewModel.user.userName}"
+                android:text="@{@string/welcome + ' ' + viewModel.userName}"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -3,4 +3,5 @@
     <integer name="spanCount">1</integer>
     <integer name="detailImagesSpanCount">2</integer>
     <integer name="maxLines">3</integer>
+    <integer name="popup_animation_duration">250</integer>
 </resources>

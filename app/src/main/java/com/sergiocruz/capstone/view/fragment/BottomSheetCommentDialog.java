@@ -46,6 +46,16 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         super();
     }
 
+    public interface NewCommentInterface {
+        void onNewComment();
+    }
+
+    NewCommentInterface newCommentInterface;
+
+    public void setNewCommentInterface(NewCommentInterface newInterface) {
+        this.newCommentInterface = newInterface;
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -103,6 +113,10 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
 
             deleteBackedUpComment(comment);
             clearUIDataAndExit();
+            if (newCommentInterface != null) {
+                newCommentInterface.onNewComment();
+            }
+
         });
 
 
@@ -246,6 +260,5 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         super.onDetach();
         backupWrittenMessage();
     }
-
 
 }

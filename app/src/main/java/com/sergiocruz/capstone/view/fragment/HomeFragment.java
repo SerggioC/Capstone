@@ -57,6 +57,8 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
         // Inflate view and obtain an instance of the binding class.
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
 
+        Utils.animateViewsOnPreDraw(binding.homeFrameLayout, new View[]{binding.usernameTextView});
+
         // Specify the current fragment as the lifecycle owner.
         binding.setLifecycleOwner(this);
 
@@ -135,7 +137,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        Crashlytics.getInstance().crash(); // Force a crash
+        //Crashlytics.getInstance().crash(); // Force a crash
     }
 
     @Override

@@ -9,6 +9,8 @@
         <variable
             name="viewModel"
             type="com.sergiocruz.capstone.viewmodel.TravelDetailsViewModel"/>
+
+        <import type="android.view.View"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -40,8 +42,8 @@
                     android:scaleType="centerCrop"
                     android:transitionName="@{viewModel.travel.ID}"
                     app:errorDrawable="@{@drawable/travel_image}"
-                    app:imageUrl="@{viewModel.travel.images.get(0)}"
                     app:imageList="@{viewModel.travel.images}"
+                    app:imageUrl="@{viewModel.travel.images.get(0)}"
                     app:layout_collapseMode="parallax"
                     app:layout_collapseParallaxMultiplier="0.6"
                     tools:srcCompat="@drawable/austria"/>
@@ -237,9 +239,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:clickable="true"
-                        android:focusable="true"
                         android:drawableEnd="@drawable/ic_edit"
                         android:drawablePadding="4dp"
+                        android:focusable="true"
                         android:text="@string/write_comment"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="@+id/comments"
@@ -249,8 +251,25 @@
                         android:id="@+id/progressBar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
                         android:indeterminate="true"
                         android:visibility="@{viewModel.currentStatus}"
+                        app:layout_constraintBottom_toBottomOf="@+id/price"
+                        app:layout_constraintEnd_toStartOf="@+id/price"
+                        app:layout_constraintStart_toEndOf="@+id/rating"
+                        app:layout_constraintTop_toTopOf="@+id/price"/>
+
+                    <TextView
+                        android:id="@+id/sale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/on_sale"
+                        android:textColor="@color/orange"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:visibility="@{viewModel.travel.onSale ? View.VISIBLE : View.GONE}"
+                        tools:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="@+id/price"
                         app:layout_constraintEnd_toStartOf="@+id/price"
                         app:layout_constraintStart_toEndOf="@+id/rating"
@@ -269,6 +288,7 @@
             android:layout_marginStart="@dimen/fab_margin"
             android:layout_marginTop="32dp"
             android:stateListAnimator="@animator/fab_animator"
+            android:contentDescription="@string/save_to_favorites"
             app:elevation="@dimen/fab_elevation"
             app:fabSize="normal"
             app:layout_anchor="@id/appbar"

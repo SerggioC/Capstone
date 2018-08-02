@@ -14,8 +14,8 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface DatabaseDAO {
 
-    @Query("SELECT * FROM Travel WHERE isFavorite == 1")
-    List<Travel> getAllFavoriteTravels();
+    @Query("SELECT * FROM Travel WHERE onSale == 1")
+    List<Travel> getAllPromoTravels();
 
     @Query("SELECT * FROM Comment WHERE commentID == :commentID")
     Comment getCommentByID(String commentID);

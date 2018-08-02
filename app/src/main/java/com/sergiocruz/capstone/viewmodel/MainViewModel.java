@@ -40,6 +40,8 @@ public class MainViewModel extends AndroidViewModel {
     private MediatorLiveData<List<TravelData>> mediatorLiveData;
     private MutableLiveData<Status> currentStatus = new MutableLiveData<>();
     private String anonymUserString;
+    private LiveData<List<Travel>> favoriteTravelList;
+    private MediatorLiveData<List<TravelData>> favoritesMediatorLiveData;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -130,6 +132,13 @@ public class MainViewModel extends AndroidViewModel {
         return repository;
     }
 
+    public LiveData<List<Travel>> getFavoriteTravelPacks() {
+        if (favoriteTravelList == null) {
+            favoriteTravelList = repository.getFavoriteTravelPacks();
+        }
+        return favoriteTravelList;
+    }
+
     public LiveData<List<TravelData>> getTravelData() {
         if (mediatorLiveData != null)
             return mediatorLiveData;
@@ -138,18 +147,54 @@ public class MainViewModel extends AndroidViewModel {
 
         mediatorLiveData = new MediatorLiveData<>();
         mediatorLiveData.addSource(getTravelPacks(), travels ->
-                combineData(travels, getTravelStars().getValue(), getNumCommentsList().getValue()));
+                combineData(mediatorLiveData,
+                        travels,
+                        getTravelStars().getValue(),
+                        getNumCommentsList().getValue()));
 
         mediatorLiveData.addSource(getTravelStars(), travelStars ->
-                combineData(getTravelPacks().getValue(), travelStars, getNumCommentsList().getValue()));
+                combineData(mediatorLiveData,
+                        getTravelPacks().getValue(),
+                        travelStars,
+                        getNumCommentsList().getValue()));
 
         mediatorLiveData.addSource(getNumCommentsList(), commentsList ->
-                combineData(getTravelPacks().getValue(), getTravelStars().getValue(), commentsList));
+                combineData(mediatorLiveData,
+                        getTravelPacks().getValue(),
+                        getTravelStars().getValue(),
+                        commentsList));
 
         return mediatorLiveData;
     }
 
-    private void combineData(List<Travel> travels, List<TravelStar> travelStars, List<TravelComments> commentsList) {
+    public LiveData<List<TravelData>> getFavoriteTravelData() {
+        if (favoritesMediatorLiveData != null)
+            return favoritesMediatorLiveData;
+
+        currentStatus.setValue(LOADING);;
+
+        favoritesMediatorLiveData = new MediatorLiveData<>();
+        favoritesMediatorLiveData.addSource(getFavoriteTravelPacks(), travels ->
+                combineData(favoritesMediatorLiveData,
+                        travels, getTravelStars().getValue(),
+                        getNumCommentsList().getValue()));
+
+        favoritesMediatorLiveData.addSource(getTravelStars(), travelStars ->
+                combineData(favoritesMediatorLiveData,
+                        getFavoriteTravelPacks().getValue(),
+                        travelStars,
+                        getNumCommentsList().getValue()));
+
+        favoritesMediatorLiveData.addSource(getNumCommentsList(), commentsList ->
+                combineData(favoritesMediatorLiveData,
+                        getFavoriteTravelPacks().getValue(),
+                        getTravelStars().getValue(),
+                        commentsList));
+
+        return favoritesMediatorLiveData;
+    }
+
+    private void combineData(MediatorLiveData mediator, List<Travel> travels, List<TravelStar> travelStars, List<TravelComments> commentsList) {
         if (travels == null || travelStars == null || commentsList == null)
             return;
 
@@ -186,7 +231,8 @@ public class MainViewModel extends AndroidViewModel {
 
                 travelDataList.add(new TravelData(travel, travelStar, travelComments));
             }
-            mediatorLiveData.postValue(travelDataList);
+            mediator.postValue(travelDataList);
+
             currentStatus.postValue(SUCCESS);
         });
     }

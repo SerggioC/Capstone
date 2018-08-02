@@ -9,6 +9,8 @@
             name="object"
             type="com.sergiocruz.capstone.model.TravelData"/>
 
+        <import type="android.view.View"/>
+
     </data>
 
     <android.support.v7.widget.CardView
@@ -47,6 +49,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="188€"/>
+
+
+            <com.sergiocruz.capstone.view.PromotionTagTextView
+                android:id="@+id/sale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/sale"
+                android:visibility="@{object.travel.onSale ? View.VISIBLE : View.GONE}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
 
             <!--android:stateListAnimator="@animator/stateful_up_down_animator"-->
             <android.support.constraint.ConstraintLayout
@@ -143,6 +158,8 @@
                     tools:text="@tools:sample/lorem/random"/>
 
             </android.support.constraint.ConstraintLayout>
+
+
 
 
         </android.support.constraint.ConstraintLayout>

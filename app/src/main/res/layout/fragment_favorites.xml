@@ -20,43 +20,59 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.constraint.ConstraintLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/home_frame_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
+            android:layout_height="match_parent"
+            tools:context=".view.fragment.HomeFragment">
 
             <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
+                android:id="@+id/username_textView"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Empty Promotions"
+                android:background="@drawable/home_textview_background"
+                android:drawableStart="@drawable/ic_favorite"
+                android:drawableTint="@color/colorPrimaryDark"
+                android:gravity="center_vertical"
+                android:padding="8dp"
+                android:text="@string/my_favorite_travel"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/promotionsRecyclerView"
-                tools:listitem="@layout/item_promotion_layout"
+                android:id="@+id/travelsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView"
-                app:layout_constraintVertical_bias="0.0"/>
+                app:layout_constraintTop_toBottomOf="@+id/username_textView"
+                tools:listitem="@layout/item_travel_layout"/>
 
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="@{viewModel.currentStatus}"
+                app:layout_constraintBottom_toBottomOf="@id/travelsRecyclerView"
+                app:layout_constraintEnd_toEndOf="@id/travelsRecyclerView"
+                app:layout_constraintStart_toStartOf="@id/travelsRecyclerView"
+                app:layout_constraintTop_toTopOf="@id/travelsRecyclerView"/>
 
         </android.support.constraint.ConstraintLayout>
-
     </android.support.v4.widget.NestedScrollView>
-
 </layout>

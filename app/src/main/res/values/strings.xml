@@ -55,6 +55,7 @@
     <string name="logout">Log out</string>
     <string name="login">Log in</string>
     <string name="favorites">Favorites</string>
+    <string name="my_favorites">My Favorites</string>
     <string name="my_account">My Account</string>
     <string name="back_arrow">Back arrow, close drawer</string>
     <string name="account">Account</string>
@@ -93,5 +94,9 @@
     <string name="user_name">User Name</string>
     <string name="phone_number">Phone Number</string>
     <string name="authentication">Authentication</string>
+    <string name="sale">SALE</string>
+    <string name="on_sale">On Sale!</string>
+    <string name="save_to_favorites">Save to Favorites</string>
+    <string name="my_favorite_travel">My Favorite Travel Destinations</string>
 
 </resources>

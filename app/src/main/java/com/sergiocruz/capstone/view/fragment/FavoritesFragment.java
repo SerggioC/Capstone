@@ -4,45 +4,35 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.SharedElementCallback;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.adapter.BaseAdapter;
 import com.sergiocruz.capstone.adapter.TravelsAdapter;
-import com.sergiocruz.capstone.databinding.FragmentHomeBinding;
+import com.sergiocruz.capstone.databinding.FragmentFavoritesBinding;
 import com.sergiocruz.capstone.model.TravelData;
-import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.util.Utils;
 import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
 import java.util.List;
-import java.util.Map;
 
 import timber.log.Timber;
 
-public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickListener<TravelData>, BaseAdapter.OnItemTouchListener {
-
-    public static final String ROOT_FRAGMENT_NAME = HomeFragment.class.getSimpleName();
+public class FavoritesFragment extends Fragment implements BaseAdapter.OnItemClickListener<TravelData>, BaseAdapter.OnItemTouchListener {
     public static final String USER_ID_BUNDLE_KEY = "USER_ID_BUNDLE_KEY";
     private static final String CLICKED_POSITION_KEY = "BUNDLE_KEY_CLICKED_POSITION";
-    private FragmentHomeBinding binding;
+    private FragmentFavoritesBinding binding;
     private TravelsAdapter adapter;
     private String userID;
     private MainViewModel viewModel;
 
-    public HomeFragment() {
+    public FavoritesFragment() {
         // Required empty public constructor
     }
 
@@ -55,7 +45,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate view and obtain an instance of the binding class.
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_favorites, container, false);
 
         Utils.animateViewsOnPreDraw(binding.homeFrameLayout, new View[]{binding.usernameTextView});
 
@@ -79,8 +69,6 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
         // variable name "viewModel" in xml <data><variable> + set prefix.
         binding.setViewModel(viewModel);
 
-        viewModel.getUser().observe(this, this::onUserInfo);
-
         setupRecyclerView();
 
         return binding.getRoot();
@@ -102,7 +90,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
 
         binding.travelsRecyclerView.setAdapter(adapter);
 
-        viewModel.getTravelData().observe(this, this::populateRecyclerView);
+        viewModel.getFavoriteTravelData().observe(this, this::populateRecyclerView);
 
     }
 
@@ -111,28 +99,6 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
             adapter.swapTravelsData(travelDataList);
         }
         //prepareExitSharedElementsTransitions();
-    }
-
-    private void onUserInfo(User user) {
-        if (userID != null && user != null && userID.equals(user.getUserID())) {
-            return;
-        }
-
-        String message;
-        if (user == null || user.getIsAnonymous()) {
-            message = getString(R.string.logged_in) + " " + getString(R.string.anonymous);
-            userID = null;
-        } else {
-            message = getString(R.string.logged_in) + " " + getString(R.string.as) + " " + user.getUserName();
-            userID = user.getUserID();
-        }
-        Utils.showSlimToast(getContext(), message, Toast.LENGTH_SHORT);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        //Crashlytics.getInstance().crash(); // Force a crash
     }
 
     @Override
@@ -165,36 +131,6 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     @Override
     public boolean onItemTouch(View view, MotionEvent event) {
         return Utils.upDownAnimation(view, event);
-    }
-
-    /**
-     * Prepares the shared element transition to the details fragment,
-     * as well as the other transitions that affect the flow.
-     */
-    private void prepareExitSharedElementsTransitions() {
-        Transition transition = TransitionInflater.from(getContext()).inflateTransition(R.transition.grid_exit_transition);
-        setExitTransition(transition);
-
-        // A similar mapping is set at the ArticlePagerFragment with a setEnterSharedElementCallback.
-        SharedElementCallback exitSharedElementCallback = new SharedElementCallback() {
-            @Override
-            public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-                super.onMapSharedElements(names, sharedElements);
-                // Locate the ViewHolder for the clicked position.
-                int clickedPosition = viewModel.getClickedPosition();
-                RecyclerView.ViewHolder selectedViewHolder = binding.travelsRecyclerView.findViewHolderForAdapterPosition(clickedPosition);
-                if (selectedViewHolder == null || selectedViewHolder.itemView == null) {
-                    return;
-                }
-
-                // Map the first shared element name to the child ImageView.
-                sharedElements.put(names.get(0), selectedViewHolder.itemView.findViewById(R.id.image));
-            }
-        };
-
-        setExitSharedElementCallback(exitSharedElementCallback);
-
-        postponeEnterTransition();
     }
 
 }

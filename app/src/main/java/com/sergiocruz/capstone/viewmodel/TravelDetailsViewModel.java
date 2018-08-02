@@ -69,5 +69,12 @@ public class TravelDetailsViewModel extends AndroidViewModel {
         this.currentStatus.setValue(currentStatus);
     }
 
+    public Boolean saveToFavorites(Travel selectedTravel) {
+        return repository.saveTravelToFavorites(selectedTravel);
+    }
+
+    public void removeFromFavorites(String travelID) {
+        repository.removeTravelFromFavorites(travelID);
+    }
 
 }

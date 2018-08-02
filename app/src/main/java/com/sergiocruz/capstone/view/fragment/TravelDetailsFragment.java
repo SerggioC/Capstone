@@ -34,9 +34,9 @@ import static com.sergiocruz.capstone.model.Status.SUCCESS;
 
 public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnItemClickListener<String>, BaseAdapter.OnItemTouchListener, CommentsAdapter.OnEditClickListener, BottomSheetCommentDialog.NewCommentInterface {
 
-    private static final String SOME_BUNDLE_KEY = "SOME_BUNDLE_KEY";
+    private static final String TRAVEL_ID_KEY = "TRAVEL_ID_KEY";
     private FragmentTravelDetailsBinding binding;
-    private String someID;
+    private String travelID;
     private MainViewModel viewModel;
     private Travel selectedTravel;
     private TravelDetailsViewModel detailsViewModel;
@@ -56,16 +56,15 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         // Specify the current fragment as the lifecycle owner.
         binding.setLifecycleOwner(this);
 
+        if (savedInstanceState != null && savedInstanceState.containsKey(TRAVEL_ID_KEY)) {
+            travelID = savedInstanceState.getString(TRAVEL_ID_KEY);
+        }
+
         // Obtain the ViewModel component.
         viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(SOME_BUNDLE_KEY)) {
-            someID = savedInstanceState.getString(SOME_BUNDLE_KEY);
-        }
-
         // variable name "travel" in xml <data><variable> + set prefix.
         selectedTravel = viewModel.getSelectedTravel();
-        //binding.setTravel(selectedTravel);
 
         setupToolbar();
 
@@ -75,21 +74,33 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
         binding.setViewModel(detailsViewModel);
 
-        setupCommentsRecyclerView();
+        String currentUserID = viewModel.getUser().getValue().getUserID();
+
+        setupCommentsRecyclerView(currentUserID); // user ID to enable editing comment
 
         setupImagesRecyclerView();
 
         binding.writeComment.setOnClickListener(v -> onClickToComment(v, false, null));
 
+        binding.fab.setOnClickListener(v -> {
+            Boolean result = detailsViewModel.saveToFavorites(selectedTravel);
+            Utils.showSlimToast(getContext(), result ? "Favorite saved.\nLong Press to remove." : "Error. not saved.", Toast.LENGTH_LONG);
+        });
+
+        binding.fab.setOnLongClickListener(v -> {
+            detailsViewModel.removeFromFavorites(selectedTravel.getID());
+            Utils.showSlimToast(getContext(), "Removed from Favorites.", Toast.LENGTH_LONG);
+            return true;
+        });
+
         return binding.getRoot();
     }
 
-    private void setupCommentsRecyclerView() {
+    private void setupCommentsRecyclerView(String currentUserID) {
         detailsViewModel.setCurrentStatus(LOADING);
 
         detailsViewModel.getCommentsForTravelID().observe(this, this::populateCommentsRecyclerView);
 
-        String currentUserID = viewModel.getUser().getValue().getUserID();
 
         commentsAdapter = new CommentsAdapter(currentUserID, this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -112,7 +123,6 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
         // Back navigation
         binding.backArrow.setOnClickListener(v -> getActivity().onBackPressed());
-
     }
 
     private void setupImagesRecyclerView() {
@@ -124,7 +134,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
     }
 
     @Override
-    public void onItemClick(String url, View view,  Integer position) {
+    public void onItemClick(String url, View view, Integer position) {
         Toast.makeText(getContext(), "Clicked position = " + position, Toast.LENGTH_LONG).show();
     }
 
@@ -155,7 +165,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(SOME_BUNDLE_KEY, someID);
+        outState.putString(TRAVEL_ID_KEY, travelID);
     }
 
     @Override

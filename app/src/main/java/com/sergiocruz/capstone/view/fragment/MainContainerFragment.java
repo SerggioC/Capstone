@@ -274,7 +274,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
                 fragment = new MapFragment();
                 break;
             case 2:
-                // promotions
+                fragment = new FavoritesFragment();
                 break;
             case 3:
                 fragment = new ProfileFragment();

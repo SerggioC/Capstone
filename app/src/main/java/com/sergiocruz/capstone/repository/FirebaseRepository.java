@@ -2,6 +2,7 @@ package com.sergiocruz.capstone.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,12 +34,14 @@ public class FirebaseRepository {
     public static final String TRAVEL_PACKS_REF = "travel-packs";
     public static final String TRAVEL_PACK_COMMENTS_REF = "travel-pack-comments";
     public static final String TRAVEL_PACK_STARS_REF = "travel-pack-stars";
+    public static final String USERS_FAVORITES_REF = "users-favorites";
 
     private static FirebaseRepository sInstance;
     private static FirebaseDatabase firebaseDatabase;
     private static DatabaseReference databaseReference;
     private static TravelPacksLiveData travelPacks;
     private static UserLiveData userLiveData;
+    private static TravelPacksLiveData favoriteTravelPacks;
 
     private FirebaseRepository() {
         firebaseDatabase.setPersistenceEnabled(true); // Enable Offline Capabilities of Firebase https://firebase.google.com/docs/database/android/offline-capabilities
@@ -63,9 +66,22 @@ public class FirebaseRepository {
     @NonNull
     public LiveData<List<Travel>> getTravelPacks() {
         if (travelPacks == null) {
-            travelPacks = new TravelPacksLiveData(databaseReference);
+            travelPacks = new TravelPacksLiveData(
+                    databaseReference
+                            .child(TRAVEL_PACKS_REF));
         }
         return travelPacks;
+    }
+
+    @NonNull
+    /** Favorites for user ID */
+    public LiveData<List<Travel>> getFavoriteTravelPacks() {
+        if (favoriteTravelPacks == null) {
+            favoriteTravelPacks = new TravelPacksLiveData(databaseReference
+                    .child(USERS_FAVORITES_REF)
+                    .child(getUser().getValue().getUserID()));
+        }
+        return favoriteTravelPacks;
     }
 
     public LiveData<User> getUser() {
@@ -127,7 +143,6 @@ public class FirebaseRepository {
                 });
     }
 
-
     private void updateTravelPackStars(Comment comment) {
         // Update Number of comments, Number of stars and rating
         // for travel pack ID
@@ -164,6 +179,45 @@ public class FirebaseRepository {
 
     public LiveData<List<TravelComments>> getNumCommentsList() {
         return new NumCommentsListLiveData(databaseReference);
+    }
+
+    public Boolean saveTravelToFavorites(Travel travel) {
+        User user = getUser().getValue();
+        if (user.getIsAnonymous()) return false;
+
+        databaseReference
+                .child(USERS_FAVORITES_REF)
+                .child(user.getUserID())
+                .child(travel.getID())
+                .setValue(travel)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Timber.i("Done saving favorite");
+                    } else {
+                        Timber.w("Failed saving favorite!");
+                    }
+
+                });
+
+        return true;
+    }
+
+    public void removeTravelFromFavorites(String travelID) {
+        if (TextUtils.isEmpty(travelID)) return;
+
+        databaseReference
+                .child(USERS_FAVORITES_REF)
+                .child(getUser().getValue().getUserID())
+                .child(travelID)
+                .removeValue()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Timber.i("Done removing favorite");
+                    } else {
+                        Timber.w("Failed to remove favorite!");
+                    }
+
+                });
     }
 
 }

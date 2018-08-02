@@ -4,24 +4,21 @@ import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.preference.PreferenceManager;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,8 +32,6 @@ import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
 import timber.log.Timber;
-
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class Utils {
 
@@ -99,6 +94,32 @@ public class Utils {
 
     public static int dpToPx(float dpValue, Context context) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, context.getResources().getDisplayMetrics());
+    }
+
+    public static boolean upDownAnimation(View view, MotionEvent event) {
+        boolean actionDown = false;
+
+        int eventAction = event.getAction();
+        switch (eventAction) {
+            case MotionEvent.ACTION_DOWN: {
+                actionDown = true;
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                actionDown = true;
+                break;
+            }
+        }
+
+        View viewToMove = view.findViewById(R.id.overlay);
+        Boolean touched = (Boolean) viewToMove.getTag(R.id.touched);
+        if (touched == null) touched = false;
+        if (actionDown && !touched) {
+            Utils.moveUpAnimation(viewToMove);
+        } else if (touched) {
+            Utils.moveDownAnimation(viewToMove);
+        }
+        return false;
     }
 
     public static void moveUpAnimation(View view) {

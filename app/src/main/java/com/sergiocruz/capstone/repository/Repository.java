@@ -87,4 +87,15 @@ public class Repository {
         return remoteRepository.getNumCommentsList();
     }
 
+    public LiveData<List<Travel>> getFavoriteTravelPacks() {
+        return remoteRepository.getFavoriteTravelPacks();
+    }
+
+    public Boolean saveTravelToFavorites(Travel travel) {
+        return remoteRepository.saveTravelToFavorites(travel);
+    }
+
+    public void removeTravelFromFavorites(String travelID) {
+        remoteRepository.removeTravelFromFavorites(travelID);
+    }
 }

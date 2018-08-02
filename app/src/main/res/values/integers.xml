@@ -4,4 +4,5 @@
     <integer name="detailImagesSpanCount">2</integer>
     <integer name="maxLines">3</integer>
     <integer name="popup_animation_duration">250</integer>
+    <integer name="icon_stroke">2</integer>
 </resources>

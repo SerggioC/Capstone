@@ -15,8 +15,6 @@ import java.util.List;
 
 import timber.log.Timber;
 
-import static com.sergiocruz.capstone.repository.FirebaseRepository.TRAVEL_PACKS_REF;
-
 public class TravelPacksLiveData extends LiveData<List<Travel>> {
     private final Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
@@ -26,7 +24,6 @@ public class TravelPacksLiveData extends LiveData<List<Travel>> {
     }
 
     public TravelPacksLiveData(DatabaseReference databaseReference) {
-        databaseReference = databaseReference.child(TRAVEL_PACKS_REF);
         this.query = databaseReference;
     }
 

@@ -23,6 +23,9 @@
         <item name="android:alertDialogTheme">@style/DialogStyle</item>
 
         <item name="preferenceTheme">@style/AppPreferencesTheme</item>
+
+        <!--workaround-->
+        <item name="cardViewStyle">@style/CardView</item>
     </style>
 
     <style name="AppPreferencesTheme" parent="PreferenceFragment.Material">

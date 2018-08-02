@@ -143,7 +143,7 @@ public class MainViewModel extends AndroidViewModel {
         if (mediatorLiveData != null)
             return mediatorLiveData;
 
-        currentStatus.setValue(LOADING);;
+        currentStatus.setValue(LOADING);
 
         mediatorLiveData = new MediatorLiveData<>();
         mediatorLiveData.addSource(getTravelPacks(), travels ->
@@ -171,7 +171,7 @@ public class MainViewModel extends AndroidViewModel {
         if (favoritesMediatorLiveData != null)
             return favoritesMediatorLiveData;
 
-        currentStatus.setValue(LOADING);;
+        currentStatus.setValue(LOADING);
 
         favoritesMediatorLiveData = new MediatorLiveData<>();
         favoritesMediatorLiveData.addSource(getFavoriteTravelPacks(), travels ->

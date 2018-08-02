@@ -89,8 +89,10 @@ public class FavoritesFragment extends Fragment implements BaseAdapter.OnItemCli
         adapter = new TravelsAdapter(this, this);
 
         binding.travelsRecyclerView.setAdapter(adapter);
+        if (!viewModel.getUser().getValue().getIsAnonymous()) {
+            viewModel.getFavoriteTravelData().observe(this, this::populateRecyclerView);
+        }
 
-        viewModel.getFavoriteTravelData().observe(this, this::populateRecyclerView);
 
     }
 

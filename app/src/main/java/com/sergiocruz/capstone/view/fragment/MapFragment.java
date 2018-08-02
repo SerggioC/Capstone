@@ -74,6 +74,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             }
 
                             googleMap.setOnInfoWindowClickListener(marker -> {
+                                if (marker.getTitle().equals(getString(R.string.lisbon))) return;
+
                                 viewModel.setSelectedTravel((Travel) marker.getTag());
 
                                 getActivity().getSupportFragmentManager()
@@ -88,7 +90,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // Add a marker in Lisbon, Portugal, and move the camera.
         LatLng lisbon = new LatLng(38.736946, -9.142685);
-        mMap.addMarker(new MarkerOptions().position(lisbon).title("Lisbon").visible(true));
+        mMap.addMarker(new MarkerOptions().position(lisbon).title(getString(R.string.lisbon)).visible(true));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(lisbon));
     }
 

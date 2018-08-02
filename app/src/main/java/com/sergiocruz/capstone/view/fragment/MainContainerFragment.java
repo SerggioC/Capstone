@@ -38,7 +38,7 @@ import static com.sergiocruz.capstone.util.SessionUtils.logoutFromFirebase;
 import static com.sergiocruz.capstone.view.fragment.HomeFragment.ROOT_FRAGMENT_NAME;
 
 public class MainContainerFragment extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
-    FragmentDrawerBinding binding;
+    private FragmentDrawerBinding binding;
     private MainViewModel viewModel;
 
     public MainContainerFragment() {
@@ -142,7 +142,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
         return true;
     }
 
-    public void logIn() {
+    private void logIn() {
         Utils.showSlimToast(getContext(), getString(R.string.login_with_accounts), Toast.LENGTH_LONG);
         logoutFromFirebase(getActivity());
     }
@@ -180,7 +180,6 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
 
         switchButton.setOnClickListener(v -> {
             statusTextView.setText(switchButton.isChecked() ? R.string.notifications_on : R.string.notifications_off);
-//            saveSettings(sharedPreferences, switchButton.isChecked());
         });
 
         popupView.findViewById(R.id.cancel_button).setOnClickListener(v -> popupWindow.dismiss());

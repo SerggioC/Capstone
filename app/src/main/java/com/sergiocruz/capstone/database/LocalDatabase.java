@@ -25,7 +25,7 @@ public abstract class LocalDatabase extends RoomDatabase {
                 INSTANCE = Room
                         .databaseBuilder(context.getApplicationContext(), LocalDatabase.class, DATABASE_NAME)
                         //.allowMainThreadQueries() // sync
-                        //.fallbackToDestructiveMigration() // Destroys the DB and recreates it with the new schema
+                        .fallbackToDestructiveMigration() // Destroys the DB and recreates it with the new schema
                         .build();
             }
             return INSTANCE;

@@ -13,8 +13,6 @@ import com.sergiocruz.capstone.model.Comment;
 
 import java.util.List;
 
-;
-
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.CommentViewHolder> {
     private final OnEditClickListener editClickListener;
     public interface OnEditClickListener {

@@ -11,6 +11,8 @@ import com.sergiocruz.capstone.viewmodel.MainViewModel;
 
 public class SessionUtils {
 
+    private SessionUtils() {}
+
     public static void logoutFromFirebase(android.support.v4.app.FragmentActivity activity) {
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
@@ -22,12 +24,6 @@ public class SessionUtils {
         String name = fragmentManager.getBackStackEntryAt(0).getName();
         fragmentManager.popBackStack(name, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
-        // Alternative pop all fragments from stack
-//        int stackEntryCount = fragmentManager.getBackStackEntryCount();
-//        for (int i = 0; i < stackEntryCount; i++) {
-//            fragmentManager.popBackStack();
-//        }
-
         if (fragmentManager.findFragmentByTag(LoginFragment.class.getSimpleName()) == null) {
             fragmentManager
                     .beginTransaction()
@@ -36,4 +32,11 @@ public class SessionUtils {
         }
 
     }
+
+//      Alternative pop all fragments from stack
+//        int stackEntryCount = fragmentManager.getBackStackEntryCount();
+//        for (int i = 0; i < stackEntryCount; i++) {
+//            fragmentManager.popBackStack();
+//        }
+
 }

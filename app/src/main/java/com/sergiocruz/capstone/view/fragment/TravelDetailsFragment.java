@@ -83,13 +83,18 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         binding.writeComment.setOnClickListener(v -> onClickToComment(v, false, null));
 
         binding.fab.setOnClickListener(v -> {
+            if (currentUserID == null) {
+                Utils.showSlimToast(getContext(), getString(R.string.login_to_save_favs), Toast.LENGTH_LONG);
+                return;
+            }
+
             Boolean result = detailsViewModel.saveToFavorites(selectedTravel);
-            Utils.showSlimToast(getContext(), result ? "Favorite saved.\nLong Press to remove." : "Error. not saved.", Toast.LENGTH_LONG);
+            Utils.showSlimToast(getContext(), result ? getString(R.string.fav_saved_long_remove) : getString(R.string.error_not_saved), Toast.LENGTH_LONG);
         });
 
         binding.fab.setOnLongClickListener(v -> {
             detailsViewModel.removeFromFavorites(selectedTravel.getID());
-            Utils.showSlimToast(getContext(), "Removed from Favorites.", Toast.LENGTH_LONG);
+            Utils.showSlimToast(getContext(), getString(R.string.removed_from_favorites), Toast.LENGTH_LONG);
             return true;
         });
 
@@ -100,7 +105,6 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         detailsViewModel.setCurrentStatus(LOADING);
 
         detailsViewModel.getCommentsForTravelID().observe(this, this::populateCommentsRecyclerView);
-
 
         commentsAdapter = new CommentsAdapter(currentUserID, this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -135,7 +139,6 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
     @Override
     public void onItemClick(String url, View view, Integer position) {
-        Toast.makeText(getContext(), "Clicked position = " + position, Toast.LENGTH_LONG).show();
     }
 
     private void onClickToComment(View v, Boolean editMode, Comment comment) {

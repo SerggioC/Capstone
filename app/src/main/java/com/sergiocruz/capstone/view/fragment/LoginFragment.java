@@ -220,7 +220,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     private void validatePassword() {
         if (!isEmailValid) {
             slideToEmail();
-            binding.emailEditText.setError("Invalid e-mail");
+            binding.emailEditText.setError(getString(R.string.invalid_email));
             return;
         } else if (isEmailValid && isPasswordValid && isRegistering) {
             createNewEmailLogin();
@@ -258,10 +258,10 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         Timber.d("Sergio > signInWithEmail:success");
-                        message = "Signed In With Email successfully!";
+                        message = getString(R.string.email_signin_ok);
                     } else {
                         Timber.w("Sergio > signInWithEmail:failure");
-                        message = "Signed In With Email Failed";
+                        message = getString(R.string.email_signin_fail);
                         slideToEmail();
                     }
                     updateUI(task.isSuccessful(), message);
@@ -272,7 +272,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     // Sign in fails
                     Timber.w("Sergio > signInWithEmail:failure" + e.getCause());
                     binding.emailEditText.setError(e.getLocalizedMessage());
-                    binding.passwordEditText.setError("Could not log in");
+                    binding.passwordEditText.setError(getString(R.string.could_not_login));
                     slideToEmail();
                     updateUI(false, e.getLocalizedMessage());
 
@@ -294,7 +294,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
             } else {
                 // Email not present -> register?
                 Timber.w("Sergio> onComplete: \n" + "= " + task.getException());
-                binding.emailEditText.setError("Unregistered e-mail");
+                binding.emailEditText.setError(getString(R.string.unregistered_email));
                 binding.emailEditText.requestFocus();
                 isEmailValid = false;
                 showRegisterDialog(email);
@@ -340,18 +340,18 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     if (task.isSuccessful()) {
                         // Sign in success
                         Timber.d("Sergio > createUserWithEmail:success");
-                        message = "Created new Email/Password login!";
+                        message = getString(R.string.created_email_login);
                     } else {
                         // If sign in fails, display a message to the user.
                         Timber.w("Sergio > createUserWithEmail:failure " + task.getException());
-                        message = "Authentication failed.";
+                        message = getString(R.string.auth_failed);
                     }
                     updateUI(task.isSuccessful(), message);
                 })
                 .addOnFailureListener(e -> {
                     Timber.w("Sergio > signInWithEmail:failure" + e.getCause());
                     binding.emailEditText.setError(e.getLocalizedMessage());
-                    binding.passwordEditText.setError("Could not log in");
+                    binding.passwordEditText.setError(getString(R.string.could_not_login));
                     binding.emailEditText.requestFocus();
 
                     updateUI(false, e.getLocalizedMessage());
@@ -422,7 +422,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
             @Override
             public void onError(FacebookException exception) {
-                Toast.makeText(getContext(), "Error: Facebook Login", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), R.string.err_fb_login, Toast.LENGTH_LONG).show();
             }
         });
 
@@ -440,7 +440,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
             @Override
             public void failure(TwitterException exception) {
                 Timber.w("Sergio > twitterLogin:failure %s", exception);
-                updateUI(false, "twitter login failure");
+                updateUI(false, getString(R.string.err_twitter_login));
             }
         });
     }
@@ -453,11 +453,11 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     if (task.isSuccessful()) {
                         // Sign in success
                         Timber.d("Sergio > Anonymous signIn:success");
-                        message = "Anonymous sign in";
+                        message = getString(R.string.anonym_sign_in);
                     } else {
                         // Sign in fails
                         Timber.w("Sergio > Anonymous signInWithCredential:failure " + task.getException());
-                        message = "Anonymous Authentication failed.";
+                        message = getString(R.string.anonym_auth_failed);
                     }
 
                     updateUI(task.isSuccessful(), message);
@@ -474,11 +474,11 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     if (task.isSuccessful()) {
                         // Sign in success
                         Timber.d("Sergio > Google signInWithCredential:success");
-                        message = "Google sign in success!";
+                        message = getString(R.string.google_signin_ok);
                     } else {
                         // Sign in fails
                         Timber.w("Sergio > Google signInWithCredential:failure " + task.getException());
-                        message = "Google Authentication failed.";
+                        message = getString(R.string.google_signin_failed);
                     }
                     updateUI(task.isSuccessful(), message);
                 });
@@ -494,11 +494,11 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     if (task.isSuccessful()) {
                         // Sign in success
                         Timber.d("Sergio > facebook signInWithCredential:success");
-                        message = "facebook sign in success";
+                        message = getString(R.string.fb_sign_in_ok);
                     } else {
                         // Sign in fails
                         Timber.w("Sergio > signInWithCredential:failure " + task.getException());
-                        message = "Facebook Authentication failed.";
+                        message = getString(R.string.fb_auth_failed);
                     }
                     updateUI(task.isSuccessful(), message);
                 });
@@ -516,11 +516,11 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
             if (task.isSuccessful()) {
                 // Sign in success
                 Timber.d("Sergio > Twitter signInWithCredential:success");
-                message = "Twitter sign in success";
+                message = getString(R.string.twitter_sign_in_ok);
             } else {
                 // Sign in fails
                 Timber.w("Sergio > Twitter signInWithCredential:failure " + task.getException());
-                message = "Twitter Authentication failed.";
+                message = getString(R.string.twitter_auth_failed);
             }
             updateUI(task.isSuccessful(), message);
         });
@@ -533,7 +533,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
         FirebaseUser currentUser = mFirebaseAuth.getCurrentUser();
         if (currentUser != null) {
             // User is signed in!
-            String message = "Authenticated with " + Objects.requireNonNull(currentUser.getProviders()).get(0);
+            String message = getString(R.string.auth_with)+ " " + Objects.requireNonNull(currentUser.getProviders()).get(0);
             updateUI(true, message);
         }
 
@@ -599,13 +599,12 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     writeNewUserToDB(user);
                 }
                 Timber.i("Sergio> onDataChange\nsnapshot= " +
-                        snapshot.getValue() == null ? "null snapshot" : String.valueOf(snapshot.getValue()));
+                        snapshot.getValue() == null ? getString(R.string.null_snapshot) : String.valueOf(snapshot.getValue()));
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getMessage());
-                Toast.makeText(getContext(), "Database Error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), getString(R.string.db_error) + databaseError.getMessage(), Toast.LENGTH_LONG).show();
             }
 
         });
@@ -647,7 +646,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     }
 
     private void writeNewUserToDB(User newUser) {
-        Toast.makeText(getContext(), "Creating new User", Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), R.string.creating_new_user, Toast.LENGTH_LONG).show();
         Timber.i("Sergio> writeNewUserToDB\nuser= " + newUser.toString());
 
         FirebaseDatabase.getInstance().getReference()
@@ -656,7 +655,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     if (task.isSuccessful()) {
                         goToMainContainerFragment();
                     } else {
-                        Toast.makeText(getContext(), "Could not create new user. Database error!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), R.string.could_not_create_user_db_error, Toast.LENGTH_LONG).show();
                     }
                 });
     }

@@ -35,7 +35,7 @@ public class StackWidgetProvider extends AppWidgetProvider {
         if (intent.getAction().equals(TOAST_ACTION)) {
             int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
             int viewIndex = intent.getIntExtra(EXTRA_ITEM, 0);
-            Toast.makeText(context, "Touched view " + viewIndex + "\n Widget ID: " + appWidgetId, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, viewIndex + " " + appWidgetId, Toast.LENGTH_LONG).show();
         }
         super.onReceive(context, intent);
     }
@@ -55,8 +55,7 @@ public class StackWidgetProvider extends AppWidgetProvider {
         repository.getTravelPacks().observeForever(new Observer<List<Travel>>() {
             @Override
             public void onChanged(@Nullable List<Travel> travels) {
-                ArrayList<Travel> list = new ArrayList<>();
-                list.addAll(travels);
+                ArrayList<Travel> list = new ArrayList<>(travels);
 
                 for (int i = 0; i < appWidgetIds.length; i++) {
 

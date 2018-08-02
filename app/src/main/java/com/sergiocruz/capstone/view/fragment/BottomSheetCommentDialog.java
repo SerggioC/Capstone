@@ -50,7 +50,7 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         void onNewComment();
     }
 
-    NewCommentInterface newCommentInterface;
+    private NewCommentInterface newCommentInterface;
 
     public void setNewCommentInterface(NewCommentInterface newInterface) {
         this.newCommentInterface = newInterface;
@@ -130,17 +130,17 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
                 getResources().getQuantityString(R.plurals.stars, Math.round(rating)) + "\n";
 
         if (rating <= 1) { // 0; 0.5; 1
-            message += "We are sad! \uD83D\uDE25";
+            message += getString(R.string.sad_rating);
         } else if (rating > 1 && rating <= 2) { // 1.5; 2
-            message += "Just two stars? \uD83D\uDE15";
+            message += getString(R.string.just_2_stars_rating);
         } else if (rating == 2.5) {
-            message += "OK \uD83D\uDE05";
+            message += getString(R.string.ok_rating);
         } else if (rating == 3) {
-            message += "Good! \uD83D\uDC4D";
+            message += getString(R.string.good_rating);
         } else if (rating > 3 && rating <= 4) { // 3.5; 4
-            message += "Great!! \uD83D\uDE03";
+            message += getString(R.string.great_rating);
         } else if (rating > 4) { // 4.5; 5
-            message += "\uD83C\uDF1F Awesome!! \uD83C\uDF1F \uD83D\uDE0D";
+            message += getString(R.string.awesome_rating);
         }
 
         Utils.showSlimToast(getContext(), message, Toast.LENGTH_SHORT);

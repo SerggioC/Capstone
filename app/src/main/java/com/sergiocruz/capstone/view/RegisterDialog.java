@@ -8,6 +8,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 import com.sergiocruz.capstone.R;
+import com.sergiocruz.capstone.repository.Resource;
 
 import java.util.Objects;
 

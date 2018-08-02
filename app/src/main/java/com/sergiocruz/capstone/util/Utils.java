@@ -35,6 +35,8 @@ import timber.log.Timber;
 
 public class Utils {
 
+    private Utils() {}
+
     public static boolean isConnected(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();

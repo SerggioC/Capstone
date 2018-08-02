@@ -76,10 +76,11 @@ public class FirebaseRepository {
     @NonNull
     /** Favorites for user ID */
     public LiveData<List<Travel>> getFavoriteTravelPacks() {
-        if (favoriteTravelPacks == null) {
+        String userID = getUser().getValue().getUserID();
+        if (!TextUtils.isEmpty(userID)) {
             favoriteTravelPacks = new TravelPacksLiveData(databaseReference
                     .child(USERS_FAVORITES_REF)
-                    .child(getUser().getValue().getUserID()));
+                    .child(userID));
         }
         return favoriteTravelPacks;
     }

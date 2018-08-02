@@ -35,7 +35,7 @@ import timber.log.Timber;
 public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickListener<TravelData>, BaseAdapter.OnItemTouchListener {
 
     public static final String ROOT_FRAGMENT_NAME = HomeFragment.class.getSimpleName();
-    public static final String USER_ID_BUNDLE_KEY = "USER_ID_BUNDLE_KEY";
+    private static final String USER_ID_BUNDLE_KEY = "USER_ID_BUNDLE_KEY";
     private static final String CLICKED_POSITION_KEY = "BUNDLE_KEY_CLICKED_POSITION";
     private FragmentHomeBinding binding;
     private TravelsAdapter adapter;
@@ -119,7 +119,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
         }
 
         String message;
-        if (user == null || user.getIsAnonymous()) {
+        if (user == null || user.getIsAnonymous() || user.getUserName() == null) {
             message = getString(R.string.logged_in) + " " + getString(R.string.anonymous);
             userID = null;
         } else {

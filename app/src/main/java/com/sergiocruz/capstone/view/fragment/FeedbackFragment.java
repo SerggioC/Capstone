@@ -25,7 +25,7 @@ import com.sergiocruz.capstone.viewmodel.MainViewModel;
 import timber.log.Timber;
 
 public class FeedbackFragment extends Fragment {
-    private static final String COMMENT_KEY = "comment_eky";
+    private static final String COMMENT_KEY = "comment_key";
     private FragmentFeedbackBinding binding;
 
     @Nullable
@@ -47,7 +47,7 @@ public class FeedbackFragment extends Fragment {
         return binding.getRoot();
     }
 
-    public void sendFeedback(View view) {
+    private void sendFeedback(View view) {
         String content = binding.content.getText().toString();
         if (TextUtils.isEmpty(content)) {
             Utils.showSlimToast(getContext(), getString(R.string.empty_message), Toast.LENGTH_LONG);
@@ -78,7 +78,7 @@ public class FeedbackFragment extends Fragment {
         outState.putString(COMMENT_KEY, binding.content.toString());
     }
 
-    public void displayAlertDialogBox(final Intent intent) {
+    private void displayAlertDialogBox(final Intent intent) {
         DialogInterface.OnClickListener onOkListener = (dialog, id) -> {
             FeedbackFragment.this.startActivity(intent);
             dialog.cancel();

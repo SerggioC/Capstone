@@ -147,6 +147,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
     private void enterFullScreen() {
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
     @SuppressWarnings("unused")

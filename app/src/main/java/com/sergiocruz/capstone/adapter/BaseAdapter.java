@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import com.sergiocruz.capstone.BR;
 import com.sergiocruz.capstone.util.Utils;
 
-public abstract class   BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>.BaseViewHolder> {
+public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>.BaseViewHolder> {
 
     private final OnItemClickListener<T> itemClickListener;
     private final OnItemTouchListener itemTouchListener;
@@ -65,13 +65,13 @@ public abstract class   BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<
     class BaseViewHolder extends RecyclerView.ViewHolder {
         private final ViewDataBinding binding;
 
-        ViewDataBinding getBinding() {
-            return binding;
-        }
-
         BaseViewHolder(ViewDataBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+        }
+
+        ViewDataBinding getBinding() {
+            return binding;
         }
 
         void bindVariable(T object) {

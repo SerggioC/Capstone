@@ -1,5 +1,6 @@
 package com.sergiocruz.capstone.util;
 
+import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -35,7 +36,8 @@ import timber.log.Timber;
 
 public class Utils {
 
-    private Utils() {}
+    private Utils() {
+    }
 
     public static boolean isConnected(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -147,17 +149,59 @@ public class Utils {
         viewToAnimate.startAnimation(topAnimation);
     }
 
-    public static void zoomInAnimation(View view) {
-        view.setTag(R.id.touched, true);
+    public static void zoomInAnimation(View view, int zOrder) {
         AnimatorSet animatorSet = (AnimatorSet) AnimatorInflater.loadAnimator(view.getContext(), R.animator.zoom_in_animation);
         animatorSet.setTarget(view);
+        animatorSet.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                view.setZ(zOrder);
+                view.setTag(R.id.touched, true);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                zoomOutAnimation(view);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
         animatorSet.start();
+
     }
 
     public static void zoomOutAnimation(View view) {
-        view.setTag(R.id.touched, false);
         AnimatorSet animatorSet = (AnimatorSet) AnimatorInflater.loadAnimator(view.getContext(), R.animator.zoom_out_animation);
         animatorSet.setTarget(view);
+        animatorSet.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                view.setTag(R.id.touched, false);
+                view.setZ(0);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
         animatorSet.start();
     }
 

@@ -42,6 +42,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
     private TravelDetailsViewModel detailsViewModel;
     private CommentsAdapter commentsAdapter;
     private Boolean hasNewComment = false;
+    private int zOrder = 10;
 
     public TravelDetailsFragment() {
         // Required empty public constructor
@@ -63,7 +64,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         // Obtain the ViewModel component.
         viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
 
-        // variable name "travel" in xml <data><variable> + set prefix.
+
         selectedTravel = viewModel.getSelectedTravel();
 
         setupToolbar();
@@ -72,6 +73,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         detailsViewModel.setRepository(viewModel.getRepository());  // init vars
         detailsViewModel.setTravel(selectedTravel);                 // init vars
 
+        // variable name "travel" in xml <data><variable> + set prefix.
         binding.setViewModel(detailsViewModel);
 
         String currentUserID = viewModel.getUser().getValue().getUserID();
@@ -180,28 +182,16 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
     @Override
     public boolean onItemTouch(View view, MotionEvent event) {
-        boolean actionDown = false;
-
         int eventAction = event.getAction();
-        switch (eventAction) {
-            case MotionEvent.ACTION_DOWN: {
-                actionDown = true;
-                break;
-            }
-            case MotionEvent.ACTION_MOVE: {
-                actionDown = true;
-                break;
-            }
-        }
+        boolean actionDown = eventAction == MotionEvent.ACTION_DOWN || eventAction == MotionEvent.ACTION_MOVE;
 
-        View viewToAnimate = view.findViewById(R.id.image_item);
-        Boolean touched = (Boolean) viewToAnimate.getTag(R.id.touched);
+        Boolean touched = (Boolean) view.getTag(R.id.touched);
         if (touched == null) touched = false;
         if (actionDown && !touched) {
-            Utils.zoomInAnimation(viewToAnimate);
-        } else if (touched) {
-            Utils.zoomOutAnimation(viewToAnimate);
+            Utils.zoomInAnimation(view, ++zOrder);
         }
+
+
         return false;
     }
 

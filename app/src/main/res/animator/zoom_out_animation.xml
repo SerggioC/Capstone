@@ -6,7 +6,7 @@
         android:duration="@integer/animation_duration"
         android:propertyName="scaleX"
         android:startOffset="2500"
-        android:valueFrom="2"
+        android:valueFrom="@integer/zoom_factor"
         android:valueTo="1"
         android:valueType="floatType"/>
 
@@ -14,7 +14,7 @@
         android:duration="@integer/animation_duration"
         android:propertyName="scaleY"
         android:startOffset="2500"
-        android:valueFrom="2"
+        android:valueFrom="@integer/zoom_factor"
         android:valueTo="1"
         android:valueType="floatType"/>
 

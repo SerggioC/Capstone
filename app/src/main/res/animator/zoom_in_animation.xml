@@ -7,7 +7,7 @@
         android:propertyName="scaleX"
         android:startOffset="0"
         android:valueFrom="1"
-        android:valueTo="2"
+        android:valueTo="@integer/zoom_factor"
         android:valueType="floatType"/>
 
     <objectAnimator
@@ -15,7 +15,7 @@
         android:propertyName="scaleY"
         android:startOffset="0"
         android:valueFrom="1"
-        android:valueTo="2"
+        android:valueTo="@integer/zoom_factor"
         android:valueType="floatType"/>
 
 </set>

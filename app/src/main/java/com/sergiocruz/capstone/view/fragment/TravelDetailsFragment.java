@@ -100,6 +100,10 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
             return true;
         });
 
+//        Louvre.init(this)
+//                .setRequestCode(11034165)
+//                .open();
+
         return binding.getRoot();
     }
 

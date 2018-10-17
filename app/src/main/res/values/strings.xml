@@ -98,8 +98,8 @@
     <string name="on_sale">On Sale!</string>
     <string name="save_to_favorites">Save to Favorites</string>
     <string name="my_favorite_travel">My Favorite Travel Destinations</string>
-    <string name="email_signin_ok">Signed In With Email successfully!</string>
-    <string name="email_signin_fail">Signed In With Email Failed</string>
+    <string name="email_signin_ok">Signed In With Email Successfully!</string>
+    <string name="email_signin_fail">Sign In With Email Failed</string>
     <string name="could_not_login">Could not log in</string>
     <string name="unregistered_email">Unregistered e-mail</string>
     <string name="created_email_login">Created new Email/Password login!</string>
@@ -132,5 +132,7 @@
     <string name="great_rating">Great!! \uD83D\uDE03</string>
     <string name="awesome_rating">\uD83C\uDF1F Awesome!! \uD83C\uDF1F \uD83D\uDE0D</string>
     <string name="explore_our_travel_locations">Explore Our Travel Locations</string>
+    <string name="travel">Travel</string>
+    <string name="companion">Companion</string>
 
 </resources>

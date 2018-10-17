@@ -3,10 +3,12 @@ package com.sergiocruz.capstone.view.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,7 +19,8 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
-import android.widget.FrameLayout;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -67,6 +70,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.regex.Pattern;
 
 import timber.log.Timber;
 
@@ -113,7 +119,6 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
         // Inflate view and obtain an instance of the binding class.
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false);
-
         // Specify the current fragment as the lifecycle owner.
         binding.setLifecycleOwner(this);
 
@@ -121,7 +126,6 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
         binding.emailEditText.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_NEXT) {
-                //binding.passwordEditText.requestFocus();
                 validateEmail();
                 return true;
             }
@@ -141,8 +145,21 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
         binding.skipLogin.setOnClickListener(this::startAnonymousLogin);
 
         setupAppLoginOptions();
+        setupTitle();
 
         return binding.getRoot();
+    }
+
+    private void setupTitle() {
+        // Shadow bellow the Text
+        binding.travel.setShadowLayer(30, 1, 1, Color.BLACK);
+        binding.companion.setShadowLayer(30, 1, 1, Color.BLACK);
+
+        Animation slideInRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_right);
+        Animation slideInLeft = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_left);
+        binding.travel.startAnimation(slideInRight);
+        binding.companion.startAnimation(slideInLeft);
+
     }
 
     private void enterFullScreen() {
@@ -209,8 +226,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
-            binding.emailEditText.setError(errorMessage);
-            binding.emailEditText.requestFocus();
+            showErrorHint(binding.emailEditText, errorMessage);
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
@@ -218,10 +234,39 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
         }
     }
 
+    private void showErrorHint(View view, String errorMessage) {
+        if (view instanceof AutoCompleteTextView) {
+            ((AutoCompleteTextView) view).setError(errorMessage);
+        } else if (view instanceof EditText) {
+            ((EditText) view).setError(errorMessage);
+        }
+        view.requestFocus();
+        timeOutErrorHint(view);
+    }
+
+    private void timeOutErrorHint(View view) {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                getActivity().runOnUiThread(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (view instanceof AutoCompleteTextView) {
+                            ((AutoCompleteTextView) view).setError(null);
+                        } else if (view instanceof EditText) {
+                            ((EditText) view).setError(null);
+                        }
+                    }
+                });
+            }
+        }, 5000);
+    }
+
     private void validatePassword() {
         if (!isEmailValid) {
             slideToEmail();
-            binding.emailEditText.setError(getString(R.string.invalid_email));
+            showErrorHint(binding.emailEditText, getString(R.string.invalid_email));
             return;
         } else if (isEmailValid && isPasswordValid && isRegistering) {
             createNewEmailLogin();
@@ -237,8 +282,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
         if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
-            binding.passwordEditText.setError(getString(R.string.error_invalid_password));
-            binding.passwordEditText.requestFocus();
+            showErrorHint(binding.passwordEditText, getString(R.string.error_invalid_password));
             isPasswordValid = false;
         } else {
             // Show a progress spinner, and kick off a background task to
@@ -271,9 +315,9 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                 .addOnFailureListener(e -> {
 
                     // Sign in fails
-                    Timber.w("Sergio > signInWithEmail:failure" + e.getCause());
-                    binding.emailEditText.setError(e.getLocalizedMessage());
-                    binding.passwordEditText.setError(getString(R.string.could_not_login));
+                    Timber.w("Sergio > signInWithEmail:failure" + e.getCause() + " Localized message = " + e.getLocalizedMessage());
+                    showErrorHint(binding.passwordEditText, getString(R.string.could_not_login));
+                    showErrorHint(binding.emailEditText, e.getLocalizedMessage());
                     slideToEmail();
                     updateUI(false, e.getLocalizedMessage());
 
@@ -295,8 +339,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
             } else {
                 // Email not present -> register?
                 Timber.w("Sergio> onComplete: \n" + "= " + task.getException());
-                binding.emailEditText.setError(getString(R.string.unregistered_email));
-                binding.emailEditText.requestFocus();
+                showErrorHint(binding.emailEditText, getString(R.string.unregistered_email));
                 isEmailValid = false;
                 showRegisterDialog(email);
             }
@@ -324,8 +367,8 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     }
 
     private boolean isEmailValid(String email) {
-        // Additional validation?
-        return email.contains("@");
+        // Simple regex validation matches everything "xxxxxx@xxxx.xxxx"
+        return Pattern.matches(".+@.+\\..+", email);
     }
 
     private boolean isPasswordValid(String password) {
@@ -351,10 +394,9 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                 })
                 .addOnFailureListener(e -> {
                     Timber.w("Sergio > signInWithEmail:failure" + e.getCause());
-                    binding.emailEditText.setError(e.getLocalizedMessage());
-                    binding.passwordEditText.setError(getString(R.string.could_not_login));
-                    binding.emailEditText.requestFocus();
-
+                    showErrorHint(binding.passwordEditText, getString(R.string.could_not_login));
+                    isPasswordValid = false;
+                    showErrorHint(binding.emailEditText, e.getLocalizedMessage());
                     updateUI(false, e.getLocalizedMessage());
                 });
     }
@@ -387,8 +429,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
         //    // TODO Jump to pager fragment
         //}
 
-        binding.rootView.findViewById(R.id.google_sign_in_button)
-                .setOnClickListener(v -> signInWithGoogle());
+        binding.googleSignInButton.setOnClickListener(this::signInWithGoogle);
     }
 
     private void setupFacebookLogin() {
@@ -403,7 +444,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
         fbCallbackManager = CallbackManager.Factory.create();
 
-        LoginButton facebookLoginButton = binding.rootView.findViewById(R.id.facebook_login_button);
+        LoginButton facebookLoginButton = binding.facebookLoginButton;
         facebookLoginButton.setReadPermissions(Arrays.asList(EMAIL_PERMISSION, PUBLIC_PROFILE_PERMISSION));
         // If you are using in a fragment, call facebookLoginButton.setFragment(this);
         facebookLoginButton.setFragment(this);
@@ -430,7 +471,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     }
 
     private void setupTwitterLogin() {
-        twitterLoginButton = binding.rootView.findViewById(R.id.twitter_login_button);
+        twitterLoginButton = binding.twitterLoginButton;
         twitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
@@ -540,7 +581,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
     }
 
-    private void signInWithGoogle() {
+    private void signInWithGoogle(View v) {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_GOOGLE);
     }
@@ -599,8 +640,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     User user = convertUser(firebaseUser);
                     writeNewUserToDB(user);
                 }
-                Timber.i("Sergio> onDataChange\nsnapshot= " +
-                        snapshot.getValue() == null ? getString(R.string.null_snapshot) : String.valueOf(snapshot.getValue()));
+                Timber.i("Sergio> onDataChange\nsnapshot= " + String.valueOf(snapshot.getValue()));
             }
 
             @Override
@@ -690,7 +730,6 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                 slideToEmail();
                 isSigningIn = false;
                 isRegistering = false;
-                isEmailValid = false;
             }
         } else if (binding.emailInputLayout.getVisibility() == View.VISIBLE) {
             getActivity().finish();
@@ -729,7 +768,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
             float aspectRatio = (float) videoViewLargestSize / videoViewSmallestSize;
 
             //Adjust videoView size maintaining aspect ratio
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+            ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(
                     (int) (videoViewLargestSize * aspectRatio), (int) (videoViewSmallestSize * aspectRatio));
             binding.videoView.setLayoutParams(layoutParams);
 
@@ -740,6 +779,8 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     }
 
     private void slideToEmail() {
+        isEmailValid = false;
+        isPasswordValid = false;
         Animation slideInRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_right);
         slideInRight.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -767,6 +808,8 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
             @Override
             public void onAnimationEnd(Animation animation) {
+                binding.passwordInputLayout.setError(null);
+                binding.passwordEditText.setText(null);
                 binding.passwordInputLayout.setVisibility(View.GONE);
             }
 
@@ -820,7 +863,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
     /** Shows the progress bar */
     private void showProgress(final boolean show) {
-        binding.loginProgress.setVisibility(show ? View.VISIBLE : View.GONE);
+        binding.loginProgress.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
 

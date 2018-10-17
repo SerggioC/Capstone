@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
@@ -17,10 +18,18 @@ import static org.junit.Assert.assertEquals;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class ExampleUnitTest {
+public class UnitTests {
 
+    @Test
+    public void isEmailValid() {
+        String email = "sergio@mail.pt";
+        email = "12-*/-*/3@123.12.´+º´º´+3";
+        Pattern pattern = Pattern.compile(".+@.+\\..+");
+        boolean matches = pattern.matcher(email).matches();
+        System.out.println("matches = " + matches + "\n" +
+        email + " is " + (matches ? "valid" : "invalid"));
 
-
+    }
 
     public void utopianTree(int n) {
         boolean duplicate = true;

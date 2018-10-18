@@ -1,5 +1,6 @@
 package com.sergiocruz.capstone.view.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -12,6 +13,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +21,12 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -54,7 +60,7 @@ import com.sergiocruz.capstone.BuildConfig;
 import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.model.User;
 import com.sergiocruz.capstone.repository.FirebaseRepository;
-import com.sergiocruz.capstone.view.RegisterDialog;
+import com.sergiocruz.capstone.util.Utils;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
@@ -76,11 +82,13 @@ import java.util.regex.Pattern;
 
 import timber.log.Timber;
 
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
+
 /**
  * A login screen that offers login via multiple providers
  * including email/password through Firebase Authentication.
  */
-public class LoginFragment extends Fragment implements RegisterDialog.OnOKClickedCallback, RegisterDialog.OnCancelClickedCallback {
+public class LoginFragment extends Fragment {
 
     // onActivityResult Request Codes
     public static final int RC_GOOGLE = 3;
@@ -341,30 +349,66 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                 Timber.w("Sergio> onComplete: \n" + "= " + task.getException());
                 showErrorHint(binding.emailEditText, getString(R.string.unregistered_email));
                 isEmailValid = false;
-                showRegisterDialog(email);
+                showRegisterPopupWindow(email);
             }
             showProgress(false);
         });
     }
 
-    private void showRegisterDialog(String email) {
-        RegisterDialog dialog = RegisterDialog.newInstance(this, this, email);
-        dialog.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), null);
+//    private void showRegisterDialog1(String email) {
+//        RegisterDialog dialog = RegisterDialog.newInstance(this, this, email);
+//        dialog.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), null);
+//    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(binding.getRoot().getWindowToken(), 0);
     }
 
-    @Override
-    public void onOKClicked() {
-        binding.emailSignInButton.setText(R.string.register);
-        slideToPassword();
-        isEmailValid = true;
-        isRegistering = true;
+    private void showRegisterPopupWindow(String email) {
+
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.popup_window_register, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
+        popupView.setFocusable(true); // let taps outside the popup also dismiss it
+        popupWindow.setOutsideTouchable(true);
+
+        popupWindow.setAnimationStyle(R.style.PopupWindowAnimationStyle);
+
+        // https://material.io/design/environment/elevation.html#default-elevations
+        popupWindow.setElevation(getContext().getResources().getDimension(R.dimen.popup_window_elevation));
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window token
+        popupWindow.showAtLocation(binding.getRoot(), Gravity.CENTER, 0, 0);
+
+        ((TextView) popupView.findViewById(R.id.content_text)).setText(
+                getString(R.string.email) + " " + email + " " + getString(R.string.not_in_database) + "\n" +
+                getString(R.string.register_email));
+
+        popupView.findViewById(R.id.ok_button).setOnClickListener(v -> {
+            binding.emailSignInButton.setText(R.string.register);
+            slideToPassword();
+            isEmailValid = true;
+            isRegistering = true;
+            popupWindow.dismiss();
+        });
+
+        popupView.findViewById(R.id.cancel_button).setOnClickListener(v -> {
+            isEmailValid = false;
+            isRegistering = false;
+            popupWindow.dismiss();
+        });
+
+        hideKeyboard();
+
     }
 
-    @Override
-    public void onCancelClicked() {
-        isEmailValid = false;
-        isRegistering = false;
-    }
 
     private boolean isEmailValid(String email) {
         // Simple regex validation matches everything "xxxxxx@xxxx.xxxx"
@@ -464,7 +508,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
             @Override
             public void onError(FacebookException exception) {
-                Toast.makeText(getContext(), R.string.err_fb_login, Toast.LENGTH_LONG).show();
+                Utils.showSlimToast(getContext(), getString(R.string.err_fb_login), Toast.LENGTH_LONG);
             }
         });
 
@@ -618,7 +662,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
     private void updateUI(boolean taskIsSuccessful, String message) {
         showProgress(false);
-        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+        Utils.showSlimToast(getContext(), message, Toast.LENGTH_LONG);
 
         if (!taskIsSuccessful) return;
 
@@ -645,7 +689,8 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), getString(R.string.db_error) + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                Utils.showSlimToast(getContext(), getString(R.string.db_error) + databaseError.getMessage(), Toast.LENGTH_LONG);
+
             }
 
         });
@@ -687,7 +732,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
     }
 
     private void writeNewUserToDB(User newUser) {
-        Toast.makeText(getContext(), R.string.creating_new_user, Toast.LENGTH_LONG).show();
+        Utils.showSlimToast(getContext(), getString(R.string.creating_new_user), Toast.LENGTH_LONG);
         Timber.i("Sergio> writeNewUserToDB\nuser= " + newUser.toString());
 
         FirebaseDatabase.getInstance().getReference()
@@ -696,7 +741,7 @@ public class LoginFragment extends Fragment implements RegisterDialog.OnOKClicke
                     if (task.isSuccessful()) {
                         goToMainContainerFragment();
                     } else {
-                        Toast.makeText(getContext(), R.string.could_not_create_user_db_error, Toast.LENGTH_LONG).show();
+                        Utils.showSlimToast(getContext(), getString(R.string.could_not_create_user_db_error), Toast.LENGTH_LONG);
                     }
                 });
     }

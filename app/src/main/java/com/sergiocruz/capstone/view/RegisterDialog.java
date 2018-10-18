@@ -8,7 +8,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 import com.sergiocruz.capstone.R;
-import com.sergiocruz.capstone.repository.Resource;
 
 import java.util.Objects;
 
@@ -34,7 +33,7 @@ public class RegisterDialog extends DialogFragment {
                         email + "\n" +
                         getString(R.string.not_in_database) + "\n" +
                         getString(R.string.register_email))
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> onOKClickedCallback.onOKClicked())
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> onOKClickedCallback.onOKClicked())
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> onCancelClickedCallback.onCancelClicked())
                 .create();
         alertDialog.setCanceledOnTouchOutside(false);

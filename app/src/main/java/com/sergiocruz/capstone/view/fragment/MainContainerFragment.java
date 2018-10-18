@@ -150,7 +150,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
     private void showSettings() {
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.settings_popup_window, null);
+        View popupView = inflater.inflate(R.layout.popup_window_settings, null);
 
         // create the popup window
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;

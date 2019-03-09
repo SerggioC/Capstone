@@ -263,7 +263,7 @@ public class MainContainerFragment extends Fragment implements NavigationView.On
     private boolean switchFragmentContent(int position, boolean wasSelected) {
         if (wasSelected) return true;
         Fragment fragment = null;
-        Boolean isHomeFragment = false;
+        boolean isHomeFragment = false;
 
         switch (position) {
             case 0:

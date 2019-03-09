@@ -58,9 +58,16 @@ public class MainViewModel extends AndroidViewModel {
     public LiveData<List<Travel>> getTravelPacks() {
         if (travelList == null) {
             travelList = repository.getTravelPacks();
+            Timber.i("travelList == null -> getting travel packs from source");
         }
-        Timber.i("getting travel packs");
+        Timber.i("travelList != null -> getting travel packs from livedata");
         return travelList;
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        user.removeObserver(this::updateUser);
     }
 
     // rating and number of stars for each Travel
@@ -143,6 +150,8 @@ public class MainViewModel extends AndroidViewModel {
         if (mediatorLiveData != null)
             return mediatorLiveData;
 
+        Timber.i("mediatorlivedata == null");
+
         currentStatus.setValue(LOADING);
 
         mediatorLiveData = new MediatorLiveData<>();
@@ -154,13 +163,15 @@ public class MainViewModel extends AndroidViewModel {
 
         mediatorLiveData.addSource(getTravelStars(), travelStars ->
                 combineData(mediatorLiveData,
-                        getTravelPacks().getValue(),
+//                        getTravelPacks().getValue(),
+                        travelList.getValue(),
                         travelStars,
                         getNumCommentsList().getValue()));
 
         mediatorLiveData.addSource(getNumCommentsList(), commentsList ->
                 combineData(mediatorLiveData,
-                        getTravelPacks().getValue(),
+//                        getTravelPacks().getValue(),
+                        travelList.getValue(),
                         getTravelStars().getValue(),
                         commentsList));
 
@@ -181,13 +192,13 @@ public class MainViewModel extends AndroidViewModel {
 
         favoritesMediatorLiveData.addSource(getTravelStars(), travelStars ->
                 combineData(favoritesMediatorLiveData,
-                        getFavoriteTravelPacks().getValue(),
+                        favoriteTravelList.getValue(),
                         travelStars,
                         getNumCommentsList().getValue()));
 
         favoritesMediatorLiveData.addSource(getNumCommentsList(), commentsList ->
                 combineData(favoritesMediatorLiveData,
-                        getFavoriteTravelPacks().getValue(),
+                        favoriteTravelList.getValue(),
                         getTravelStars().getValue(),
                         commentsList));
 

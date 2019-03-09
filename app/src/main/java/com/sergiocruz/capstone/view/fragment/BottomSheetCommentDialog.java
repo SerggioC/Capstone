@@ -7,7 +7,6 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.text.TextUtils;
@@ -76,7 +75,7 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.item_bottomsheet_comment_layout, container, false);
 
         if (savedInstanceState != null) {
@@ -181,7 +180,6 @@ public class BottomSheetCommentDialog extends BottomSheetDialogFragment {
         return isValid;
     }
 
-    @NonNull
     private Comment getCommentObject() {
         String commentText = binding.commentEditText.getText().toString().trim();
         Float rating = binding.ratingBar.getRating();

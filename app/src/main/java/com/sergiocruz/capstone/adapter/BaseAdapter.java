@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sergiocruz.capstone.BR;
+import com.android.databinding.library.baseAdapters.BR;
 import com.sergiocruz.capstone.util.Utils;
 
 public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>.BaseViewHolder> {

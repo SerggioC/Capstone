@@ -1,6 +1,7 @@
 package com.sergiocruz.capstone.repository;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
@@ -18,9 +19,9 @@ public class Repository {
     private FirebaseRepository remoteRepository;
     private DatabaseDAO localRepositoryDAO;
 
-    private Repository(FirebaseRepository remoteRepository, DatabaseDAO localRepositoryDAO) {
+    private Repository(FirebaseRepository remoteRepository, LocalRepository localRepositoryDAO) {
         this.remoteRepository = remoteRepository;
-        this.localRepositoryDAO = localRepositoryDAO;
+        this.localRepositoryDAO = LocalRepository.getDatabaseDAO();
     }
 
     // Broken multithreaded version
@@ -29,7 +30,7 @@ public class Repository {
         if (sInstance == null) {
             synchronized (Repository.class) {
                 if (sInstance == null) {
-                    sInstance = new Repository(FirebaseRepository.getInstance(), LocalRepository.getInstance(applicationContext).getDatabaseDAO());
+                    sInstance = new Repository(FirebaseRepository.getInstance(), LocalRepository.getInstance(applicationContext));
                 }
             }
         }
@@ -44,22 +45,22 @@ public class Repository {
         return localRepositoryDAO;
     }
 
-    public LiveData<User> getUser() {
+    public MutableLiveData<User> getUser() {
         return remoteRepository.getUser();
     }
 
     @NonNull
-    public LiveData<List<Travel>> getTravelPacks() {
+    public MutableLiveData<List<Travel>> getTravelPacks() {
         return remoteRepository.getTravelPacks();
     }
 
     @NonNull
-    public LiveData<List<Comment>> getCommentsForTravelID(String travelID) {
+    public MutableLiveData<List<Comment>> getCommentsForTravelID(String travelID) {
         return remoteRepository.getCommentsForTravelID(travelID);
     }
 
     @NonNull
-    public LiveData<Long> getNumCommentsForTravelID(String travelID) {
+    public MutableLiveData<Long> getNumCommentsForTravelID(String travelID) {
         return remoteRepository.getNumCommentsForTravelID(travelID);
     }
 
@@ -75,19 +76,19 @@ public class Repository {
         localRepositoryDAO.deleteCommentByID(commentID);
     }
 
-    public LiveData<TravelStar> getStarsForTravelID(String travelID) {
+    public MutableLiveData<TravelStar> getStarsForTravelID(String travelID) {
         return remoteRepository.getStarsForTravelID(travelID);
     }
 
-    public LiveData<List<TravelStar>> getTravelStars() {
+    public MutableLiveData<List<TravelStar>> getTravelStars() {
         return remoteRepository.getTravelStars();
     }
 
-    public LiveData<List<TravelComments>> getNumCommentsList() {
+    public MutableLiveData<List<TravelComments>> getNumCommentsList() {
         return remoteRepository.getNumCommentsList();
     }
 
-    public LiveData<List<Travel>> getFavoriteTravelPacks() {
+    public MutableLiveData<List<Travel>> getFavoriteTravelPacks() {
         return remoteRepository.getFavoriteTravelPacks();
     }
 

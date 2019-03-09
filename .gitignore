@@ -1,6 +1,5 @@
 *.iml
 .gradle
-/gradle.properties
 /local.properties
 /.idea/libraries
 /.idea/modules.xml
@@ -14,3 +13,10 @@
 /app/google-services.json
 /values/google_maps_api.xml
 /app/src/main/res/values/google_maps_api.xml
+.idea/caches/gradle_models.ser
+.idea/markdown-exported-files.xml
+app/libs/
+app/src/main/res/drawable-v24/
+app/src/main/res/mipmap-anydpi-v26/
+gen/
+releaseToUdacity.jks

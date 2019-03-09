@@ -10,10 +10,12 @@
 <!--        android:name="android.support.multidex.MultiDexApplication"-->
 
     <application
+        android:name=".CapstoneApplication"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 

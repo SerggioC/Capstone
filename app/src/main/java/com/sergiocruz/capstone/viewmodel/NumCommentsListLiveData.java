@@ -1,6 +1,6 @@
 package com.sergiocruz.capstone.viewmodel;
 
-import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
@@ -18,7 +18,7 @@ import timber.log.Timber;
 
 import static com.sergiocruz.capstone.repository.FirebaseRepository.TRAVEL_PACK_COMMENTS_REF;
 
-public class NumCommentsListLiveData extends LiveData<List<TravelComments>> {
+public class NumCommentsListLiveData extends MutableLiveData<List<TravelComments>> {
     private final Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
 
@@ -29,18 +29,7 @@ public class NumCommentsListLiveData extends LiveData<List<TravelComments>> {
     public NumCommentsListLiveData(DatabaseReference databaseReference) {
         databaseReference = databaseReference.child(TRAVEL_PACK_COMMENTS_REF);
         this.query = databaseReference;
-    }
-
-    @Override
-    protected void onActive() {
-        Timber.d("onActive");
         query.addValueEventListener(listener);
-    }
-
-    @Override
-    protected void onInactive() {
-        Timber.d("onInactive");
-        query.removeEventListener(listener);
     }
 
     private class MyValueEventListener implements ValueEventListener {
@@ -48,7 +37,6 @@ public class NumCommentsListLiveData extends LiveData<List<TravelComments>> {
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             new AppExecutors().networkIO().execute(() -> {
                 List<TravelComments> numCommentsList = new ArrayList<>();
-
                 if (dataSnapshot.hasChildren()) {
                     for (DataSnapshot snapshotChild : dataSnapshot.getChildren()) {
                         String travelID = snapshotChild.getKey();
@@ -56,7 +44,6 @@ public class NumCommentsListLiveData extends LiveData<List<TravelComments>> {
                         numCommentsList.add(new TravelComments(count, travelID));
                     }
                 }
-
                 postValue(numCommentsList);
             });
         }

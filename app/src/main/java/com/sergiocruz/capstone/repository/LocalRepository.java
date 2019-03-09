@@ -17,7 +17,7 @@ public class LocalRepository {
         return sInstance;
     }
 
-    public static DatabaseDAO getDatabaseDAO() {
+    static DatabaseDAO getDatabaseDAO() {
         return databaseDAO;
     }
 }

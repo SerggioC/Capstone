@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        installLeakCanary();
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        Boolean shouldNotify = preferences.getBoolean(
+        boolean shouldNotify = preferences.getBoolean(
                 getString(R.string.notification_pref_key),
                 getResources().getBoolean(R.bool.default_notifications));
         if (shouldNotify) {
@@ -73,15 +72,6 @@ public class MainActivity extends AppCompatActivity {
                     .addToBackStack(HomeFragment.class.getSimpleName())
                     .commit();
         }
-    }
-
-    private void installLeakCanary() {
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(this.getApplication());
     }
 
     @Override

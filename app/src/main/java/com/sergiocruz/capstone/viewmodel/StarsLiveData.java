@@ -1,6 +1,6 @@
 package com.sergiocruz.capstone.viewmodel;
 
-import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
@@ -8,15 +8,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.sergiocruz.capstone.model.TravelStar;
 import com.sergiocruz.capstone.model.Star;
+import com.sergiocruz.capstone.model.TravelStar;
 import com.sergiocruz.capstone.util.AppExecutors;
 
 import timber.log.Timber;
 
 import static com.sergiocruz.capstone.repository.FirebaseRepository.TRAVEL_PACK_STARS_REF;
 
-public class StarsLiveData extends LiveData<TravelStar> {
+public class StarsLiveData extends MutableLiveData<TravelStar> {
     private final Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
 
@@ -27,19 +27,19 @@ public class StarsLiveData extends LiveData<TravelStar> {
     public StarsLiveData(DatabaseReference databaseReference, String travelID) {
         databaseReference = databaseReference.child(TRAVEL_PACK_STARS_REF).child(travelID);
         this.query = databaseReference;
-    }
-
-    @Override
-    protected void onActive() {
-        Timber.d("onActive");
         query.addValueEventListener(listener);
     }
 
-    @Override
-    protected void onInactive() {
-        Timber.d("onInactive");
-        query.removeEventListener(listener);
-    }
+//    @Override
+//    protected void onActive() {
+//        Timber.d("onActive");
+//    }
+//
+//    @Override
+//    protected void onInactive() {
+//        Timber.d("onInactive");
+//        query.removeEventListener(listener);
+//    }
 
     private class MyValueEventListener implements ValueEventListener {
         @Override
@@ -49,7 +49,6 @@ public class StarsLiveData extends LiveData<TravelStar> {
                 TravelStar travelStar = getStar(dataSnapshot, dataSnapshot.getKey());
                 postValue(travelStar);
             });
-
         }
 
         @Override

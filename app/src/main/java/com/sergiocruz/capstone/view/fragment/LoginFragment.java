@@ -366,7 +366,6 @@ public class LoginFragment extends Fragment {
     }
 
     private void showRegisterPopupWindow(String email) {
-
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.popup_window_register, null);
@@ -389,7 +388,7 @@ public class LoginFragment extends Fragment {
 
         ((TextView) popupView.findViewById(R.id.content_text)).setText(
                 getString(R.string.email) + " " + email + " " + getString(R.string.not_in_database) + "\n" +
-                getString(R.string.register_email));
+                        getString(R.string.register_email));
 
         popupView.findViewById(R.id.ok_button).setOnClickListener(v -> {
             binding.emailSignInButton.setText(R.string.register);
@@ -619,7 +618,7 @@ public class LoginFragment extends Fragment {
         FirebaseUser currentUser = mFirebaseAuth.getCurrentUser();
         if (currentUser != null) {
             // User is signed in!
-            String message = getString(R.string.auth_with)+ " " + Objects.requireNonNull(currentUser.getProviders()).get(0);
+            String message = getString(R.string.auth_with) + " " + Objects.requireNonNull(currentUser.getProviders()).get(0);
             updateUI(true, message);
         }
 
@@ -906,7 +905,9 @@ public class LoginFragment extends Fragment {
         binding.passwordInputLayout.startAnimation(slideInLeft);
     }
 
-    /** Shows the progress bar */
+    /**
+     * Shows the progress bar
+     */
     private void showProgress(final boolean show) {
         binding.loginProgress.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }

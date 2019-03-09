@@ -100,15 +100,11 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
             return true;
         });
 
-//        Louvre.init(this)
-//                .setRequestCode(11034165)
-//                .open();
-
         return binding.getRoot();
     }
 
     private void setupCommentsRecyclerView(String currentUserID) {
-        detailsViewModel.setCurrentStatus(LOADING);
+        detailsViewModel.setStatus(LOADING);
 
         detailsViewModel.getCommentsForTravelID().observe(this, this::populateCommentsRecyclerView);
 
@@ -120,7 +116,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
     private void populateCommentsRecyclerView(List<Comment> commentList) {
         commentsAdapter.swapData(commentList);
-        detailsViewModel.setCurrentStatus(SUCCESS);
+        detailsViewModel.setStatus(SUCCESS);
         if (hasNewComment) {
             binding.nestedScrollview.fullScroll(View.FOCUS_DOWN);
             hasNewComment = false;
@@ -194,8 +190,6 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         if (actionDown && !touched) {
             Utils.zoomInAnimation(view, ++zOrder);
         }
-
-
         return false;
     }
 

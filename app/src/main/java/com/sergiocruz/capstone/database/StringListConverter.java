@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class StringListConverter {
-    static Gson gson = new Gson();
+    private static Gson gson = new Gson();
 
     @TypeConverter
     public static List<String> stringToStringList(String data) {

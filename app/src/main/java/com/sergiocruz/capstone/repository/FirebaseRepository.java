@@ -1,6 +1,6 @@
 package com.sergiocruz.capstone.repository;
 
-import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -31,21 +31,24 @@ public class FirebaseRepository {
 
     // DB node references
     public static final String USERS_REF = "users";
-    public static final String TRAVEL_PACKS_REF = "travel-packs";
+    private static final String TRAVEL_PACKS_REF = "travel-packs";
     public static final String TRAVEL_PACK_COMMENTS_REF = "travel-pack-comments";
     public static final String TRAVEL_PACK_STARS_REF = "travel-pack-stars";
-    public static final String USERS_FAVORITES_REF = "users-favorites";
+    private static final String USERS_FAVORITES_REF = "users-favorites";
 
     private static FirebaseRepository sInstance;
     private static FirebaseDatabase firebaseDatabase;
     private static DatabaseReference databaseReference;
-    private static TravelPacksLiveData travelPacks;
-    private static UserLiveData userLiveData;
-    private static TravelPacksLiveData favoriteTravelPacks;
+    private TravelPacksLiveData travelPacks;
+    private UserLiveData userLiveData;
+    private TravelPacksLiveData favoriteTravelPacks;
 
     private FirebaseRepository() {
-        firebaseDatabase.setPersistenceEnabled(true); // Enable Offline Capabilities of Firebase https://firebase.google.com/docs/database/android/offline-capabilities
+        // Enable Offline Capabilities of Firebase https://firebase.google.com/docs/database/android/offline-capabilities
+        firebaseDatabase.setPersistenceEnabled(true);
         databaseReference = firebaseDatabase.getReference();
+        //Data that is kept in sync is not purged from the cache.
+        databaseReference.keepSynced(true);
     }
 
     public static FirebaseRepository getInstance() {
@@ -64,35 +67,37 @@ public class FirebaseRepository {
     }
 
     @NonNull
-    public LiveData<List<Travel>> getTravelPacks() {
+    public MutableLiveData<List<Travel>> getTravelPacks() {
         if (travelPacks == null) {
             travelPacks = new TravelPacksLiveData(
                     databaseReference
                             .child(TRAVEL_PACKS_REF));
+            Timber.i("getting travel packs from TravelPacksLiveData");
         }
         return travelPacks;
     }
 
     @NonNull
-    /** Favorites for user ID */
-    public LiveData<List<Travel>> getFavoriteTravelPacks() {
+    /** Favorites for user ID get.Id() */
+    MutableLiveData<List<Travel>> getFavoriteTravelPacks() {
         String userID = getUser().getValue().getUserID();
         if (!TextUtils.isEmpty(userID)) {
-            favoriteTravelPacks = new TravelPacksLiveData(databaseReference
-                    .child(USERS_FAVORITES_REF)
-                    .child(userID));
+            favoriteTravelPacks = new TravelPacksLiveData(
+                    databaseReference
+                            .child(USERS_FAVORITES_REF)
+                            .child(userID));
         }
         return favoriteTravelPacks;
     }
 
-    public LiveData<User> getUser() {
+    public MutableLiveData<User> getUser() {
         if (userLiveData == null) {
             userLiveData = new UserLiveData(databaseReference);
         }
         return userLiveData;
     }
 
-    public LiveData<List<Comment>> getCommentsForTravelID(String travelID) {
+    MutableLiveData<List<Comment>> getCommentsForTravelID(String travelID) {
         return new CommentsLiveData(databaseReference, travelID);
     }
 
@@ -166,23 +171,23 @@ public class FirebaseRepository {
 
     }
 
-    public LiveData<Long> getNumCommentsForTravelID(String travelID) {
+    public MutableLiveData<Long> getNumCommentsForTravelID(String travelID) {
         return new NumberOfCommentsLiveData(databaseReference, travelID);
     }
 
-    public LiveData<TravelStar> getStarsForTravelID(String travelID) {
+    public MutableLiveData<TravelStar> getStarsForTravelID(String travelID) {
         return new StarsLiveData(databaseReference, travelID);
     }
 
-    public LiveData<List<TravelStar>> getTravelStars() {
+    public MutableLiveData<List<TravelStar>> getTravelStars() {
         return new TravelStarsListLiveData(databaseReference);
     }
 
-    public LiveData<List<TravelComments>> getNumCommentsList() {
+    public MutableLiveData<List<TravelComments>> getNumCommentsList() {
         return new NumCommentsListLiveData(databaseReference);
     }
 
-    public Boolean saveTravelToFavorites(Travel travel) {
+    Boolean saveTravelToFavorites(Travel travel) {
         User user = getUser().getValue();
         if (user.getIsAnonymous()) return false;
 

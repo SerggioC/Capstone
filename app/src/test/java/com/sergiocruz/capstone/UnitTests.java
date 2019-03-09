@@ -2,12 +2,14 @@ package com.sergiocruz.capstone;
 
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
@@ -19,6 +21,57 @@ import static org.junit.Assert.assertEquals;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class UnitTests {
+
+    @Test
+    public void testit() {
+        int i = 4;
+        int j = 1;
+        int k = 0;
+        for (int l = 0; l < 3; l++) {
+            k += j;
+            j = 1 - j;
+        }
+        System.out.print(k);
+    }
+
+    @Test
+    public void leetCodeStringToInt() {
+        String input = "  jhyg  -123456789101112";
+        input = "-91283472332";
+        String regex = "^([ ]*([+-])?[0-9]+)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher match = pattern.matcher(input);
+
+        String result = "";
+        while (match.find()) {
+            result = match.group(0).trim();
+        }
+        System.out.println("result =" + result);
+
+        if (result == null || result.length() == 0) {
+            return; // return 0
+        }
+
+
+        BigInteger bigNumber = new BigInteger(result);
+        Integer number;
+        BigInteger maxValue = BigInteger.valueOf(Integer.MAX_VALUE);
+        BigInteger minValue = BigInteger.valueOf(Integer.MIN_VALUE);
+        if (bigNumber.compareTo(maxValue) > 0) {
+            number = Integer.MAX_VALUE;
+        } else if (bigNumber.compareTo(minValue) < 0) {
+            number = Integer.MIN_VALUE;
+        } else {
+            number = bigNumber.intValue();
+        }
+
+        System.out.println("Int.min =" + Integer.MIN_VALUE);
+        System.out.println("number =" + number);
+
+
+    }
+
+
 
     @Test
     public void isEmailValid() {

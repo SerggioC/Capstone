@@ -49,6 +49,9 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Obtain the ViewModel component.
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
     }
 
     @Override
@@ -60,10 +63,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
         Utils.animateViewsOnPreDraw(binding.homeFrameLayout, new View[]{binding.usernameTextView});
 
         // Specify the current fragment as the lifecycle owner.
-        binding.setLifecycleOwner(this);
-
-        // Obtain the ViewModel component.
-        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
+        binding.setLifecycleOwner(getActivity());
 
         int clickedPosition = 0;
         if (savedInstanceState != null) {
@@ -87,7 +87,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
     }
 
     private void setupRecyclerView() {
-        Boolean isTablet = getResources().getBoolean(R.bool.isTablet);
+        boolean isTablet = getResources().getBoolean(R.bool.isTablet);
         if (isTablet) {
             int spanCount = getResources().getInteger(R.integer.spanCount);
             binding.travelsRecyclerView.setLayoutManager(

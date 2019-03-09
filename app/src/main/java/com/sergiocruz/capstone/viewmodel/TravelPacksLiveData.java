@@ -1,6 +1,6 @@
 package com.sergiocruz.capstone.viewmodel;
 
-import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
@@ -15,29 +15,27 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class TravelPacksLiveData extends LiveData<List<Travel>> {
-    private final Query query;
+public class TravelPacksLiveData extends MutableLiveData<List<Travel>> {
+    private Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
-
-    public TravelPacksLiveData(Query query) {
-        this.query = query;
-    }
 
     public TravelPacksLiveData(DatabaseReference databaseReference) {
         this.query = databaseReference;
-    }
-
-    @Override
-    protected void onActive() {
-        Timber.d("onActive");
         query.addValueEventListener(listener);
+        Timber.d("onCreate TravelPacksLiveData");
     }
 
-    @Override
-    protected void onInactive() {
-        Timber.d("onInactive");
-        query.removeEventListener(listener);
-    }
+//    @Override
+//    protected void onActive() {
+//        query.addValueEventListener(listener);
+//        Timber.d("onActive");
+//    }
+//
+//    @Override
+//    protected void onInactive() {
+//        query.removeEventListener(listener);
+//        Timber.d("onInactive");
+//    }
 
     private class MyValueEventListener implements ValueEventListener {
         @Override

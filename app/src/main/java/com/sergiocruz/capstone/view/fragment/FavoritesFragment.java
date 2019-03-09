@@ -50,7 +50,7 @@ public class FavoritesFragment extends Fragment implements BaseAdapter.OnItemCli
         Utils.animateViewsOnPreDraw(binding.homeFrameLayout, new View[]{binding.usernameTextView});
 
         // Specify the current fragment as the lifecycle owner.
-        binding.setLifecycleOwner(this);
+        binding.setLifecycleOwner(getActivity());
 
         // Obtain the ViewModel component.
         viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);

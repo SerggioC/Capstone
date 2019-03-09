@@ -131,7 +131,6 @@ public class Utils {
         ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", dpToPx(-52, view.getContext()));
         animation.setDuration(200);
         animation.start();
-        Timber.i("Move up animation");
     }
 
     public static void moveDownAnimation(View view) {
@@ -140,7 +139,6 @@ public class Utils {
         animation.setDuration(1000);
         animation.setStartDelay(2500);
         animation.start();
-        Timber.i("Move down animation");
     }
 
     public static void setItemViewAnimation(View viewToAnimate, int position) {

@@ -20,7 +20,9 @@ import java.util.Random;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 import static com.sergiocruz.capstone.database.DateConverter.getFormattedDateString;
+import static com.sergiocruz.capstone.model.Status.ERROR;
 import static com.sergiocruz.capstone.model.Status.LOADING;
+import static com.sergiocruz.capstone.model.Status.PROCESSING;
 import static com.sergiocruz.capstone.model.Status.SUCCESS;
 
 public class BindingAdapters {
@@ -79,10 +81,10 @@ public class BindingAdapters {
 
     @BindingAdapter("android:visibility")
     public static void setVisibility(View view, Status status) {
-        Integer visibility = View.GONE;
-        if (status == LOADING) {
+        int visibility = view.getVisibility();
+        if (status == LOADING || status == PROCESSING) {
             visibility = View.VISIBLE;
-        } else if (status == SUCCESS){
+        } else if (status == SUCCESS || status == ERROR){
             visibility = View.GONE;
         }
         view.setVisibility(visibility);

@@ -32,7 +32,7 @@ import java.util.Map;
 
 import timber.log.Timber;
 
-public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickListener<TravelData>, BaseAdapter.OnItemTouchListener {
+public class HomeFragment extends Fragment implements BaseAdapter.OnItemInteraction<TravelData> {
 
     public static final String ROOT_FRAGMENT_NAME = HomeFragment.class.getSimpleName();
     private static final String USER_ID_BUNDLE_KEY = "USER_ID_BUNDLE_KEY";
@@ -98,7 +98,7 @@ public class HomeFragment extends Fragment implements BaseAdapter.OnItemClickLis
         }
 
         binding.travelsRecyclerView.setHasFixedSize(true);
-        adapter = new TravelsAdapter(this, this);
+        adapter = new TravelsAdapter(this);
 
         binding.travelsRecyclerView.setAdapter(adapter);
 

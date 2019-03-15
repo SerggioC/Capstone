@@ -40,6 +40,7 @@
                     android:contentDescription="@string/photo_of_travel"
                     android:scaleType="centerCrop"
                     android:transitionName="@{viewModel.travel.ID}"
+                    android:visibility="visible"
                     app:errorDrawable="@{@drawable/travel_image}"
                     app:imageList="@{viewModel.travel.images}"
                     app:imageUrl="@{viewModel.travel.images.get(0)}"
@@ -52,10 +53,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="30dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="16dp"
                     android:contentDescription="@string/go_back"
+                    app:layout_constraintBottom_toBottomOf="@+id/image"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:srcCompat="@drawable/ic_arrow_back" />
 
                 <android.support.v7.widget.Toolbar
@@ -64,7 +66,8 @@
                     android:layout_height="?android:actionBarSize"
                     android:elevation="@dimen/appbar_elevation"
                     app:title="@{viewModel.travel.name}"
-                    app:titleMarginStart="16dp" />
+                    app:titleMarginStart="16dp"
+                    tools:layout_editor_absoluteY="144dp" />
 
             </android.support.design.widget.CollapsingToolbarLayout>
 

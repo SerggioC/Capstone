@@ -1,9 +1,12 @@
 package com.sergiocruz.capstone.adapter;
 
+import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,7 +16,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.sergiocruz.capstone.R;
 import com.sergiocruz.capstone.model.Status;
+import com.sergiocruz.capstone.util.Utils;
 
 import java.util.List;
 import java.util.Random;
@@ -62,7 +67,17 @@ public class BindingAdapters {
         // dp gets converted to density * value automatically here
         if (cornerRadius != null) {
             options = options.transforms(new CenterCrop(), new RoundedCorners(Math.round(cornerRadius)));
+
+            WindowManager manager = (WindowManager) imageView.getContext().getSystemService(Context.WINDOW_SERVICE);
+            int width = manager.getDefaultDisplay().getWidth();
+            int margin = ((FrameLayout.LayoutParams) imageView.getLayoutParams()).rightMargin * 10;
+            width = (width - margin) / imageView.getContext().getResources().getInteger(R.integer.detailImagesSpanCount);
+            width = Utils.pxToDp(width, imageView.getContext());
+
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(width, width * 3 / 4);
+            imageView.setLayoutParams(layoutParams);
         }
+
 
         Glide.with(imageView.getContext())
                 .load(url)
@@ -84,7 +99,7 @@ public class BindingAdapters {
         int visibility = view.getVisibility();
         if (status == LOADING || status == PROCESSING) {
             visibility = View.VISIBLE;
-        } else if (status == SUCCESS || status == ERROR){
+        } else if (status == SUCCESS || status == ERROR) {
             visibility = View.GONE;
         }
         view.setVisibility(visibility);
@@ -100,7 +115,7 @@ public class BindingAdapters {
         if (status == LOADING || status == Status.PROCESSING) {
             visibility = View.VISIBLE;
             animatable.start();
-        } else if (status == SUCCESS){
+        } else if (status == SUCCESS) {
             animatable.stop();
             visibility = View.GONE;
         }

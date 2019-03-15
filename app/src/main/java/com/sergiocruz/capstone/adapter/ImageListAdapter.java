@@ -1,5 +1,7 @@
 package com.sergiocruz.capstone.adapter;
 
+import android.support.annotation.NonNull;
+
 import com.sergiocruz.capstone.R;
 
 import java.util.List;
@@ -8,8 +10,8 @@ public class ImageListAdapter extends BaseAdapter {
     private List<String> imagesList;
 
     @SuppressWarnings("unchecked")
-    public ImageListAdapter(List<String> imagesList, OnItemClickListener itemClickListener, OnItemTouchListener itemTouchListener) {
-        super(itemClickListener, itemTouchListener);
+    public ImageListAdapter(List<String> imagesList, OnItemInteraction itemInteraction) {
+        super(itemInteraction);
         this.imagesList = imagesList;
     }
 

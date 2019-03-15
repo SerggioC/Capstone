@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
+import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -134,6 +135,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+
+    public void launchMotionLayout(View view) {
+        Intent intent = new Intent(this, MotionLayoutActivity.class);
+        startActivity(intent);
     }
 
 

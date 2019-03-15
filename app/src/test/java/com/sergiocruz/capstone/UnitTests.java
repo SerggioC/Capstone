@@ -22,6 +22,30 @@ import static org.junit.Assert.assertEquals;
  */
 public class UnitTests {
 
+
+
+    @Test
+    public void sequenceTest() {
+        int limit = 10000;
+        int count = 0;
+        int sequence = 3004;
+        while (sequence != 1) {
+            if (sequence % 2 == 0) {
+                sequence /= 2;
+                System.out.println("Halving: " + sequence);
+            } else {
+                sequence = 3 * sequence + 1;
+                System.out.println("Triple+1: " + sequence);
+            }
+            count++;
+            if (count >= limit){
+                break;
+            }
+        }
+        System.out.println("Operations: " + count);
+
+    }
+
     @Test
     public void testit() {
         int i = 4;
@@ -72,7 +96,6 @@ public class UnitTests {
     }
 
 
-
     @Test
     public void isEmailValid() {
         String email = "sergio@mail.pt";
@@ -80,7 +103,7 @@ public class UnitTests {
         Pattern pattern = Pattern.compile(".+@.+\\..+");
         boolean matches = pattern.matcher(email).matches();
         System.out.println("matches = " + matches + "\n" +
-        email + " is " + (matches ? "valid" : "invalid"));
+                email + " is " + (matches ? "valid" : "invalid"));
 
     }
 

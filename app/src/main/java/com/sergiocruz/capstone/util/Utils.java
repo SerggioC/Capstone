@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.sergiocruz.capstone.R;
+import com.sergiocruz.capstone.model.Star;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -94,10 +96,15 @@ public class Utils {
             e.printStackTrace();
             return null;
         }
+
     }
 
     public static int dpToPx(float dpValue, Context context) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, context.getResources().getDisplayMetrics());
+    }
+
+    public static int pxToDp(float dpValue, Context context) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, dpValue, context.getResources().getDisplayMetrics());
     }
 
     public static boolean upDownAnimation(View view, MotionEvent event) {

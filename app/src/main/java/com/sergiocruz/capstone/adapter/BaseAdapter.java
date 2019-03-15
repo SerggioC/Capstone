@@ -10,21 +10,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.databinding.library.baseAdapters.BR;
+import com.sergiocruz.capstone.BR;
 import com.sergiocruz.capstone.util.Utils;
 
 public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>.BaseViewHolder> {
 
-    private final OnItemClickListener<T> itemClickListener;
-    private final OnItemTouchListener itemTouchListener;
+    private final OnItemInteraction<T> itemInteractionListener;
 
-    BaseAdapter(OnItemClickListener<T> itemClickListener, OnItemTouchListener itemTouchListener) {
-        this.itemClickListener = itemClickListener;
-        this.itemTouchListener = itemTouchListener;
+    BaseAdapter(OnItemInteraction<T> itemInteractionListener) {
+        this.itemInteractionListener = itemInteractionListener;
     }
 
     private boolean onTouchItem(View v, MotionEvent event) {
-        return itemTouchListener.onItemTouch(v, event);
+        return itemInteractionListener.onItemTouch(v, event);
     }
 
     @NonNull
@@ -37,9 +35,9 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>
     @Override
     public void onBindViewHolder(@NonNull BaseAdapter<T>.BaseViewHolder holder, int position) {
         final T object = getObjectForPosition(position);
-        if (itemClickListener != null)
-            holder.itemView.setOnClickListener(v -> itemClickListener.onItemClick(object, holder.itemView, position)); /* TODO move to BaseViewHolder? */
-        if (itemTouchListener != null)
+        if (itemInteractionListener != null)
+            holder.itemView.setOnClickListener(v -> itemInteractionListener.onItemClick(object, holder.itemView, position)); /* TODO move to BaseViewHolder? */
+        if (itemInteractionListener != null)
             holder.itemView.setOnTouchListener(this::onTouchItem);
         Utils.setItemViewAnimation(holder.itemView, position);
         holder.bindVariable(object);
@@ -54,11 +52,9 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseAdapter<T>
 
     protected abstract int getLayoutIdForPosition(int position);
 
-    public interface OnItemClickListener<T> {
+    public interface OnItemInteraction<T> {
         void onItemClick(T object, View view, Integer position);
-    }
 
-    public interface OnItemTouchListener {
         boolean onItemTouch(View v, MotionEvent event);
     }
 

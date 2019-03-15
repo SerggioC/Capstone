@@ -84,6 +84,8 @@ import timber.log.Timber;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
+;
+
 /**
  * A login screen that offers login via multiple providers
  * including email/password through Firebase Authentication.

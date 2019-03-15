@@ -13,8 +13,8 @@ public class TravelsAdapter extends BaseAdapter {
     private List<TravelData> travelData;
 
     @SuppressWarnings("unchecked")
-    public TravelsAdapter(OnItemClickListener itemClickListener, OnItemTouchListener itemTouchListener) {
-        super(itemClickListener, itemTouchListener);
+    public TravelsAdapter(OnItemInteraction itemInteraction) {
+        super(itemInteraction);
     }
 
     public void swapTravelsData(List<TravelData> data) {

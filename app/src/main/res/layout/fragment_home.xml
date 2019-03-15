@@ -29,33 +29,34 @@
                 android:id="@+id/username_textView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 android:background="@drawable/home_textview_background"
                 android:gravity="center_vertical"
                 android:padding="8dp"
                 android:text="@{@string/welcome + ' ' + viewModel.userName}"
                 android:textColor="@color/white"
+                android:onClick="launchMotionLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/travelsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="4dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="8dp"
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/username_textView"
-                tools:listitem="@layout/item_travel_layout"/>
+                tools:listitem="@layout/item_travel_layout" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -66,19 +67,19 @@
                 app:layout_constraintBottom_toBottomOf="@id/travelsRecyclerView"
                 app:layout_constraintEnd_toEndOf="@id/travelsRecyclerView"
                 app:layout_constraintStart_toStartOf="@id/travelsRecyclerView"
-                app:layout_constraintTop_toTopOf="@id/travelsRecyclerView"/>
+                app:layout_constraintTop_toTopOf="@id/travelsRecyclerView" />
 
-<!--            <ImageView
+            <ImageView
                 android:id="@+id/loadingGears"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="@+id/travelsRecyclerView"
-                app:layout_constraintEnd_toEndOf="@+id/travelsRecyclerView"
-                app:layout_constraintStart_toStartOf="@+id/travelsRecyclerView"
-                app:layout_constraintTop_toTopOf="@+id/travelsRecyclerView"
-                app:visible="@{viewModel.currentStatus}"
+                android:layout_marginTop="32dp"
+                android:contentDescription="@string/loading_animation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/animated_gears"
-                android:contentDescription="@string/loading_animation"/>-->
+                app:visible="@{viewModel.currentStatus}" />
 
 
         </android.support.constraint.ConstraintLayout>

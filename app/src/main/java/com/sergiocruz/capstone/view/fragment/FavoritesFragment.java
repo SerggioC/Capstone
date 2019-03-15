@@ -24,7 +24,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class FavoritesFragment extends Fragment implements BaseAdapter.OnItemClickListener<TravelData>, BaseAdapter.OnItemTouchListener {
+public class FavoritesFragment extends Fragment implements BaseAdapter.OnItemInteraction<TravelData> {
     public static final String USER_ID_BUNDLE_KEY = "USER_ID_BUNDLE_KEY";
     private static final String CLICKED_POSITION_KEY = "BUNDLE_KEY_CLICKED_POSITION";
     private FragmentFavoritesBinding binding;
@@ -86,7 +86,7 @@ public class FavoritesFragment extends Fragment implements BaseAdapter.OnItemCli
         }
 
         binding.travelsRecyclerView.setHasFixedSize(true);
-        adapter = new TravelsAdapter(this, this);
+        adapter = new TravelsAdapter(this);
 
         binding.travelsRecyclerView.setAdapter(adapter);
         if (!viewModel.getUser().getValue().getIsAnonymous()) {

@@ -15,18 +15,24 @@
     cornerRadius in dp -->
 
 
-    <ImageView
-        android:id="@+id/image_item"
-        android:layout_width="160dp"
-        android:layout_height="90dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="@dimen/item_margin"
-        android:contentDescription="@string/photo_of_travel"
-        android:scaleType="centerCrop"
-        app:cornerRadius="@{@dimen/corner_radius}"
-        app:errorDrawable="@{@drawable/travel_image}"
-        app:imageUrl="@{object}"
-        tools:src="@drawable/austria" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp">
+
+        <ImageView
+            android:id="@+id/image_item"
+            android:layout_width="160dp"
+            android:layout_height="90dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/item_margin"
+            android:contentDescription="@string/photo_of_travel"
+            android:scaleType="centerCrop"
+            app:cornerRadius="@{@dimen/corner_radius}"
+            app:errorDrawable="@{@drawable/travel_image}"
+            app:imageUrl="@{object}"
+            tools:src="@drawable/austria" />
+    </FrameLayout>
 
 
 </layout>

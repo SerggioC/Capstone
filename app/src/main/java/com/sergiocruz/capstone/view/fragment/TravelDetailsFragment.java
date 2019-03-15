@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ import timber.log.Timber;
 import static com.sergiocruz.capstone.model.Status.LOADING;
 import static com.sergiocruz.capstone.model.Status.SUCCESS;
 
-public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnItemClickListener<String>, BaseAdapter.OnItemTouchListener, CommentsAdapter.OnEditClickListener, BottomSheetCommentDialog.NewCommentInterface {
+public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnItemInteraction<String>, CommentsAdapter.OnEditClickListener, BottomSheetCommentDialog.NewCommentInterface {
 
     private static final String TRAVEL_ID_KEY = "TRAVEL_ID_KEY";
     private FragmentTravelDetailsBinding binding;
@@ -63,7 +64,6 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
 
         // Obtain the ViewModel component.
         viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
-
 
         selectedTravel = viewModel.getSelectedTravel();
 
@@ -135,7 +135,7 @@ public class TravelDetailsFragment extends Fragment implements BaseAdapter.OnIte
         int spanCount = getResources().getInteger(R.integer.detailImagesSpanCount);
         binding.imagesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
         binding.imagesRecyclerView.setHasFixedSize(true);
-        ImageListAdapter adapter = new ImageListAdapter(selectedTravel.getImages(), this, this);
+        ImageListAdapter adapter = new ImageListAdapter(selectedTravel.getImages(), this);
         binding.imagesRecyclerView.setAdapter(adapter);
     }
 

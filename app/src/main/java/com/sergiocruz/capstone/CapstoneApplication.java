@@ -2,6 +2,7 @@ package com.sergiocruz.capstone;
 
 import android.app.Application;
 
+import com.sergiocruz.capstone.util.TimberImplementation;
 import com.squareup.leakcanary.LeakCanary;
 
 public class CapstoneApplication extends Application {
@@ -16,6 +17,7 @@ public class CapstoneApplication extends Application {
         }
         LeakCanary.install(this);
         // Normal app init code...
+        TimberImplementation.init();
     }
 
 }

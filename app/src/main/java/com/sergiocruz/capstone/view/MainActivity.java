@@ -13,12 +13,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.sergiocruz.capstone.R;
-import com.sergiocruz.capstone.util.TimberImplementation;
 import com.sergiocruz.capstone.view.fragment.HomeFragment;
 import com.sergiocruz.capstone.view.fragment.LoginFragment;
 import com.sergiocruz.capstone.view.fragment.MainContainerFragment;
 import com.sergiocruz.capstone.view.fragment.TravelDetailsFragment;
-import com.squareup.leakcanary.LeakCanary;
 
 import timber.log.Timber;
 
@@ -31,13 +29,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {
-            TimberImplementation.init();
-        } else {
+        if (savedInstanceState != null) {
             // Return here to prevent adding additional
             // Fragments when changing orientation.
             return;
         }
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean shouldNotify = preferences.getBoolean(
                 getString(R.string.notification_pref_key),

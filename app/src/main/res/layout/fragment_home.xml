@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -8,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.sergiocruz.capstone.viewmodel.MainViewModel"/>
+            type="com.sergiocruz.capstone.viewmodel.MainViewModel" />
     </data>
 
     <android.support.v4.widget.NestedScrollView
@@ -34,10 +33,10 @@
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/home_textview_background"
                 android:gravity="center_vertical"
+                android:onClick="launchMotionLayout"
                 android:padding="8dp"
                 android:text="@{@string/welcome + ' ' + viewModel.userName}"
                 android:textColor="@color/white"
-                android:onClick="launchMotionLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -75,9 +74,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:contentDescription="@string/loading_animation"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/travelsRecyclerView"
+                app:layout_constraintStart_toStartOf="@+id/travelsRecyclerView"
+                app:layout_constraintTop_toTopOf="@+id/travelsRecyclerView"
                 app:srcCompat="@drawable/animated_gears"
                 app:visible="@{viewModel.currentStatus}" />
 
